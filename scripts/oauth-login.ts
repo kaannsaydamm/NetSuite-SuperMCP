@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process"
 import { randomBytes } from "node:crypto"
-import { readFile, writeFile } from "node:fs/promises"
+import { copyFile, readFile, writeFile } from "node:fs/promises"
 import { createServer } from "node:http"
 import { join } from "node:path"
 import ky, { HTTPError } from "ky"
@@ -12,29 +12,39 @@ const TokenResponseSchema = z.object({
   expires_in: z.number().int().positive().optional(),
 })
 
-const projectRoot = join(import.meta.dir, "..")
-const envPath = join(projectRoot, ".env")
-const env = await readEnv(envPath)
+const packageRoot = join(import.meta.dir, "..")
+const workspaceRoot = process.cwd()
+const envPath = join(workspaceRoot, ".env")
 
-const authorizationUrl = requiredEnv("NETSUITE_AUTHORIZATION_URL")
-const tokenUrl = requiredEnv("NETSUITE_TOKEN_URL")
-const clientId = requiredEnv("NETSUITE_CLIENT_ID")
-const clientSecret = requiredEnv("NETSUITE_CLIENT_SECRET")
-const redirectUri = requiredEnv("NETSUITE_REDIRECT_URI")
-const state = randomBytes(24).toString("base64url")
-const authUrl = createAuthorizationUrl({ authorizationUrl, clientId, redirectUri, state })
+await main().catch((error) => {
+  console.error(error instanceof Error ? error.message : "NetSuite OAuth login failed")
+  process.exit(1)
+})
 
-console.log(`Opening NetSuite OAuth consent page: ${authUrl}`)
-await openBrowser(authUrl)
+async function main(): Promise<void> {
+  await ensureEnvFile(envPath)
+  const env = await readEnv(envPath)
 
-const code = await waitForAuthorizationCode(redirectUri, state)
-const token = await exchangeCode({ tokenUrl, clientId, clientSecret, redirectUri, code })
+  const authorizationUrl = requiredEnv(env, "NETSUITE_AUTHORIZATION_URL")
+  const tokenUrl = requiredEnv(env, "NETSUITE_TOKEN_URL")
+  const clientId = requiredEnv(env, "NETSUITE_CLIENT_ID")
+  const clientSecret = requiredEnv(env, "NETSUITE_CLIENT_SECRET")
+  const redirectUri = requiredEnv(env, "NETSUITE_REDIRECT_URI")
+  const state = randomBytes(24).toString("base64url")
+  const authUrl = createAuthorizationUrl({ authorizationUrl, clientId, redirectUri, state })
 
-env.set("NETSUITE_OAUTH_FLOW", "authorization_code")
-env.set("NETSUITE_REFRESH_TOKEN", token.refresh_token)
-await writeEnv(envPath, env)
+  console.log(`Opening NetSuite OAuth consent page: ${authUrl}`)
+  await openBrowser(authUrl)
 
-console.log("NetSuite OAuth login complete. Refresh token was saved to .env.")
+  const code = await waitForAuthorizationCode(redirectUri, state)
+  const token = await exchangeCode({ tokenUrl, clientId, clientSecret, redirectUri, code })
+
+  env.set("NETSUITE_OAUTH_FLOW", "authorization_code")
+  env.set("NETSUITE_REFRESH_TOKEN", token.refresh_token)
+  await writeEnv(envPath, env)
+
+  console.log("NetSuite OAuth login complete. Refresh token was saved to .env.")
+}
 
 function createAuthorizationUrl(input: {
   readonly authorizationUrl: string
@@ -150,6 +160,19 @@ async function readEnv(path: string): Promise<Map<string, string>> {
   return values
 }
 
+async function ensureEnvFile(path: string): Promise<void> {
+  try {
+    await readFile(path, "utf8")
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      await copyFile(join(packageRoot, ".env.example"), path)
+      console.log(`Created ${path} from .env.example. Fill the NetSuite OAuth values and rerun.`)
+      return
+    }
+    throw error
+  }
+}
+
 async function writeEnv(path: string, values: Map<string, string>): Promise<void> {
   await writeFile(
     path,
@@ -158,7 +181,7 @@ async function writeEnv(path: string, values: Map<string, string>): Promise<void
   )
 }
 
-function requiredEnv(key: string): string {
+function requiredEnv(env: Map<string, string>, key: string): string {
   const value = env.get(key)
   if (value === undefined || value.length === 0 || value === "change-me") {
     throw new Error(`${key} must be set in .env before browser OAuth login`)

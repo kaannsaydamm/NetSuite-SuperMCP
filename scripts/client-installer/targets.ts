@@ -12,22 +12,26 @@ export type JsonTarget = {
 }
 
 export type InstallerPaths = {
-  readonly projectRoot: string
+  readonly packageRoot: string
+  readonly workspaceRoot: string
   readonly stdioEntry: string
   readonly codexConfig: string
   readonly env: Record<string, string>
 }
 
 export function createInstallerPaths(scriptDir: string): InstallerPaths {
-  const projectRoot = resolve(scriptDir, "..")
+  const packageRoot = resolve(scriptDir, "..")
+  const workspaceRoot = resolve(process.cwd())
   const home = process.env["USERPROFILE"] ?? process.env["HOME"] ?? "."
   return {
-    projectRoot,
-    stdioEntry: join(projectRoot, "src", "stdio.ts"),
+    packageRoot,
+    workspaceRoot,
+    stdioEntry: join(packageRoot, "src", "stdio.ts"),
     codexConfig: join(home, ".codex", "config.toml"),
     env:
-      readEnvFile(join(projectRoot, ".env")) ??
-      readEnvFile(join(projectRoot, ".env.example")) ??
+      readEnvFile(join(workspaceRoot, ".env")) ??
+      readEnvFile(join(packageRoot, ".env")) ??
+      readEnvFile(join(packageRoot, ".env.example")) ??
       {},
   }
 }
@@ -35,13 +39,13 @@ export function createInstallerPaths(scriptDir: string): InstallerPaths {
 export function createJsonTargets(paths: InstallerPaths): readonly JsonTarget[] {
   const home = process.env["USERPROFILE"] ?? process.env["HOME"] ?? "."
   const appData = process.env["APPDATA"] ?? join(home, "AppData", "Roaming")
-  const projectRoot = paths.projectRoot
+  const workspaceRoot = paths.workspaceRoot
 
   return [
     target(
       "claude-code",
       "Claude Code project .mcp.json",
-      join(projectRoot, ".mcp.json"),
+      join(workspaceRoot, ".mcp.json"),
       "claude-code",
       [join(home, ".claude")],
     ),
@@ -73,7 +77,7 @@ export function createJsonTargets(paths: InstallerPaths): readonly JsonTarget[] 
       "antigravity",
       [join(home, ".gemini", "antigravity-cli")],
     ),
-    target("vscode", "VS Code workspace", join(projectRoot, ".vscode", "mcp.json"), "vscode", [
+    target("vscode", "VS Code workspace", join(workspaceRoot, ".vscode", "mcp.json"), "vscode", [
       join(appData, "Code"),
     ]),
     target("opencode", "OpenCode", join(home, ".config", "opencode", "mcp.json"), "opencode", [
@@ -94,7 +98,7 @@ export function createJsonTargets(paths: InstallerPaths): readonly JsonTarget[] 
     target(
       "zed",
       "Zed / Zcode MCP snippet",
-      join(projectRoot, "generated", "zed-mcp.json"),
+      join(workspaceRoot, "generated", "zed-mcp.json"),
       "zed",
       [join(appData, "Zed"), join(home, ".config", "zed")],
     ),

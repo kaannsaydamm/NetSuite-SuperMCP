@@ -127,11 +127,11 @@ async function installJsonTarget(entry: JsonTarget): Promise<void> {
 }
 
 async function ensureEnvFile(): Promise<void> {
-  const envPath = join(paths.projectRoot, ".env")
+  const envPath = join(paths.workspaceRoot, ".env")
   if (existsSync(envPath)) {
     return
   }
-  const example = await readText(join(paths.projectRoot, ".env.example"))
+  const example = await readText(join(paths.packageRoot, ".env.example"))
   await writeText(envPath, example)
   console.log(`created ${envPath} from .env.example; fill NetSuite OAuth values before live use`)
 }
