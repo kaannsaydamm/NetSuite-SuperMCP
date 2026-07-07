@@ -4,16 +4,21 @@
  */
 define([
   "N/error",
+  "N/runtime",
   "./supermcp_integration_actions",
   "./supermcp_mapping_actions",
   "./supermcp_read_actions",
   "./supermcp_transform_actions",
-], (nsError, integrationActions, mappingActions, readActions, transformActions) => {
+], (nsError, runtime, integrationActions, mappingActions, readActions, transformActions) => {
   const PHASES = ["prepare", "preview", "commit"]
+  const SYSTEM_ACTIONS = {
+    ns_checkAccountPermissions: checkAccountPermissions,
+  }
 
   function post(request) {
     const actionRequest = parseRequest(request)
     const result =
+      runSystemAction(actionRequest) ||
       transformActions.run(actionRequest) ||
       readActions.run(actionRequest) ||
       integrationActions.run(actionRequest) ||
@@ -42,6 +47,28 @@ define([
     }
 
     return { action, phase, payload }
+  }
+
+  function runSystemAction(actionRequest) {
+    const handler = SYSTEM_ACTIONS[actionRequest.action]
+    return handler ? handler(actionRequest) : null
+  }
+
+  function checkAccountPermissions(actionRequest) {
+    const currentUser = runtime.getCurrentUser()
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      accountId: runtime.accountId,
+      executionContext: runtime.executionContext,
+      currentUser: {
+        id: currentUser.id,
+        name: currentUser.name,
+        role: currentUser.role,
+        roleId: currentUser.roleId,
+        roleCenter: currentUser.roleCenter,
+      },
+    }
   }
 
   function requireText(payload, fieldId) {

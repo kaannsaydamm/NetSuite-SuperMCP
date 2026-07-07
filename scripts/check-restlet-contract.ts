@@ -5,6 +5,7 @@ const transformPath = "netsuite/suitescript/supermcp_transform_actions.js"
 const readPath = "netsuite/suitescript/supermcp_read_actions.js"
 const integrationPath = "netsuite/suitescript/supermcp_integration_actions.js"
 const mappingPath = "netsuite/suitescript/supermcp_mapping_actions.js"
+const actionRestletPath = "netsuite/suitescript/supermcp_action_restlet.js"
 
 const mcpTransformActions = [
   ToolName.TransformRecord,
@@ -29,29 +30,41 @@ const mcpReadActions = [
 
 const mcpIntegrationActions = [ToolName.RetryIntegrationJob]
 const mcpMappingActions = [ToolName.GetMapping, ToolName.UpdateMapping]
+const mcpSystemRestletActions = [ToolName.CheckAccountPermissions]
 
 const transformSource = await readFile(transformPath, "utf8")
 const readSource = await readFile(readPath, "utf8")
 const integrationSource = await readFile(integrationPath, "utf8")
 const mappingSource = await readFile(mappingPath, "utf8")
+const actionRestletSource = await readFile(actionRestletPath, "utf8")
 const restletTransformActions = extractRestletActions(transformSource, "TRANSFORM_ACTIONS")
 const restletReadActions = extractRestletActions(readSource, "READ_ACTIONS")
 const restletIntegrationActions = extractRestletActions(integrationSource, "INTEGRATION_ACTIONS")
 const restletMappingActions = extractRestletActions(mappingSource, "MAPPING_ACTIONS")
+const restletSystemActions = extractRestletActions(actionRestletSource, "SYSTEM_ACTIONS")
 
 const transformResult = compareActions(mcpTransformActions, restletTransformActions)
 const readResult = compareActions(mcpReadActions, restletReadActions)
 const integrationResult = compareActions(mcpIntegrationActions, restletIntegrationActions)
 const mappingResult = compareActions(mcpMappingActions, restletMappingActions)
+const systemResult = compareActions(mcpSystemRestletActions, restletSystemActions)
 
-if (!transformResult.ok || !readResult.ok || !integrationResult.ok || !mappingResult.ok) {
+if (
+  !transformResult.ok ||
+  !readResult.ok ||
+  !integrationResult.ok ||
+  !mappingResult.ok ||
+  !systemResult.ok
+) {
   console.error(
     JSON.stringify(
       {
+        actionRestletPath,
         transformPath,
         readPath,
         integrationPath,
         mappingPath,
+        system: systemResult,
         transform: transformResult,
         read: readResult,
         integration: integrationResult,
@@ -65,7 +78,7 @@ if (!transformResult.ok || !readResult.ok || !integrationResult.ok || !mappingRe
 }
 
 console.log(
-  `restlet contract ok: ${restletTransformActions.length} transform actions, ${restletReadActions.length} read actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
+  `restlet contract ok: ${restletSystemActions.length} system actions, ${restletTransformActions.length} transform actions, ${restletReadActions.length} read actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
 )
 
 function compareActions(expected: readonly string[], actual: readonly string[]) {
