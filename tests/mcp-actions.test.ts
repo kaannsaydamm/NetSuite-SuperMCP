@@ -124,7 +124,7 @@ describe("MCP NetSuite actions", () => {
     expect(fakeNetSuite.deletedRecords).toHaveLength(0)
   })
 
-  it("blocks production mutating tools before NetSuite execution", async () => {
+  it("lets production mutating tools reach the configured NetSuite account", async () => {
     // Given
     const auditLogPath = await tempAuditPath()
     const fakeNetSuite = new FakeNetSuiteClient()
@@ -149,17 +149,21 @@ describe("MCP NetSuite actions", () => {
         arguments: { action: "bill", payload: { purchaseOrderId: "123" } },
       },
     })
-    const body = await response.json()
     const auditContent = await readFile(auditLogPath, "utf8")
 
     // Then
     expect(response.status).toBe(200)
-    expect(JSON.stringify(body)).toContain("production writes are locked")
-    expect(auditContent).toContain('"status":"blocked"')
-    expect(fakeNetSuite.actions).toHaveLength(0)
+    expect(auditContent).toContain('"status":"succeeded"')
+    expect(fakeNetSuite.actions).toEqual([
+      {
+        action: ToolName.BillPurchaseOrder,
+        phase: "commit",
+        payload: { purchaseOrderId: "123" },
+      },
+    ])
   })
 
-  it("routes high-risk direct action tools to preview", async () => {
+  it("routes direct action tools to commit", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -180,7 +184,7 @@ describe("MCP NetSuite actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.BillPurchaseOrder,
-        phase: "preview",
+        phase: "commit",
         payload: { purchaseOrderId: "123" },
       },
     ])

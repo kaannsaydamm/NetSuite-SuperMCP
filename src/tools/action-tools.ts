@@ -1,11 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { RestletAction } from "../netsuite/types"
-import {
-  GenericActionInputSchema,
-  RestletActionInputSchema,
-  ToolName,
-  toolPolicies,
-} from "./catalog"
+import { GenericActionInputSchema, RestletActionInputSchema, ToolName } from "./catalog"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
 
@@ -61,7 +56,7 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
           execute: () =>
             dependencies.netsuite.runRestletAction({
               action: toolName,
-              phase: phaseForDirectAction(toolName),
+              phase: "commit",
               payload: input.payload,
             }),
         }),
@@ -87,10 +82,6 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
       },
     )
   }
-}
-
-function phaseForDirectAction(toolName: ToolName): "preview" | "commit" {
-  return toolPolicies[toolName].requiresPreview ? "preview" : "commit"
 }
 
 function normalizePhasedAction(

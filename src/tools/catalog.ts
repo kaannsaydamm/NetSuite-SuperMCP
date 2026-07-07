@@ -14,6 +14,7 @@ import { JsonValueSchema } from "../shared/json"
 
 export const ToolName = {
   GetEnvironment: "ns_getEnvironment",
+  CheckAccountPermissions: "ns_checkAccountPermissions",
   GetRecord: "ns_getRecord",
   RunSuiteQl: "ns_runSuiteQL",
   RunSavedSearch: "ns_runSavedSearch",
@@ -51,6 +52,7 @@ export type ToolName = (typeof ToolName)[keyof typeof ToolName]
 
 export const toolPolicies = {
   [ToolName.GetEnvironment]: low(ToolName.GetEnvironment),
+  [ToolName.CheckAccountPermissions]: low(ToolName.CheckAccountPermissions),
   [ToolName.GetRecord]: low(ToolName.GetRecord),
   [ToolName.RunSuiteQl]: low(ToolName.RunSuiteQl),
   [ToolName.RunSavedSearch]: low(ToolName.RunSavedSearch),
@@ -96,6 +98,11 @@ export const AuditLogInputSchema = z.object({
   limit: z.number().int().min(1).max(100).default(20),
 })
 
+export const AccountPermissionCheckInputSchema = z.object({
+  recordTypes: z.array(z.string().min(1)).max(20).default([]),
+  includeRestlet: z.boolean().default(false),
+})
+
 export const GenericActionInputSchema = z.object({
   action: z.string().min(1),
   payload: z.record(z.string(), JsonValueSchema).default({}),
@@ -104,13 +111,13 @@ export const GenericActionInputSchema = z.object({
 export const RestletActionInputSchema = RestletActionSchema
 
 function low(toolName: ToolName): ToolPolicy {
-  return { toolName, risk: ToolRisk.Low, mutatesNetSuite: false, requiresPreview: false }
+  return { toolName, risk: ToolRisk.Low, mutatesNetSuite: false }
 }
 
 function medium(toolName: ToolName): ToolPolicy {
-  return { toolName, risk: ToolRisk.Medium, mutatesNetSuite: true, requiresPreview: false }
+  return { toolName, risk: ToolRisk.Medium, mutatesNetSuite: true }
 }
 
 function high(toolName: ToolName): ToolPolicy {
-  return { toolName, risk: ToolRisk.High, mutatesNetSuite: true, requiresPreview: true }
+  return { toolName, risk: ToolRisk.High, mutatesNetSuite: true }
 }

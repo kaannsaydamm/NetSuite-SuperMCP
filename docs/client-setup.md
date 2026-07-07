@@ -66,8 +66,8 @@ NETSUITE_PRIVATE_KEY_PEM_BASE64=...
 NETSUITE_TOKEN_URL=...
 ```
 
-This uses the dedicated `VSP MCP Integration User` and `VSP MCP Super Integration Role`; it does
-not use the human user's NetSuite role.
+This uses whichever NetSuite entity and role you map in OAuth Client Credentials. SuperMCP does
+not require a specific integration user or role name.
 
 ## HTTP Clients
 
@@ -84,15 +84,16 @@ X-SuperMCP-User: kaan
 X-SuperMCP-Client: claude
 ```
 
-## Safety
+## Permissions And Approval
 
-Client-side tool approval remains the UX for mutating tools.
+Client-side tool approval remains the UX for mutating tools. SuperMCP writes MCP server
+registration only; it does not write client permission toggles or approval settings.
 
-Server-side policy still blocks:
+Server-side checks still reject:
 
-- Production writes when `PRODUCTION_WRITES_ENABLED=false`.
-- Critical tools that do not have a preview phase.
 - Invalid or unauthenticated MCP requests.
+- Invalid tool inputs.
 
-Use `ns_listCapabilities` to inspect each tool's risk level, whether it mutates NetSuite, and
-whether preview is required before execution.
+Use `ns_listCapabilities` to inspect each tool's risk level and whether it mutates NetSuite. Use
+`ns_checkAccountPermissions` to probe the configured NetSuite account's effective REST, SuiteQL,
+record metadata, and optional RESTlet access.

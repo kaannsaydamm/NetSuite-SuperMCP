@@ -32,7 +32,6 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       privateKeyPemBase64: "cGVt",
       tokenUrl: "https://1234567-sb1.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token",
     },
-    productionWritesEnabled: false,
     auditLogPath: "./data/test-audit.ndjson",
   } satisfies AppConfig
 

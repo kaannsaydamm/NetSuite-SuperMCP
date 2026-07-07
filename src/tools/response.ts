@@ -14,21 +14,7 @@ export type NetSuiteToolRequest = {
 export async function runNetSuiteTool(request: NetSuiteToolRequest): Promise<ToolResponse> {
   const { toolName, dependencies, input, execute } = request
   const policy = toolPolicies[toolName]
-  const allowed = authorizeTool(policy, {
-    environment: dependencies.config.netsuite.environment,
-    productionWritesEnabled: dependencies.config.productionWritesEnabled,
-  })
-
-  if (!allowed.ok) {
-    await writeAudit({
-      dependencies,
-      toolName,
-      input,
-      result: { reason: allowed.error.reason },
-      status: "blocked",
-    })
-    return toolError(allowed.error.message)
-  }
+  authorizeTool(policy)
 
   try {
     const result = await execute()

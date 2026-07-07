@@ -21,7 +21,6 @@ const ConfigSchema = z.object({
     privateKeyPemBase64: z.string().min(1),
     tokenUrl: z.string().url(),
   }),
-  productionWritesEnabled: z.boolean(),
   auditLogPath: z.string().min(1),
 })
 
@@ -45,7 +44,6 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
       privateKeyPemBase64: env["NETSUITE_PRIVATE_KEY_PEM_BASE64"],
       tokenUrl: env["NETSUITE_TOKEN_URL"],
     },
-    productionWritesEnabled: env["PRODUCTION_WRITES_ENABLED"] === "true",
     auditLogPath: env["AUDIT_LOG_PATH"] ?? "./data/audit.ndjson",
   })
 

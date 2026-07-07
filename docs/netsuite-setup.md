@@ -1,13 +1,10 @@
 # NetSuite Setup
 
-## Integration Identity
+## OAuth Identity
 
-Create a dedicated employee and role:
-
-- Employee: `VSP MCP Integration User`
-- Role: `VSP MCP Super Integration Role`
-
-Do not use a personal NetSuite user for MCP execution.
+Choose the NetSuite entity and role that should execute MCP actions. SuperMCP does not require a
+specific employee, role, or naming convention; the OAuth Client Credentials mapping determines the
+effective NetSuite permissions.
 
 ## OAuth 2.0 Client Credentials
 
@@ -31,7 +28,7 @@ Required environment values:
 
 ## Role Permissions
 
-Minimum permission groups for the Super Integration Role:
+Give the mapped role the permissions you want MCP clients to have. Common permission groups are:
 
 - REST Web Services
 - Log in using Access Tokens
@@ -45,7 +42,7 @@ Minimum permission groups for the Super Integration Role:
 - Inventory Adjustment, Inventory Transfer, Transfer Order
 - Customer, Vendor, Item, Location, Department, Class, Currency
 
-NetSuite permission checks still apply. SuperMCP centralizes execution through the custom role; it
+NetSuite permission checks still apply. SuperMCP sends requests as the mapped OAuth account; it
 does not bypass NetSuite authorization.
 
 ## RESTlet Action Layer
@@ -129,10 +126,10 @@ defaults to 1 MB and cannot exceed the `File.getContents()` 10 MB in-memory limi
 
 | Action | Required payload | Behavior |
 |---|---|---|
-| `ns_retryIntegrationJob` | `recordType`, `recordId`, `values` | Previews or commits field updates that mark a configured integration job for retry |
+| `ns_retryIntegrationJob` | `recordType`, `recordId`, `values` | Commits field updates that mark a configured integration job for retry |
 
-Direct `ns_retryIntegrationJob` MCP calls run as `preview`. To mutate NetSuite, call
-`ns_commitAction` with:
+Direct `ns_retryIntegrationJob` MCP calls run as `commit`. To explicitly call the generic commit
+wrapper, use `ns_commitAction` with:
 
 ```json
 {
@@ -165,7 +162,8 @@ Optional body fields can be set with:
 - `preview`: runs `record.transform`, applies optional body fields, summarizes line counts, and does not save.
 - `commit`: runs `record.transform`, applies optional body fields, saves the target record, and returns the new record reference.
 
-Production MCP writes should stay locked until the RESTlet has passed sandbox tests for each action.
+Run `ns_checkAccountPermissions` after OAuth mapping, role permission, or RESTlet deployment
+changes to verify the configured account's effective access.
 
 Run this before deploying RESTlet changes:
 

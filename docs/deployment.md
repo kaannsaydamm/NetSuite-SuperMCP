@@ -60,13 +60,13 @@ Operational values:
 - `MCP_SERVER_VERSION`
 - `MCP_HOST`
 - `MCP_PORT`
-- `PRODUCTION_WRITES_ENABLED`
 - `AUDIT_LOG_PATH`
 
 ## Production Defaults
 
-- Keep `PRODUCTION_WRITES_ENABLED=false` until the production NetSuite RESTlet/action layer has
-  passed sandbox verification.
+- Map the OAuth client credentials to the exact NetSuite account and role you want SuperMCP to use.
+- Run `ns_checkAccountPermissions` after changing OAuth mapping, role permissions, or RESTlet
+  deployments.
 - Store `AUDIT_LOG_PATH` on persistent storage or send audit output to a managed log pipeline in a
   later adapter.
 - Terminate TLS at a reverse proxy or managed ingress. Do not expose the MCP endpoint over plain

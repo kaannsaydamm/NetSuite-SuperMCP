@@ -70,8 +70,38 @@ describe("MCP system tools", () => {
       name: ToolName.BillPurchaseOrder,
       risk: "high",
       mutatesNetSuite: true,
-      requiresPreview: true,
     })
+  })
+
+  it("checks configured NetSuite account permissions with safe probes", async () => {
+    // Given
+    const fakeNetSuite = new FakeNetSuiteClient()
+    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
+
+    // When
+    const response = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 21,
+      method: "tools/call",
+      params: {
+        name: ToolName.CheckAccountPermissions,
+        arguments: { recordTypes: ["customer"], includeRestlet: true },
+      },
+    })
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const payload = JSON.parse(body.result.content[0].text)
+
+    // Then
+    expect(response.status).toBe(200)
+    expect(payload.accountId).toBe("1234567_SB1")
+    expect(payload.checks).toContainEqual({ name: "rest_metadata_catalog", allowed: true })
+    expect(payload.checks).toContainEqual({ name: "suiteql", allowed: true })
+    expect(payload.checks).toContainEqual({ name: "record_metadata:customer", allowed: true })
+    expect(payload.checks).toContainEqual({ name: "restlet_preview", allowed: true })
+    expect(fakeNetSuite.metadataRequests).toEqual([
+      { select: [], mediaType: "application/schema+json" },
+      { type: "customer", select: [], mediaType: "application/schema+json" },
+    ])
   })
 
   it("routes metadata reads through the REST metadata client", async () => {

@@ -21,7 +21,7 @@ const server = new McpServer(
   { name: config.serverName, version: config.serverVersion },
   {
     instructions:
-      "NetSuite SuperMCP exposes NetSuite read, write, transform, integration, and safety tools through a dedicated integration identity. Client applications own tool approval.",
+      "NetSuite SuperMCP exposes NetSuite read, write, transform, integration, and account permission check tools through the configured NetSuite OAuth account. Client applications own tool approval.",
   },
 )
 

@@ -16,7 +16,6 @@ const validEnv = {
   NETSUITE_PRIVATE_KEY_PEM_BASE64: "cGVt",
   NETSUITE_TOKEN_URL:
     "https://1234567-sb1.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token",
-  PRODUCTION_WRITES_ENABLED: "false",
   AUDIT_LOG_PATH: "./data/audit.ndjson",
 } satisfies NodeJS.ProcessEnv
 
@@ -32,7 +31,7 @@ describe("parseConfig", () => {
     expect(result.ok).toBe(true)
     if (result.ok) {
       expect(result.value.netsuite.environment).toBe("sandbox")
-      expect(result.value.productionWritesEnabled).toBe(false)
+      expect(result.value.netsuite.accountId).toBe("1234567_SB1")
     }
   })
 

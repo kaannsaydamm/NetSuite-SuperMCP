@@ -24,7 +24,6 @@ export const CapabilitiesPayloadSchema = z.object({
       name: z.string(),
       risk: z.string(),
       mutatesNetSuite: z.boolean(),
-      requiresPreview: z.boolean(),
     }),
   ),
 })

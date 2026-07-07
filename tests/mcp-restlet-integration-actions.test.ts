@@ -5,7 +5,7 @@ import { mcpCall } from "./mcp-support"
 import { FakeNetSuiteClient, testConfig } from "./test-support"
 
 describe("MCP RESTlet-backed integration actions", () => {
-  it("routes direct integration retries to preview", async () => {
+  it("routes direct integration retries to commit", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -33,7 +33,7 @@ describe("MCP RESTlet-backed integration actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.RetryIntegrationJob,
-        phase: "preview",
+        phase: "commit",
         payload: {
           recordType: "customrecord_integration_job",
           recordId: "456",

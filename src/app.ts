@@ -43,7 +43,7 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       { name: config.serverName, version: config.serverVersion },
       {
         instructions:
-          "NetSuite SuperMCP exposes NetSuite read, write, transform, integration, and safety tools through a dedicated integration identity. Mutating tools require client-side approval.",
+          "NetSuite SuperMCP exposes NetSuite read, write, transform, integration, and account permission check tools through the configured NetSuite OAuth account. Client applications own tool approval.",
       },
     )
 
