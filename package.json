@@ -14,6 +14,7 @@
     "start": "bun run src/index.ts",
     "stdio": "bun run src/stdio.ts",
     "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File ./setup.ps1",
+    "setup:sh": "sh ./setup.sh",
     "install:clients": "bun run scripts/install-clients.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",

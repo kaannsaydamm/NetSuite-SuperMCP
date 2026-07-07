@@ -36,6 +36,12 @@ Or run `setup.cmd` from Explorer/terminal. The setup wrapper installs dependenci
 from `.env.example` when missing, and registers detected MCP clients without changing any client
 approval settings.
 
+macOS/Linux setup wrapper:
+
+```bash
+sh ./setup.sh --all-detected
+```
+
 The MCP endpoint is available at:
 
 ```text

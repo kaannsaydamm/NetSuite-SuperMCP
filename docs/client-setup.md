@@ -18,6 +18,15 @@ Windows setup wrapper:
 
 `setup.cmd` runs the same PowerShell wrapper for double-click or `cmd.exe` use.
 
+macOS/Linux setup wrapper:
+
+```bash
+sh ./setup.sh --all-detected
+sh ./setup.sh --all-known
+sh ./setup.sh --target codex
+sh ./setup.sh --list
+```
+
 List detected clients:
 
 ```bash
