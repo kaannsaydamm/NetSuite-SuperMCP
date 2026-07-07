@@ -7,6 +7,17 @@ NetSuite SuperMCP supports two local surfaces:
 
 ## Installer
 
+Windows setup wrapper:
+
+```powershell
+.\setup.ps1 -AllDetected
+.\setup.ps1 -AllKnown
+.\setup.ps1 -Target codex
+.\setup.ps1 -List
+```
+
+`setup.cmd` runs the same PowerShell wrapper for double-click or `cmd.exe` use.
+
 List detected clients:
 
 ```bash

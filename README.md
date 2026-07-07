@@ -26,6 +26,16 @@ bun run smoke
 bun run dev
 ```
 
+Windows setup wrapper:
+
+```powershell
+.\setup.ps1 -AllDetected
+```
+
+Or run `setup.cmd` from Explorer/terminal. The setup wrapper installs dependencies, creates `.env`
+from `.env.example` when missing, and registers detected MCP clients without changing any client
+approval settings.
+
 The MCP endpoint is available at:
 
 ```text
