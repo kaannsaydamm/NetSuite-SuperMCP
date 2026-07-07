@@ -15,6 +15,24 @@ Includes:
 
 ## Local Setup
 
+Install from npm:
+
+```bash
+npm install -g netsuite-supermcp
+netsuite-supermcp-install --list
+netsuite-supermcp-stdio
+```
+
+Run directly with npm/npx:
+
+```bash
+npx netsuite-supermcp install --all-detected
+npx netsuite-supermcp stdio
+npx netsuite-supermcp http
+```
+
+Install from source:
+
 ```bash
 bun install
 cp .env.example .env
