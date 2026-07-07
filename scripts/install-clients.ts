@@ -19,6 +19,7 @@ import {
 
 const paths = createInstallerPaths(import.meta.dir)
 const jsonTargets = createJsonTargets(paths)
+const codexDetected = existsSync(paths.codexConfig) || existsSync(dirname(paths.codexConfig))
 
 const args = new Set(process.argv.slice(2))
 
@@ -33,19 +34,28 @@ await ensureEnvFile()
 await installTargets(selected)
 printSnippet()
 
-async function selectTargets(requested: string | undefined): Promise<readonly JsonTarget[]> {
+type SelectedTargets = {
+  readonly installCodex: boolean
+  readonly jsonTargets: readonly JsonTarget[]
+}
+
+async function selectTargets(requested: string | undefined): Promise<SelectedTargets> {
   if (requested !== undefined) {
     if (requested === "codex") {
-      return []
+      return { installCodex: true, jsonTargets: [] }
     }
-    return jsonTargets.filter((entry) => entry.id === requested)
+    const target = jsonTargets.find((entry) => entry.id === requested)
+    if (target === undefined) {
+      throw new Error(`Unknown install target: ${requested}`)
+    }
+    return { installCodex: false, jsonTargets: [target] }
   }
   if (args.has("--all-known")) {
-    return jsonTargets
+    return { installCodex: true, jsonTargets }
   }
   const detected = jsonTargets.filter(isDetected)
   if (args.has("--all-detected")) {
-    return detected
+    return { installCodex: codexDetected, jsonTargets: detected }
   }
 
   printTargets()
@@ -53,13 +63,13 @@ async function selectTargets(requested: string | undefined): Promise<readonly Js
   const answer = await rl.question("Install targets [detected/all/comma ids/none]: ")
   rl.close()
   if (answer.trim() === "all") {
-    return jsonTargets
+    return { installCodex: true, jsonTargets }
   }
   if (answer.trim() === "detected") {
-    return detected
+    return { installCodex: codexDetected, jsonTargets: detected }
   }
   if (answer.trim() === "none" || answer.trim().length === 0) {
-    return []
+    return { installCodex: false, jsonTargets: [] }
   }
   const ids = new Set(
     answer
@@ -67,14 +77,21 @@ async function selectTargets(requested: string | undefined): Promise<readonly Js
       .map((value) => value.trim())
       .filter(Boolean),
   )
-  return jsonTargets.filter((entry) => ids.has(entry.id))
+  const unknown = [...ids].filter(
+    (id) => id !== "codex" && !jsonTargets.some((entry) => entry.id === id),
+  )
+  if (unknown.length > 0) {
+    throw new Error(`Unknown install target: ${unknown.join(", ")}`)
+  }
+  return {
+    installCodex: ids.has("codex"),
+    jsonTargets: jsonTargets.filter((entry) => ids.has(entry.id)),
+  }
 }
 
 function printTargets(): void {
   console.log("NetSuite SuperMCP client install targets:")
-  console.log(
-    `- codex: ${paths.codexConfig} ${existsSync(paths.codexConfig) || existsSync(dirname(paths.codexConfig)) ? "(detected)" : ""}`,
-  )
+  console.log(`- codex: ${paths.codexConfig} ${codexDetected ? "(detected)" : ""}`)
   for (const entry of jsonTargets) {
     console.log(
       `- ${entry.id}: ${entry.label} -> ${entry.path} ${isDetected(entry) ? "(detected)" : ""}`,
@@ -82,18 +99,11 @@ function printTargets(): void {
   }
 }
 
-async function installTargets(targets: readonly JsonTarget[]): Promise<void> {
-  const requested = process.argv.find((arg) => arg.startsWith("--target="))?.split("=")[1]
-  if (
-    args.has("--all-known") ||
-    (args.has("--all-detected") &&
-      (existsSync(paths.codexConfig) || existsSync(dirname(paths.codexConfig)))) ||
-    requested === "codex" ||
-    targets.length > 0
-  ) {
+async function installTargets(targets: SelectedTargets): Promise<void> {
+  if (targets.installCodex) {
     await installCodex()
   }
-  for (const entry of targets) {
+  for (const entry of targets.jsonTargets) {
     await installJsonTarget(entry)
   }
 }

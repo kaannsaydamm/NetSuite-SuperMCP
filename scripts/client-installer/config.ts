@@ -1,8 +1,9 @@
 import type { InstallerPaths } from "./targets"
 
 export function createServerEnv(paths: InstallerPaths, clientName: string): Record<string, string> {
+  const { PRODUCTION_WRITES_ENABLED: _deprecated, ...env } = paths.env
   return {
-    ...paths.env,
+    ...env,
     MCP_CLIENT: clientName,
     MCP_REQUESTER: process.env["USERNAME"] ?? process.env["USER"] ?? "local-user",
   }
