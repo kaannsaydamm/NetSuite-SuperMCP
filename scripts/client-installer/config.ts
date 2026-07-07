@@ -1,7 +1,26 @@
 import type { InstallerPaths } from "./targets"
 
+const SERVER_ENV_KEYS = new Set([
+  "MCP_SERVER_NAME",
+  "MCP_SERVER_VERSION",
+  "MCP_HOST",
+  "MCP_PORT",
+  "MCP_BEARER_TOKEN",
+  "NETSUITE_ACCOUNT_ID",
+  "NETSUITE_ENVIRONMENT",
+  "NETSUITE_BASE_URL",
+  "NETSUITE_RESTLET_URL",
+  "NETSUITE_CONSUMER_KEY",
+  "NETSUITE_CERTIFICATE_ID",
+  "NETSUITE_PRIVATE_KEY_PEM_BASE64",
+  "NETSUITE_TOKEN_URL",
+  "AUDIT_LOG_PATH",
+])
+
 export function createServerEnv(paths: InstallerPaths, clientName: string): Record<string, string> {
-  const { PRODUCTION_WRITES_ENABLED: _deprecated, ...env } = paths.env
+  const env = Object.fromEntries(
+    Object.entries(paths.env).filter(([key]) => SERVER_ENV_KEYS.has(key)),
+  )
   return {
     ...env,
     MCP_CLIENT: clientName,

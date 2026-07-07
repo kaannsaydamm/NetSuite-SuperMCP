@@ -67,8 +67,8 @@ Operational values:
 - Map the OAuth client credentials to the exact NetSuite account and role you want SuperMCP to use.
 - Run `ns_checkAccountPermissions` after changing OAuth mapping, role permissions, or RESTlet
   deployments.
-- Store `AUDIT_LOG_PATH` on persistent storage or send audit output to a managed log pipeline in a
-  later adapter.
+- Store `AUDIT_LOG_PATH` on persistent storage or send audit output through your platform log
+  collector.
 - Terminate TLS at a reverse proxy or managed ingress. Do not expose the MCP endpoint over plain
   HTTP outside a private network.
 - Use separate deployments and secret sets for sandbox and production.

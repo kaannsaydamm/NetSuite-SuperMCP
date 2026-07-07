@@ -25,7 +25,7 @@ describe("MCP system tools", () => {
     expect(response.status).toBe(401)
   })
 
-  it("lists the MVP tool catalog over MCP", async () => {
+  it("lists the tool catalog over MCP", async () => {
     // Given
     const app = createApp(testConfig(), { netsuite: new FakeNetSuiteClient() })
 

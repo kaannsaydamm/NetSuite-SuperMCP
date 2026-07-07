@@ -3,7 +3,7 @@
 NetSuite SuperMCP is a single MCP endpoint for AI clients to operate NetSuite through the
 NetSuite OAuth account and role you configure.
 
-The first slice includes:
+Includes:
 
 - Streamable HTTP MCP endpoint.
 - Bearer-token protection for MCP clients.
@@ -11,7 +11,7 @@ The first slice includes:
 - Tool risk metadata and audit logging.
 - File-backed audit log.
 - NetSuite REST/RESTlet adapter boundaries.
-- MVP read/write/action tool catalog.
+- Read, write, action, audit, capability, and account-permission tools.
 
 ## Local Setup
 
