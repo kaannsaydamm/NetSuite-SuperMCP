@@ -1,0 +1,174 @@
+# NetSuite Setup
+
+## Integration Identity
+
+Create a dedicated employee and role:
+
+- Employee: `VSP MCP Integration User`
+- Role: `VSP MCP Super Integration Role`
+
+Do not use a personal NetSuite user for MCP execution.
+
+## OAuth 2.0 Client Credentials
+
+Configure OAuth 2.0 M2M with:
+
+- Integration application.
+- Certificate uploaded to NetSuite.
+- OAuth Client Credentials mapping for entity + role + application + certificate.
+- Separate setup for sandbox and production.
+
+Required environment values:
+
+- `NETSUITE_ACCOUNT_ID`
+- `NETSUITE_ENVIRONMENT`
+- `NETSUITE_BASE_URL`
+- `NETSUITE_RESTLET_URL`
+- `NETSUITE_CONSUMER_KEY`
+- `NETSUITE_CERTIFICATE_ID`
+- `NETSUITE_PRIVATE_KEY_PEM_BASE64`
+- `NETSUITE_TOKEN_URL`
+
+## Role Permissions
+
+Minimum permission groups for the Super Integration Role:
+
+- REST Web Services
+- Log in using Access Tokens
+- SuiteAnalytics Workbook
+- SuiteScript
+- Custom Records and Custom Lists
+- Saved Searches and Reports
+- File Cabinet / Documents and Files
+- Sales Order, Item Fulfillment, Invoice, Credit Memo, Customer Refund
+- Purchase Order, Item Receipt, Vendor Bill, Vendor Credit
+- Inventory Adjustment, Inventory Transfer, Transfer Order
+- Customer, Vendor, Item, Location, Department, Class, Currency
+
+NetSuite permission checks still apply. SuperMCP centralizes execution through the custom role; it
+does not bypass NetSuite authorization.
+
+## RESTlet Action Layer
+
+Deploy these SuiteScript files together:
+
+- [supermcp_action_restlet.js](../netsuite/suitescript/supermcp_action_restlet.js)
+- [supermcp_integration_actions.js](../netsuite/suitescript/supermcp_integration_actions.js)
+- [supermcp_mapping_actions.js](../netsuite/suitescript/supermcp_mapping_actions.js)
+- [supermcp_transform_actions.js](../netsuite/suitescript/supermcp_transform_actions.js)
+- [supermcp_read_actions.js](../netsuite/suitescript/supermcp_read_actions.js)
+
+Deploy `supermcp_action_restlet.js` as the RESTlet entry point and set `NETSUITE_RESTLET_URL`
+to its deployment URL. The RESTlet accepts:
+
+```json
+{
+  "action": "ns_billPurchaseOrder",
+  "phase": "commit",
+  "payload": {
+    "purchaseOrderId": "12345"
+  }
+}
+```
+
+### Supported mapping actions
+
+| Action | Required payload | Behavior |
+|---|---|---|
+| `ns_getMapping` | `recordType`, `recordId` | Loads one mapping record and returns selected fields |
+| `ns_updateMapping` | `recordType`, `recordId`, `values` | Updates one mapping record with `record.submitFields` |
+
+`ns_getMapping` can receive a `fields` array. `ns_updateMapping` can be committed directly by MCP
+clients that approve medium-risk tools.
+
+The RESTlet owns `record.transform`, script/log access, retry operations, and channel-specific
+actions that cannot be represented cleanly through REST Record CRUD.
+
+### Supported transform actions
+
+| Action | Required payload | Transform |
+|---|---|---|
+| `ns_transformRecord` | `fromType`, `fromId`, `toType` | Generic transform |
+| `ns_fulfillSalesOrder` | `salesOrderId` | Sales Order → Item Fulfillment |
+| `ns_invoiceSalesOrder` | `salesOrderId` | Sales Order → Invoice |
+| `ns_receivePurchaseOrder` | `purchaseOrderId` | Purchase Order → Item Receipt |
+| `ns_billPurchaseOrder` | `purchaseOrderId` | Purchase Order → Vendor Bill |
+
+### Supported read actions
+
+| Action | Required payload | Behavior |
+|---|---|---|
+| `ns_runSavedSearch` | `savedSearchId` | Runs a saved search page and returns serialized result values/text |
+| `ns_runReport` | `reportId` | Runs a saved-search-backed report page and returns serialized result values/text |
+| `ns_getFile` | `fileId` | Loads a File Cabinet text/source file and returns metadata plus contents |
+| `ns_getIntegrationLogs` | `savedSearchId` | Runs the configured integration-log saved search page |
+| `ns_getScriptLogs` | `savedSearchId` | Runs the configured script execution log saved search page |
+| `ns_findScriptErrors` | `savedSearchId` | Runs the configured script execution error saved search page |
+| `ns_listScripts` | `savedSearchId` | Runs the configured script inventory saved search page |
+| `ns_listScriptDeployments` | `savedSearchId` | Runs the configured script deployment inventory saved search page |
+| `ns_getFailedIntegrationJobs` | `savedSearchId` | Runs the configured failed-integration-jobs saved search page |
+| `ns_explainIntegrationError` | `recordType`, `recordId` | Loads one integration job/error record and returns selected fields plus candidate error text |
+
+Optional paging fields:
+
+```json
+{
+  "pageSize": 100,
+  "pageIndex": 0
+}
+```
+
+`ns_explainIntegrationError` can also receive a `fields` array. If omitted, the RESTlet reads common
+integration error fields such as `name`, `custrecord_error`, `custrecord_message`,
+`custrecord_details`, and `custrecord_payload`.
+
+`ns_getFile` accepts a numeric internal ID or File Cabinet path in `fileId`. Optional `maxBytes`
+defaults to 1 MB and cannot exceed the `File.getContents()` 10 MB in-memory limit.
+
+### Supported integration actions
+
+| Action | Required payload | Behavior |
+|---|---|---|
+| `ns_retryIntegrationJob` | `recordType`, `recordId`, `values` | Previews or commits field updates that mark a configured integration job for retry |
+
+Direct `ns_retryIntegrationJob` MCP calls run as `preview`. To mutate NetSuite, call
+`ns_commitAction` with:
+
+```json
+{
+  "action": "ns_retryIntegrationJob",
+  "phase": "commit",
+  "payload": {
+    "recordType": "customrecord_integration_job",
+    "recordId": "456",
+    "values": {
+      "custrecord_retry_requested": true
+    },
+    "confirmation": "retry:customrecord_integration_job:456"
+  }
+}
+```
+
+Optional body fields can be set with:
+
+```json
+{
+  "values": {
+    "memo": "Created by NetSuite SuperMCP"
+  }
+}
+```
+
+### Phases
+
+- `prepare`: validates payload and returns the transform plan without loading or saving a target record.
+- `preview`: runs `record.transform`, applies optional body fields, summarizes line counts, and does not save.
+- `commit`: runs `record.transform`, applies optional body fields, saves the target record, and returns the new record reference.
+
+Production MCP writes should stay locked until the RESTlet has passed sandbox tests for each action.
+
+Run this before deploying RESTlet changes:
+
+```bash
+bun run check:restlet-contract
+```
