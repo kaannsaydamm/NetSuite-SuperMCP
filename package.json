@@ -18,6 +18,7 @@
     "netsuite-supermcp": "bin/netsuite-supermcp.mjs",
     "netsuite-supermcp-http": "bin/netsuite-supermcp-http.mjs",
     "netsuite-supermcp-install": "bin/netsuite-supermcp-install.mjs",
+    "netsuite-supermcp-oauth-login": "bin/netsuite-supermcp-oauth-login.mjs",
     "netsuite-supermcp-stdio": "bin/netsuite-supermcp-stdio.mjs"
   },
   "files": [
@@ -55,6 +56,7 @@
     "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
     "stdio": "bun run src/stdio.ts",
+    "oauth:login": "bun run scripts/oauth-login.ts",
     "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File ./setup.ps1",
     "setup:sh": "sh ./setup.sh",
     "install:clients": "bun run scripts/install-clients.ts",

@@ -9,6 +9,7 @@ const args = process.argv.slice(3)
 
 const commands = {
   http: ["run", join(root, "src", "index.ts")],
+  "oauth-login": ["run", join(root, "scripts", "oauth-login.ts")],
   stdio: ["run", join(root, "src", "stdio.ts")],
   install: ["run", join(root, "scripts", "install-clients.ts")],
   "install-clients": ["run", join(root, "scripts", "install-clients.ts")],

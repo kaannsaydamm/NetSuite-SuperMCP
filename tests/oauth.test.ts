@@ -1,0 +1,47 @@
+import { describe, expect, it } from "bun:test"
+import { NetSuiteTokenProvider } from "../src/netsuite/oauth"
+import { testConfig } from "./test-support"
+
+describe("NetSuiteTokenProvider", () => {
+  it("uses refresh-token grant for browser authorization-code OAuth", async () => {
+    // Given
+    const originalFetch = globalThis.fetch
+    const bodies: URLSearchParams[] = []
+    const mockFetch = Object.assign(
+      async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
+        const request =
+          input instanceof Request ? new Request(input, init) : new Request(input.toString(), init)
+        bodies.push(new URLSearchParams(await request.text()))
+        return Response.json({ access_token: "access-token", expires_in: 3600 })
+      },
+      { preconnect: originalFetch.preconnect },
+    )
+    globalThis.fetch = mockFetch
+
+    try {
+      const provider = new NetSuiteTokenProvider({
+        ...testConfig().netsuite,
+        oauthFlow: "authorization_code",
+        clientId: "client-id",
+        clientSecret: "client-secret",
+        refreshToken: "refresh-token",
+        consumerKey: "",
+        certificateId: "",
+        privateKeyPemBase64: "",
+      })
+
+      // When
+      const token = await provider.getAccessToken()
+
+      // Then
+      expect(token).toBe("access-token")
+      expect(bodies).toHaveLength(1)
+      expect(bodies[0]?.get("grant_type")).toBe("refresh_token")
+      expect(bodies[0]?.get("client_id")).toBe("client-id")
+      expect(bodies[0]?.get("client_secret")).toBe("client-secret")
+      expect(bodies[0]?.get("refresh_token")).toBe("refresh-token")
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
+})

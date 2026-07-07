@@ -6,9 +6,33 @@ Choose the NetSuite entity and role that should execute MCP actions. SuperMCP do
 specific employee, role, or naming convention; the OAuth Client Credentials mapping determines the
 effective NetSuite permissions.
 
+## OAuth 2.0 Authorization Code
+
+For browser login, enable Authorization Code Grant on the NetSuite integration record and set its
+redirect URI to the same value as `NETSUITE_REDIRECT_URI`, for example:
+
+```text
+http://127.0.0.1:3025/oauth/callback
+```
+
+Then set:
+
+- `NETSUITE_OAUTH_FLOW=authorization_code`
+- `NETSUITE_AUTHORIZATION_URL`
+- `NETSUITE_CLIENT_ID`
+- `NETSUITE_CLIENT_SECRET`
+- `NETSUITE_REDIRECT_URI`
+- `NETSUITE_TOKEN_URL`
+
+Run:
+
+```bash
+bun run oauth:login
+```
+
 ## OAuth 2.0 Client Credentials
 
-Configure OAuth 2.0 M2M with:
+For M2M, configure OAuth 2.0 Client Credentials with:
 
 - Integration application.
 - Certificate uploaded to NetSuite.
@@ -21,6 +45,7 @@ Required environment values:
 - `NETSUITE_ENVIRONMENT`
 - `NETSUITE_BASE_URL`
 - `NETSUITE_RESTLET_URL`
+- `NETSUITE_OAUTH_FLOW`
 - `NETSUITE_CONSUMER_KEY`
 - `NETSUITE_CERTIFICATE_ID`
 - `NETSUITE_PRIVATE_KEY_PEM_BASE64`

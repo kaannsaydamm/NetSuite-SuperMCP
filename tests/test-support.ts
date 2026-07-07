@@ -27,6 +27,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       environment: "sandbox",
       baseUrl: "https://1234567-sb1.suitetalk.api.netsuite.com",
       restletUrl: "https://1234567-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl",
+      oauthFlow: "client_credentials",
       consumerKey: "consumer-key",
       certificateId: "cert-id",
       privateKeyPemBase64: "cGVt",

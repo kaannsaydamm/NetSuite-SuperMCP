@@ -53,6 +53,8 @@ NetSuite environment and endpoint values:
 - `NETSUITE_BASE_URL`
 - `NETSUITE_RESTLET_URL`
 - `NETSUITE_TOKEN_URL`
+- `NETSUITE_OAUTH_FLOW`
+- `NETSUITE_REFRESH_TOKEN` when using browser authorization-code OAuth.
 
 Operational values:
 

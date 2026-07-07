@@ -19,6 +19,7 @@ Install from npm:
 
 ```bash
 npm install -g netsuite-supermcp
+netsuite-supermcp-oauth-login
 netsuite-supermcp-install --list
 netsuite-supermcp-stdio
 ```
@@ -27,6 +28,7 @@ Run directly with npm/npx:
 
 ```bash
 npx netsuite-supermcp install --all-detected
+npx netsuite-supermcp oauth-login
 npx netsuite-supermcp stdio
 npx netsuite-supermcp http
 ```
@@ -90,8 +92,11 @@ Agent client setup details are in [docs/client-setup.md](docs/client-setup.md).
 
 ## NetSuite Identity Model
 
-Execution uses the NetSuite OAuth 2.0 Client Credentials / M2M mapping from `.env`.
-Whoever you map in NetSuite is the account and role that performs the work.
+Execution uses the NetSuite OAuth mapping from `.env`. For user-delegated access, run
+`bun run oauth:login` or `netsuite-supermcp-oauth-login`; it opens NetSuite in the browser, captures
+the authorization callback, exchanges the code for a refresh token, and saves it to `.env`. For
+machine-to-machine access, set `NETSUITE_OAUTH_FLOW=client_credentials` and provide the certificate
+values.
 
 SuperMCP does not impose a specific employee, role, or naming convention. It also does not bypass
 NetSuite authorization; NetSuite allows or denies actions based on the mapped account's permissions.
