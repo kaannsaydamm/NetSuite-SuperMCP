@@ -35,9 +35,11 @@ Useful direct commands:
 ```bash
 netsuite-supermcp oauth2
 netsuite-supermcp switch-account
+netsuite-supermcp public-url
 netsuite-supermcp setup
 netsuite-supermcp doctor
 netsuite-supermcp suitecloud
+netsuite-supermcp-public-url
 netsuite-supermcp-oauth2
 netsuite-supermcp-oauth-login
 netsuite-supermcp-install --list
@@ -52,6 +54,7 @@ npx netsuite-supermcp switch-account
 npx netsuite-supermcp setup
 npx netsuite-supermcp doctor
 npx netsuite-supermcp suitecloud
+npx netsuite-supermcp public-url
 npx netsuite-supermcp install --all-detected
 npx netsuite-supermcp oauth-login
 npx netsuite-supermcp stdio
@@ -98,6 +101,30 @@ Health check:
 ```text
 http://127.0.0.1:3025/health
 ```
+
+## ChatGPT Server URL With ngrok
+
+For ChatGPT's custom app "Server URL" mode, run:
+
+```bash
+netsuite-supermcp public-url
+```
+
+The command starts the local MCP server, downloads the ngrok agent into your user profile when it
+is not already installed, starts an HTTPS public tunnel, and prints a URL like:
+
+```text
+https://example.ngrok-free.app/mcp
+```
+
+In ChatGPT, use:
+
+- Connection: `Server URL`
+- Authentication: `No auth`
+- URL: the printed `/mcp` URL
+
+Keep the terminal open while ChatGPT uses the connector. If ngrok has not been configured on the
+machine before, the command opens the ngrok authtoken page and asks you to paste the token once.
 
 ## Verification
 

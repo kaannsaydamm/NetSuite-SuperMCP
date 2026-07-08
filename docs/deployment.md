@@ -25,6 +25,18 @@ The local MCP endpoint listens on:
 http://127.0.0.1:3025/mcp
 ```
 
+## Temporary Public URL
+
+For local ChatGPT testing without OpenAI's tunnel client:
+
+```bash
+netsuite-supermcp public-url
+```
+
+This starts the local MCP server in loopback-only no-auth mode, downloads ngrok when needed, starts
+an HTTPS tunnel, and prints the public `/mcp` URL. Use that URL in ChatGPT with Authentication set
+to `No auth`. Stop the terminal to close both the local server and ngrok.
+
 ## NetSuite RESTlet Deployment
 
 Browser OAuth, REST metadata, and SuiteQL work after the Integration record and `.env` are

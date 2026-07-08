@@ -7,7 +7,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const command = process.argv[2] ?? "stdio"
 const args = process.argv.slice(3)
 const usage =
-  "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|doctor|suitecloud|stdio|http|tunnel|install|oauth-login] [...args]"
+  "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|doctor|suitecloud|stdio|http|tunnel|public-url|install|oauth-login] [...args]"
 
 if (command === "--help" || command === "-h" || args.includes("--help") || args.includes("-h")) {
   console.log(usage)
@@ -15,6 +15,9 @@ if (command === "--help" || command === "-h" || args.includes("--help") || args.
   console.log("ChatGPT tunnel:")
   console.log("  netsuite-supermcp tunnel")
   console.log("  tunnel-client run --profile netsuite-supermcp")
+  console.log("")
+  console.log("ChatGPT Server URL with ngrok:")
+  console.log("  netsuite-supermcp public-url")
   console.log("")
   console.log("Standard local HTTP with bearer auth:")
   console.log("  netsuite-supermcp http")
@@ -35,6 +38,7 @@ if (bunCheck.error !== undefined || (bunCheck.status ?? 1) !== 0) {
 const commands = {
   http: ["run", join(root, "src", "index.ts")],
   tunnel: ["run", join(root, "src", "index.ts")],
+  "public-url": ["run", join(root, "scripts", "public-url.ts")],
   doctor: ["run", join(root, "scripts", "doctor.ts")],
   oauth2: ["run", join(root, "scripts", "oauth2.ts")],
   "oauth-login": ["run", join(root, "scripts", "oauth-login.ts")],
