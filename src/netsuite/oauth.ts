@@ -16,6 +16,7 @@ type CachedToken = {
 
 export class NetSuiteTokenProvider {
   #cachedToken: CachedToken | null = null
+  #refreshingToken: Promise<string> | null = null
 
   constructor(readonly config: AppConfig["netsuite"]) {}
 
@@ -24,7 +25,19 @@ export class NetSuiteTokenProvider {
     if (this.#cachedToken !== null && this.#cachedToken.expiresAtMs > now + 60_000) {
       return this.#cachedToken.accessToken
     }
+    if (this.#refreshingToken !== null) {
+      return await this.#refreshingToken
+    }
 
+    this.#refreshingToken = this.refreshAccessToken(now)
+    try {
+      return await this.#refreshingToken
+    } finally {
+      this.#refreshingToken = null
+    }
+  }
+
+  private async refreshAccessToken(now: number): Promise<string> {
     try {
       const body =
         this.config.oauthFlow === "authorization_code"

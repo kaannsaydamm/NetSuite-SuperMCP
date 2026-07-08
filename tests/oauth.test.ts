@@ -44,4 +44,47 @@ describe("NetSuiteTokenProvider", () => {
       globalThis.fetch = originalFetch
     }
   })
+
+  it("shares one token refresh across concurrent callers", async () => {
+    // Given
+    const originalFetch = globalThis.fetch
+    const bodies: URLSearchParams[] = []
+    const mockFetch = Object.assign(
+      async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
+        const request =
+          input instanceof Request ? new Request(input, init) : new Request(input.toString(), init)
+        bodies.push(new URLSearchParams(await request.text()))
+        await new Promise((resolve) => setTimeout(resolve, 20))
+        return Response.json({ access_token: "access-token", expires_in: 3600 })
+      },
+      { preconnect: originalFetch.preconnect },
+    )
+    globalThis.fetch = mockFetch
+
+    try {
+      const provider = new NetSuiteTokenProvider({
+        ...testConfig().netsuite,
+        oauthFlow: "authorization_code",
+        clientId: "client-id",
+        clientSecret: "client-secret",
+        refreshToken: "refresh-token",
+        consumerKey: "",
+        certificateId: "",
+        privateKeyPemBase64: "",
+      })
+
+      // When
+      const tokens = await Promise.all([
+        provider.getAccessToken(),
+        provider.getAccessToken(),
+        provider.getAccessToken(),
+      ])
+
+      // Then
+      expect(tokens).toEqual(["access-token", "access-token", "access-token"])
+      expect(bodies).toHaveLength(1)
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
 })
