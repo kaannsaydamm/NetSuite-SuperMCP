@@ -1,10 +1,10 @@
-import { spawn } from "node:child_process"
+import { type ChildProcess, spawn } from "node:child_process"
 import { rm } from "node:fs/promises"
 import { setTimeout as delay } from "node:timers/promises"
 import { z } from "zod"
 
 const SmokeConfigSchema = z.object({
-  baseUrl: z.string().url().default("http://127.0.0.1:3025"),
+  baseUrl: z.string().url().default("http://127.0.0.1:3125"),
   token: z.string().min(12).default("test-token-12345"),
 })
 
@@ -17,6 +17,7 @@ const server = spawn("bun", ["run", "start"], {
   stdio: ["ignore", "pipe", "pipe"],
   env: {
     ...process.env,
+    MCP_PORT: new URL(config.baseUrl).port,
     MCP_BEARER_TOKEN: config.token,
     NETSUITE_ACCOUNT_ID: "1234567_SB1",
     NETSUITE_ENVIRONMENT: "sandbox",
@@ -45,6 +46,7 @@ try {
   await assertUnauthorized(config.baseUrl)
   await assertMcpInitialize(config.baseUrl, config.token)
   await assertEnvironmentTool(config.baseUrl, config.token)
+  await assertTunnelMode()
   console.log("smoke ok")
 } finally {
   server.kill()
@@ -53,9 +55,17 @@ try {
 }
 
 async function waitForHealth(baseUrl: string): Promise<void> {
+  await waitForServerHealth(baseUrl, server, () => serverOutput)
+}
+
+async function waitForServerHealth(
+  baseUrl: string,
+  child: ChildProcess,
+  output: () => string,
+): Promise<void> {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    if (server.exitCode !== null) {
-      throw new Error(`server exited before health check passed: ${serverOutput}`)
+    if (child.exitCode !== null) {
+      throw new Error(`server exited before health check passed: ${output()}`)
     }
     try {
       const response = await fetch(`${baseUrl}/health`)
@@ -71,7 +81,7 @@ async function waitForHealth(baseUrl: string): Promise<void> {
     }
     await delay(100)
   }
-  throw new Error(`health check did not become ready: ${serverOutput}`)
+  throw new Error(`health check did not become ready: ${output()}`)
 }
 
 async function assertUnauthorized(baseUrl: string): Promise<void> {
@@ -82,6 +92,58 @@ async function assertUnauthorized(baseUrl: string): Promise<void> {
   })
   if (response.status !== 401) {
     throw new Error(`expected unauthorized MCP request to return 401, got ${response.status}`)
+  }
+}
+
+async function assertTunnelMode(): Promise<void> {
+  const tunnelPort = 3127
+  const tunnelBaseUrl = `http://127.0.0.1:${tunnelPort}`
+  const tunnelServer = spawn("bun", ["run", "start"], {
+    stdio: ["ignore", "pipe", "pipe"],
+    env: {
+      ...process.env,
+      MCP_AUTH_MODE: "none",
+      MCP_PORT: String(tunnelPort),
+      NETSUITE_ACCOUNT_ID: "1234567_SB1",
+      NETSUITE_ENVIRONMENT: "sandbox",
+      NETSUITE_BASE_URL: "https://1234567-sb1.suitetalk.api.netsuite.com",
+      NETSUITE_RESTLET_URL:
+        "https://1234567-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=customscript_supermcp_action&deploy=customdeploy_supermcp_action",
+      NETSUITE_OAUTH_FLOW: "client_credentials",
+      NETSUITE_CONSUMER_KEY: "consumer-key",
+      NETSUITE_CERTIFICATE_ID: "cert-id",
+      NETSUITE_PRIVATE_KEY_PEM_BASE64: "cGVt",
+      NETSUITE_TOKEN_URL:
+        "https://1234567-sb1.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token",
+      AUDIT_LOG_PATH: "./data/smoke-tunnel-audit.ndjson",
+    },
+  })
+  let tunnelOutput = ""
+  tunnelServer.stdout.on("data", (chunk: Buffer) => {
+    tunnelOutput += chunk.toString("utf8")
+  })
+  tunnelServer.stderr.on("data", (chunk: Buffer) => {
+    tunnelOutput += chunk.toString("utf8")
+  })
+
+  try {
+    await waitForServerHealth(tunnelBaseUrl, tunnelServer, () => tunnelOutput)
+    const response = await fetch(`${tunnelBaseUrl}/mcp`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json, text/event-stream",
+      },
+      body: JSON.stringify(initializePayload(4)),
+    })
+    if (!response.ok) {
+      throw new Error(
+        `expected tunnel mode unauthenticated MCP request to pass, got ${response.status}`,
+      )
+    }
+  } finally {
+    tunnelServer.kill()
+    await rm("./data/smoke-tunnel-audit.ndjson", { force: true })
   }
 }
 

@@ -21,6 +21,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     serverVersion: "0.1.0",
     host: "127.0.0.1",
     port: 3025,
+    authMode: "bearer",
     bearerToken: "test-token-12345",
     netsuite: {
       accountId: "1234567_SB1",

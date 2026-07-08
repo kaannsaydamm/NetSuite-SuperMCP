@@ -6,6 +6,20 @@ import { fileURLToPath } from "node:url"
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const command = process.argv[2] ?? "stdio"
 const args = process.argv.slice(3)
+const usage =
+  "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|doctor|suitecloud|stdio|http|tunnel|install|oauth-login] [...args]"
+
+if (command === "--help" || command === "-h" || args.includes("--help") || args.includes("-h")) {
+  console.log(usage)
+  console.log("")
+  console.log("ChatGPT tunnel:")
+  console.log("  netsuite-supermcp tunnel")
+  console.log("  tunnel-client run --profile netsuite-supermcp")
+  console.log("")
+  console.log("Standard local HTTP with bearer auth:")
+  console.log("  netsuite-supermcp http")
+  process.exit(0)
+}
 
 const bunCheck = spawnSync("bun", ["--version"], {
   encoding: "utf8",
@@ -20,6 +34,7 @@ if (bunCheck.error !== undefined || (bunCheck.status ?? 1) !== 0) {
 
 const commands = {
   http: ["run", join(root, "src", "index.ts")],
+  tunnel: ["run", join(root, "src", "index.ts")],
   doctor: ["run", join(root, "scripts", "doctor.ts")],
   oauth2: ["run", join(root, "scripts", "oauth2.ts")],
   "oauth-login": ["run", join(root, "scripts", "oauth-login.ts")],
@@ -34,14 +49,19 @@ const commands = {
 
 const bunArgs = commands[command]
 if (bunArgs === undefined) {
-  console.error(
-    "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|doctor|suitecloud|stdio|http|install|oauth-login] [...args]",
-  )
+  console.error(usage)
   process.exit(1)
+}
+
+const env = { ...process.env }
+if (command === "tunnel") {
+  env.MCP_AUTH_MODE = "none"
+  env.MCP_HOST = env.MCP_HOST ?? "127.0.0.1"
 }
 
 const result = spawnSync("bun", [...bunArgs, ...args], {
   stdio: "inherit",
   shell: process.platform === "win32",
+  env,
 })
 process.exit(result.status ?? 1)

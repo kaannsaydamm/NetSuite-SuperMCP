@@ -20,3 +20,6 @@ Bun.serve({
 console.log(
   `${parsedConfig.value.serverName} listening on http://${parsedConfig.value.host}:${parsedConfig.value.port}`,
 )
+if (parsedConfig.value.authMode === "none") {
+  console.warn("MCP auth disabled for loopback tunnel mode. Do not expose this port directly.")
+}

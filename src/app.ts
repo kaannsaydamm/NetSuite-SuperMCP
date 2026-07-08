@@ -34,7 +34,10 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
   )
 
   app.all("/mcp", async (context) => {
-    if (!isAuthorized(context.req.header("authorization") ?? null, config.bearerToken)) {
+    if (
+      config.authMode === "bearer" &&
+      !isAuthorized(context.req.header("authorization") ?? null, config.bearerToken ?? "")
+    ) {
       return context.json({ error: "unauthorized" }, 401)
     }
 

@@ -5,6 +5,7 @@ import { err, ok } from "./shared/result"
 
 const EnvironmentSchema = z.enum(["sandbox", "production"])
 const OAuthFlowSchema = z.enum(["client_credentials", "authorization_code"])
+const McpAuthModeSchema = z.enum(["bearer", "none"])
 
 const NetSuiteConfigSchema = z
   .object({
@@ -35,15 +36,31 @@ const NetSuiteConfigSchema = z
     requireField(value.refreshToken, "refreshToken", context)
   })
 
-const ConfigSchema = z.object({
-  serverName: z.string().min(1),
-  serverVersion: z.string().min(1),
-  host: z.string().min(1),
-  port: z.number().int().min(1).max(65535),
-  bearerToken: z.string().min(12),
-  netsuite: NetSuiteConfigSchema,
-  auditLogPath: z.string().min(1),
-})
+const ConfigSchema = z
+  .object({
+    serverName: z.string().min(1),
+    serverVersion: z.string().min(1),
+    host: z.string().min(1),
+    port: z.number().int().min(1).max(65535),
+    authMode: McpAuthModeSchema,
+    bearerToken: z.string().min(12).optional(),
+    netsuite: NetSuiteConfigSchema,
+    auditLogPath: z.string().min(1),
+  })
+  .superRefine((value, context) => {
+    if (value.authMode === "bearer") {
+      requireField(value.bearerToken, "bearerToken", context)
+      return
+    }
+
+    if (!["127.0.0.1", "localhost", "::1"].includes(value.host)) {
+      context.addIssue({
+        code: "custom",
+        path: ["authMode"],
+        message: "MCP_AUTH_MODE=none is allowed only when MCP_HOST is 127.0.0.1, localhost, or ::1",
+      })
+    }
+  })
 
 export type AppConfig = z.infer<typeof ConfigSchema>
 export type NetSuiteEnvironment = z.infer<typeof EnvironmentSchema>
@@ -54,6 +71,7 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
     serverVersion: env["MCP_SERVER_VERSION"] ?? "0.1.10",
     host: env["MCP_HOST"] ?? "127.0.0.1",
     port: Number(env["MCP_PORT"] ?? "3025"),
+    authMode: env["MCP_AUTH_MODE"] ?? "bearer",
     bearerToken: env["MCP_BEARER_TOKEN"],
     netsuite: {
       accountId: env["NETSUITE_ACCOUNT_ID"],
