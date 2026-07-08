@@ -25,6 +25,33 @@ The local MCP endpoint listens on:
 http://127.0.0.1:3025/mcp
 ```
 
+## NetSuite RESTlet Deployment
+
+Browser OAuth, REST metadata, and SuiteQL work after the Integration record and `.env` are
+configured. RESTlet-backed tools also require the bundled SuiteScript files to be deployed in
+NetSuite:
+
+- `netsuite/suitescript/supermcp_action_restlet.js`
+- `netsuite/suitescript/supermcp_read_actions.js`
+- `netsuite/suitescript/supermcp_transform_actions.js`
+- `netsuite/suitescript/supermcp_integration_actions.js`
+- `netsuite/suitescript/supermcp_mapping_actions.js`
+
+Create a RESTlet script record for `supermcp_action_restlet.js` and a deployment for the OAuth
+role that will run SuperMCP. If you keep the default `.env` URL, use these IDs:
+
+- Script ID: `customscript_supermcp_action`
+- Deployment ID: `customdeploy_supermcp_action`
+
+Then verify without changing NetSuite business data:
+
+```bash
+netsuite-supermcp doctor
+```
+
+If you use SuiteCloud CLI instead of the NetSuite UI, Oracle's current CLI package is
+`@oracle/suitecloud-cli`; it requires JDK 17 or 21.
+
 ## Run As A Service
 
 Use the deployment platform's process manager, systemd, PM2, or a managed Node/Bun service runner

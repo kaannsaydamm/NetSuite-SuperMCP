@@ -20,6 +20,7 @@ if (bunCheck.error !== undefined || (bunCheck.status ?? 1) !== 0) {
 
 const commands = {
   http: ["run", join(root, "src", "index.ts")],
+  doctor: ["run", join(root, "scripts", "doctor.ts")],
   "oauth-login": ["run", join(root, "scripts", "oauth-login.ts")],
   setup: ["run", join(root, "scripts", "setup-wizard.ts")],
   stdio: ["run", join(root, "src", "stdio.ts")],
@@ -29,7 +30,7 @@ const commands = {
 
 const bunArgs = commands[command]
 if (bunArgs === undefined) {
-  console.error("Usage: netsuite-supermcp [setup|stdio|http|install|oauth-login] [...args]")
+  console.error("Usage: netsuite-supermcp [setup|doctor|stdio|http|install|oauth-login] [...args]")
   process.exit(1)
 }
 

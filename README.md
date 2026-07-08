@@ -24,12 +24,14 @@ netsuite-supermcp setup
 
 The setup wizard creates `.env`, opens the NetSuite integration page, shows the exact OAuth
 checkboxes and redirect URI, saves your account/client values, can run browser OAuth, and can
-install detected agent-client MCP configs.
+install detected agent-client MCP configs. It also runs `doctor` at the end so missing NetSuite
+RESTlet deployment is visible immediately.
 
 Useful direct commands:
 
 ```bash
 netsuite-supermcp setup
+netsuite-supermcp doctor
 netsuite-supermcp-oauth-login
 netsuite-supermcp-install --list
 netsuite-supermcp-stdio
@@ -39,6 +41,7 @@ Run directly with npm/npx:
 
 ```bash
 npx netsuite-supermcp setup
+npx netsuite-supermcp doctor
 npx netsuite-supermcp install --all-detected
 npx netsuite-supermcp oauth-login
 npx netsuite-supermcp stdio
@@ -98,6 +101,9 @@ bun run smoke
 
 `bun run smoke` starts the server with sandbox-shaped local config, verifies `/health`,
 unauthorized MCP rejection, MCP initialize, and `ns_getEnvironment`, then shuts the server down.
+
+`netsuite-supermcp doctor` uses your real `.env` and runs non-mutating live probes for OAuth,
+REST metadata, SuiteQL, and the RESTlet action layer.
 
 Deployment details are in [docs/deployment.md](docs/deployment.md).
 Agent client setup details are in [docs/client-setup.md](docs/client-setup.md).

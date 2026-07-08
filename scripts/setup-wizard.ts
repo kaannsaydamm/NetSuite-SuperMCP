@@ -74,6 +74,16 @@ async function main(): Promise<void> {
     console.log(dim("Later: run netsuite-supermcp-install --all-detected"))
   }
 
+  printStep("5", "Health check")
+  if (runOptional("bun", ["run", join(packageRoot, "scripts", "doctor.ts")]) !== 0) {
+    console.log("")
+    console.log(
+      yellow("Setup saved your local config, but the health check still needs attention."),
+    )
+    console.log("Fix the item above, then rerun:")
+    console.log(bold("  netsuite-supermcp doctor"))
+  }
+
   printDone()
 }
 
@@ -269,7 +279,7 @@ function buildEnv(current: Map<string, string>, answers: Answers): Map<string, s
   const bearerToken =
     current.get("MCP_BEARER_TOKEN")?.replace("change-me-token-please", "") || randomToken()
   next.set("MCP_SERVER_NAME", current.get("MCP_SERVER_NAME") || "NetSuite SuperMCP")
-  next.set("MCP_SERVER_VERSION", cleanDefault(current.get("MCP_SERVER_VERSION") ?? "") || "0.1.6")
+  next.set("MCP_SERVER_VERSION", cleanDefault(current.get("MCP_SERVER_VERSION") ?? "") || "0.1.7")
   next.set("MCP_HOST", current.get("MCP_HOST") || "127.0.0.1")
   next.set("MCP_PORT", current.get("MCP_PORT") || "3025")
   next.set("MCP_BEARER_TOKEN", bearerToken)
@@ -315,6 +325,11 @@ function run(command: string, args: readonly string[]): void {
   if ((result.status ?? 1) !== 0) {
     throw new Error(`${command} ${args.join(" ")} failed`)
   }
+}
+
+function runOptional(command: string, args: readonly string[]): number {
+  const result = spawnSync(command, args, { stdio: "inherit", shell: process.platform === "win32" })
+  return result.status ?? 1
 }
 
 function printStep(index: string, title: string): void {
@@ -380,6 +395,10 @@ function green(value: string): string {
 
 function red(value: string): string {
   return `\x1b[31m${value}\x1b[0m`
+}
+
+function yellow(value: string): string {
+  return `\x1b[33m${value}\x1b[0m`
 }
 
 function bold(value: string): string {
