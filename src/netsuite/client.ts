@@ -95,7 +95,7 @@ export class OAuthNetSuiteClient implements NetSuiteClient {
     const searchParams = suiteQlSearchParams(request)
     return this.requestJson(`${this.config.baseUrl}/services/rest/query/v1/suiteql`, {
       method: "POST",
-      json: { q: request.query, params: request.params },
+      json: suiteQlBody(request),
       ...(searchParams === undefined ? {} : { searchParams }),
     })
   }
@@ -165,4 +165,10 @@ function suiteQlSearchParams(request: SuiteQlRequest): Record<string, string> | 
     entries["offset"] = request.offset.toString()
   }
   return Object.keys(entries).length === 0 ? undefined : entries
+}
+
+function suiteQlBody(request: SuiteQlRequest): JsonObject {
+  return request.params.length === 0
+    ? { q: request.query }
+    : { q: request.query, params: request.params }
 }

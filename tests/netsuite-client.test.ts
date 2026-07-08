@@ -150,7 +150,26 @@ describe("OAuthNetSuiteClient", () => {
     expect(result).toMatchObject({
       path: "/services/rest/query/v1/suiteql",
       search: "?limit=100&offset=200",
+      body: { q: "select id from transaction" },
       prefer: "transient",
+    })
+  })
+
+  it("sends SuiteQL params only when present", async () => {
+    // When
+    const { result } = await withMockNetSuite(
+      (request) => Response.json(request),
+      (client) =>
+        client.runSuiteQl({
+          query: "select id from transaction where id = ?",
+          params: [123],
+        }),
+    )
+
+    // Then
+    expect(result).toMatchObject({
+      path: "/services/rest/query/v1/suiteql",
+      body: { q: "select id from transaction where id = ?", params: [123] },
     })
   })
 })
