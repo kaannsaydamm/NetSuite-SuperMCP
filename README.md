@@ -19,20 +19,25 @@ Install from npm:
 
 ```bash
 npm install -g netsuite-supermcp
-netsuite-supermcp setup
+netsuite-supermcp oauth2
+netsuite-supermcp install --all-detected
 ```
 
-The setup wizard creates `.env`, opens the NetSuite integration page, shows the exact OAuth
-checkboxes and redirect URI, saves your account/client values, can run browser OAuth, and can
-install detected agent-client MCP configs. It also runs `doctor` at the end so missing NetSuite
-RESTlet deployment is visible immediately.
+`oauth2` is the shortest browser-login path. It asks only for your NetSuite account ID and the
+Integration Client ID/Secret when they are not already in `.env`, derives the NetSuite OAuth/REST
+URLs, opens the NetSuite OAuth consent screen, saves the refresh token, and runs `doctor`.
+
+Use `setup` when you also want the longer guided wizard with NetSuite Integration instructions and
+detected agent-client install prompts.
 
 Useful direct commands:
 
 ```bash
+netsuite-supermcp oauth2
 netsuite-supermcp setup
 netsuite-supermcp doctor
 netsuite-supermcp suitecloud
+netsuite-supermcp-oauth2
 netsuite-supermcp-oauth-login
 netsuite-supermcp-install --list
 netsuite-supermcp-stdio
@@ -41,6 +46,7 @@ netsuite-supermcp-stdio
 Run directly with npm/npx:
 
 ```bash
+npx netsuite-supermcp oauth2
 npx netsuite-supermcp setup
 npx netsuite-supermcp doctor
 npx netsuite-supermcp suitecloud
@@ -113,8 +119,9 @@ Agent client setup details are in [docs/client-setup.md](docs/client-setup.md).
 ## NetSuite Identity Model
 
 Execution uses the NetSuite OAuth mapping from `.env`. For user-delegated access, run
-`bun run oauth:login` or `netsuite-supermcp-oauth-login`; it opens NetSuite in the browser, captures
-the authorization callback, exchanges the code for a refresh token, and saves it to `.env`. For
+`netsuite-supermcp oauth2`; it configures `.env`, opens NetSuite in the browser, captures the
+authorization callback, exchanges the code for a refresh token, and saves it to `.env`.
+`netsuite-supermcp-oauth-login` is still available when `.env` is already configured. For
 machine-to-machine access, set `NETSUITE_OAUTH_FLOW=client_credentials` and provide the certificate
 values.
 

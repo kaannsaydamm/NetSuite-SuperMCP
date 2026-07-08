@@ -1,6 +1,6 @@
 {
   "name": "netsuite-supermcp",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "A NetSuite MCP server with OAuth, REST/RESTlet tools, client installers, and account permission probes.",
   "private": false,
   "license": "MIT",
@@ -20,6 +20,7 @@
     "netsuite-supermcp-http": "bin/netsuite-supermcp-http.mjs",
     "netsuite-supermcp-install": "bin/netsuite-supermcp-install.mjs",
     "netsuite-supermcp-oauth-login": "bin/netsuite-supermcp-oauth-login.mjs",
+    "netsuite-supermcp-oauth2": "bin/netsuite-supermcp-oauth2.mjs",
     "netsuite-supermcp-setup": "bin/netsuite-supermcp-setup.mjs",
     "netsuite-supermcp-suitecloud": "bin/netsuite-supermcp-suitecloud.mjs",
     "netsuite-supermcp-stdio": "bin/netsuite-supermcp-stdio.mjs"
@@ -61,6 +62,7 @@
     "start": "bun run src/index.ts",
     "stdio": "bun run src/stdio.ts",
     "oauth:login": "bun run scripts/oauth-login.ts",
+    "oauth2": "bun run scripts/oauth2.ts",
     "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File ./setup.ps1",
     "setup:wizard": "bun run scripts/setup-wizard.ts",
     "setup:sh": "sh ./setup.sh",

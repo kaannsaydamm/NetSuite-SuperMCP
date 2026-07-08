@@ -6,5 +6,6 @@ if (process.env["NETSUITE_SUPERMCP_QUIET_POSTINSTALL"] === "1") {
 
 console.log("")
 console.log("NetSuite SuperMCP installed.")
-console.log("Next: run `netsuite-supermcp setup` for guided OAuth and agent-client setup.")
+console.log("Fast path: run `netsuite-supermcp oauth2` for browser OAuth login.")
+console.log("Full setup: run `netsuite-supermcp setup` for OAuth plus agent-client install.")
 console.log("")
