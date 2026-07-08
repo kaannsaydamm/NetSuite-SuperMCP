@@ -27,10 +27,12 @@ const packageRoot = join(import.meta.dir, "..")
 const workspaceRoot = process.cwd()
 const envPath = join(workspaceRoot, ".env")
 
-await main().catch((error) => {
-  console.error(error instanceof Error ? error.message : "NetSuite OAuth login failed")
-  process.exit(1)
-})
+if (import.meta.main) {
+  await main().catch((error) => {
+    console.error(error instanceof Error ? error.message : "NetSuite OAuth login failed")
+    process.exit(1)
+  })
+}
 
 async function main(): Promise<void> {
   await ensureEnvFile(envPath)
@@ -42,7 +44,8 @@ async function main(): Promise<void> {
   const clientSecret = requiredEnv(env, "NETSUITE_CLIENT_SECRET")
   const redirectUri = requiredEnv(env, "NETSUITE_REDIRECT_URI")
   const state = randomBytes(24).toString("base64url")
-  const authUrl = createAuthorizationUrl({ authorizationUrl, clientId, redirectUri, state })
+  const prompt = argValue("--prompt")
+  const authUrl = createAuthorizationUrl({ authorizationUrl, clientId, redirectUri, state, prompt })
 
   if (new URL(redirectUri).protocol === "https:") {
     console.log(
@@ -68,9 +71,10 @@ async function main(): Promise<void> {
   console.log("NetSuite OAuth login complete. Refresh token was saved to .env.")
 }
 
-function createAuthorizationUrl(input: {
+export function createAuthorizationUrl(input: {
   readonly authorizationUrl: string
   readonly clientId: string
+  readonly prompt?: string | undefined
   readonly redirectUri: string
   readonly state: string
 }): string {
@@ -80,6 +84,9 @@ function createAuthorizationUrl(input: {
   url.searchParams.set("redirect_uri", input.redirectUri)
   url.searchParams.set("scope", "restlets,rest_webservices")
   url.searchParams.set("state", input.state)
+  if (input.prompt !== undefined && input.prompt.length > 0) {
+    url.searchParams.set("prompt", input.prompt)
+  }
   return url.toString()
 }
 
@@ -286,4 +293,12 @@ function requiredEnv(env: Map<string, string>, key: string): string {
     throw new Error(`${key} must be set in .env before browser OAuth login`)
   }
   return value
+}
+
+function argValue(name: string): string | undefined {
+  const prefix = `${name}=`
+  return process.argv
+    .slice(2)
+    .find((value) => value.startsWith(prefix))
+    ?.slice(prefix.length)
 }

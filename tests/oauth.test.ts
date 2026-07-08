@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test"
+import { createAuthorizationUrl } from "../scripts/oauth-login"
 import { NetSuiteTokenProvider } from "../src/netsuite/oauth"
 import { testConfig } from "./test-support"
 
@@ -86,5 +87,22 @@ describe("NetSuiteTokenProvider", () => {
     } finally {
       globalThis.fetch = originalFetch
     }
+  })
+})
+
+describe("createAuthorizationUrl", () => {
+  it("adds NetSuite prompt login for account switching", () => {
+    const url = new URL(
+      createAuthorizationUrl({
+        authorizationUrl: "https://11675047.app.netsuite.com/app/login/oauth2/authorize.nl",
+        clientId: "client-id",
+        prompt: "login consent",
+        redirectUri: "https://127.0.0.1:3026/oauth/callback",
+        state: "state-value",
+      }),
+    )
+
+    expect(url.searchParams.get("prompt")).toBe("login consent")
+    expect(url.searchParams.get("client_id")).toBe("client-id")
   })
 })

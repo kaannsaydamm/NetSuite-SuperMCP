@@ -16,8 +16,10 @@ const suiteScriptFiles = [
 type DeploymentStatus = "RELEASED" | "TESTING"
 
 type Options = {
+  readonly deploy: boolean
   readonly outDir: string
   readonly status: DeploymentStatus
+  readonly validate: boolean
 }
 
 await main().catch((error) => {
@@ -51,41 +53,56 @@ async function main(): Promise<void> {
   console.log(green("SuiteCloud RESTlet project generated."))
   console.log(`Project: ${root}`)
   console.log("")
-  printJavaPreflight()
+  const javaEnv = ensureSuiteCloudJavaEnv()
   console.log("")
-  console.log("Next:")
-  console.log(`  cd ${shellPath(root)}`)
-  console.log("  npx -y @oracle/suitecloud-cli@3.2.0 account:setup -i")
-  console.log("  npx -y @oracle/suitecloud-cli@3.2.0 project:deploy --validate")
-  console.log("")
-  console.log("After deploy:")
-  console.log("  netsuite-supermcp doctor")
+  if (options.deploy) {
+    runSuiteCloud(root, javaEnv, options.validate)
+  } else {
+    console.log("Next:")
+    console.log(`  netsuite-supermcp suitecloud --deploy`)
+    console.log("")
+    console.log("This uses npx for Oracle SuiteCloud CLI and manages a portable JDK on Windows.")
+  }
 }
 
-function printJavaPreflight(): void {
+function ensureSuiteCloudJavaEnv(): NodeJS.ProcessEnv {
   const java = spawnSync("java", ["-version"], {
     encoding: "utf8",
     shell: process.platform === "win32",
   })
-  if (java.error !== undefined || (java.status ?? 1) !== 0) {
-    console.log(
-      yellow("SuiteCloud CLI preflight: Java was not found. Install Oracle JDK 17 or 21."),
-    )
-    return
-  }
-
-  const versionText = `${java.stderr}\n${java.stdout}`
-  const major = parseJavaMajorVersion(versionText)
+  const major =
+    java.error !== undefined || (java.status ?? 1) !== 0
+      ? null
+      : parseJavaMajorVersion(`${java.stderr}\n${java.stdout}`)
   if (major === 17 || major === 21) {
     console.log(green(`SuiteCloud CLI preflight: Java ${major} is compatible.`))
-    return
+    return process.env
   }
 
-  console.log(
-    yellow(
-      `SuiteCloud CLI preflight: Java ${major ?? "unknown"} detected. Oracle SuiteCloud CLI requires JDK 17 or 21.`,
-    ),
-  )
+  const portableJavaHome = findPortableJdkHome()
+  if (portableJavaHome !== null) {
+    console.log(green(`SuiteCloud CLI preflight: using portable JDK at ${portableJavaHome}`))
+    return {
+      ...process.env,
+      JAVA_HOME: portableJavaHome,
+      PATH: `${join(portableJavaHome, "bin")};${process.env["PATH"] ?? ""}`,
+    }
+  }
+
+  if (process.platform === "win32") {
+    installPortableJdk()
+    const installedJavaHome = findPortableJdkHome()
+    if (installedJavaHome !== null) {
+      console.log(green(`SuiteCloud CLI preflight: installed portable JDK at ${installedJavaHome}`))
+      return {
+        ...process.env,
+        JAVA_HOME: installedJavaHome,
+        PATH: `${join(installedJavaHome, "bin")};${process.env["PATH"] ?? ""}`,
+      }
+    }
+  }
+
+  throw new Error("SuiteCloud CLI needs JDK 17 or 21 and no compatible Java runtime was found.")
 }
 
 function parseJavaMajorVersion(value: string): number | null {
@@ -105,6 +122,8 @@ function parseJavaMajorVersion(value: string): number | null {
 function readOptions(): Options {
   const outDir = argValue("--out") ?? ".netsuite-supermcp-suitecloud"
   const statusValue = argValue("--status") ?? "RELEASED"
+  const deploy = process.argv.includes("--deploy")
+  const validate = !process.argv.includes("--no-validate")
   if (statusValue !== "RELEASED" && statusValue !== "TESTING") {
     throw new Error("--status must be RELEASED or TESTING")
   }
@@ -114,7 +133,84 @@ function readOptions(): Options {
   if (!existsSync(suiteScriptSourceDir)) {
     throw new Error(`Missing bundled SuiteScript directory: ${suiteScriptSourceDir}`)
   }
-  return { outDir, status: statusValue }
+  return { deploy, outDir, status: statusValue, validate }
+}
+
+function runSuiteCloud(root: string, env: NodeJS.ProcessEnv, validate: boolean): void {
+  console.log("Running Oracle SuiteCloud CLI through npx.")
+  run("npx", ["-y", "@oracle/suitecloud-cli@3.2.0", "account:setup", "-i"], root, env)
+  run(
+    "npx",
+    ["-y", "@oracle/suitecloud-cli@3.2.0", "project:deploy", ...(validate ? ["--validate"] : [])],
+    root,
+    env,
+  )
+  console.log("")
+  console.log(green("SuiteCloud deploy command finished."))
+  console.log("Run: netsuite-supermcp doctor")
+}
+
+function run(command: string, args: readonly string[], cwd: string, env: NodeJS.ProcessEnv): void {
+  const result = spawnSync(command, args, {
+    cwd,
+    env,
+    stdio: "inherit",
+    shell: process.platform === "win32",
+  })
+  if ((result.status ?? 1) !== 0) {
+    throw new Error(`${command} ${args.join(" ")} failed`)
+  }
+}
+
+function findPortableJdkHome(): string | null {
+  if (process.platform !== "win32") {
+    return null
+  }
+  const localAppData = process.env["LOCALAPPDATA"]
+  if (localAppData === undefined) {
+    return null
+  }
+  const root = join(localAppData, "NetSuiteSuperMCP", "jdk", "temurin-21")
+  const candidates = [
+    join(root, "jdk-21.0.11+10"),
+    join(root, "jdk-21.0.10+9"),
+    join(root, "jdk-21.0.9+10"),
+  ]
+  return candidates.find((candidate) => existsSync(join(candidate, "bin", "java.exe"))) ?? null
+}
+
+function installPortableJdk(): void {
+  const localAppData = process.env["LOCALAPPDATA"]
+  if (localAppData === undefined) {
+    throw new Error("LOCALAPPDATA is not set; cannot install portable JDK.")
+  }
+  const installRoot = join(localAppData, "NetSuiteSuperMCP", "jdk", "temurin-21")
+  console.log(yellow("Compatible Java was not found. Installing portable Temurin JDK 21..."))
+  const script = [
+    "$ErrorActionPreference='Stop'",
+    `$dest='${escapePowerShell(installRoot)}'`,
+    "New-Item -ItemType Directory -Force -Path $dest | Out-Null",
+    "$zip=Join-Path $dest 'temurin-21.zip'",
+    "$url='https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk'",
+    "Invoke-WebRequest -Uri $url -OutFile $zip",
+    "Expand-Archive -LiteralPath $zip -DestinationPath $dest -Force",
+    "Remove-Item -LiteralPath $zip -Force",
+  ].join("; ")
+  const result = spawnSync(
+    "powershell",
+    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script],
+    {
+      stdio: "inherit",
+      shell: process.platform === "win32",
+    },
+  )
+  if ((result.status ?? 1) !== 0) {
+    throw new Error("Portable JDK install failed")
+  }
+}
+
+function escapePowerShell(value: string): string {
+  return value.replaceAll("'", "''")
 }
 
 function manifestXml(): string {
@@ -200,10 +296,6 @@ function argValue(name: string): string | undefined {
 
 function xmlHeader(): string {
   return '<?xml version="1.0" encoding="UTF-8"?>\n'
-}
-
-function shellPath(path: string): string {
-  return path.includes(" ") ? `"${path}"` : path
 }
 
 function green(value: string): string {

@@ -23,6 +23,8 @@ const commands = {
   doctor: ["run", join(root, "scripts", "doctor.ts")],
   oauth2: ["run", join(root, "scripts", "oauth2.ts")],
   "oauth-login": ["run", join(root, "scripts", "oauth-login.ts")],
+  "switch-account": ["run", join(root, "scripts", "switch-account.ts")],
+  logout: ["run", join(root, "scripts", "switch-account.ts")],
   setup: ["run", join(root, "scripts", "setup-wizard.ts")],
   suitecloud: ["run", join(root, "scripts", "suitecloud-project.ts")],
   stdio: ["run", join(root, "src", "stdio.ts")],
@@ -33,7 +35,7 @@ const commands = {
 const bunArgs = commands[command]
 if (bunArgs === undefined) {
   console.error(
-    "Usage: netsuite-supermcp [setup|oauth2|doctor|suitecloud|stdio|http|install|oauth-login] [...args]",
+    "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|doctor|suitecloud|stdio|http|install|oauth-login] [...args]",
   )
   process.exit(1)
 }

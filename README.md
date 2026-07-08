@@ -34,6 +34,7 @@ Useful direct commands:
 
 ```bash
 netsuite-supermcp oauth2
+netsuite-supermcp switch-account
 netsuite-supermcp setup
 netsuite-supermcp doctor
 netsuite-supermcp suitecloud
@@ -47,6 +48,7 @@ Run directly with npm/npx:
 
 ```bash
 npx netsuite-supermcp oauth2
+npx netsuite-supermcp switch-account
 npx netsuite-supermcp setup
 npx netsuite-supermcp doctor
 npx netsuite-supermcp suitecloud
@@ -129,6 +131,18 @@ authorization callback, exchanges the code for a refresh token, and saves it to 
 `netsuite-supermcp-oauth-login` is still available when `.env` is already configured. For
 machine-to-machine access, set `NETSUITE_OAUTH_FLOW=client_credentials` and provide the certificate
 values.
+
+To leave the current OAuth browser account and connect another NetSuite account or role, run
+`netsuite-supermcp switch-account` or `netsuite-supermcp logout`. This clears only the local refresh
+token and restarts browser OAuth with NetSuite `prompt=login consent`; it does not revoke the
+Integration record or change NetSuite data.
+
+## SuiteCloud Deploy
+
+`netsuite-supermcp suitecloud --deploy` generates the bundled SuiteCloud project and runs Oracle
+SuiteCloud CLI through `npx -y @oracle/suitecloud-cli@3.2.0`. On Windows, if Java 17/21 is not
+available, it installs a portable Temurin JDK 21 under the user profile and uses it only for that
+SuiteCloud process.
 
 SuperMCP does not impose a specific employee, role, or naming convention. It also does not bypass
 NetSuite authorization; NetSuite allows or denies actions based on the mapped account's permissions.
