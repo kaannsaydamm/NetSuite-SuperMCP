@@ -1,13 +1,14 @@
-import { spawn } from "node:child_process"
 import { randomBytes } from "node:crypto"
 import { copyFile, readFile, writeFile } from "node:fs/promises"
 import type { IncomingMessage, ServerResponse } from "node:http"
 import { createServer as createHttpServer } from "node:http"
 import { createServer as createHttpsServer } from "node:https"
 import { join } from "node:path"
+import { createInterface } from "node:readline/promises"
 import jsrsasign from "jsrsasign"
 import ky, { HTTPError } from "ky"
 import { z } from "zod"
+import { openBrowser } from "./browser-open"
 
 const TokenResponseSchema = z.object({
   access_token: z.string().min(1),
@@ -50,6 +51,12 @@ async function main(): Promise<void> {
   }
   console.log(`Opening NetSuite OAuth consent page: ${authUrl}`)
   await openBrowser(authUrl)
+  console.log(`Waiting for NetSuite callback on ${redirectUri}. Keep this terminal open.`)
+  if (process.stdin.isTTY) {
+    console.log(
+      "If Chrome cannot reach the local callback, copy the full 127.0.0.1 callback URL and paste it here.",
+    )
+  }
 
   const code = await waitForAuthorizationCode(redirectUri, state)
   const token = await exchangeCode({ tokenUrl, clientId, clientSecret, redirectUri, code })
@@ -84,26 +91,16 @@ async function waitForAuthorizationCode(
   const port = Number(url.port || (url.protocol === "https:" ? "443" : "80"))
   const path = url.pathname
 
-  return await new Promise((resolve, reject) => {
+  let closeServer: (() => void) | undefined
+  const serverCode = new Promise<string>((resolve, reject) => {
     const handleCallback = (request: IncomingMessage, response: ServerResponse): void => {
       try {
-        const requestUrl = new URL(request.url ?? "/", redirectUri)
-        if (requestUrl.pathname !== path) {
+        const callbackUrl = new URL(request.url ?? "/", redirectUri)
+        if (callbackUrl.pathname !== path) {
           response.writeHead(404).end("Not found")
           return
         }
-        const state = requestUrl.searchParams.get("state")
-        const code = requestUrl.searchParams.get("code")
-        const error = requestUrl.searchParams.get("error")
-        if (error !== null) {
-          throw new Error(`NetSuite authorization failed: ${error}`)
-        }
-        if (state !== expectedState) {
-          throw new Error("OAuth state mismatch")
-        }
-        if (code === null || code.length === 0) {
-          throw new Error("OAuth callback did not include a code")
-        }
+        const code = parseAuthorizationCallback(callbackUrl.toString(), redirectUri, expectedState)
         response.writeHead(200, { "content-type": "text/plain; charset=utf-8" })
         response.end("NetSuite SuperMCP OAuth login complete. You can close this tab.")
         server.close()
@@ -121,8 +118,58 @@ async function waitForAuthorizationCode(
         : createHttpServer(handleCallback)
 
     server.once("error", reject)
+    closeServer = () => server.close()
     server.listen(port, url.hostname)
   })
+
+  try {
+    return await Promise.race([serverCode, waitForPastedCallback(redirectUri, expectedState)])
+  } finally {
+    closeServer?.()
+  }
+}
+
+async function waitForPastedCallback(redirectUri: string, expectedState: string): Promise<string> {
+  if (!process.stdin.isTTY) {
+    return await new Promise(() => undefined)
+  }
+  const rl = createInterface({ input: process.stdin, output: process.stdout })
+  try {
+    const answer = (
+      await rl.question("Callback URL paste, or leave blank while waiting for automatic callback: ")
+    ).trim()
+    if (answer.length === 0) {
+      return await new Promise(() => undefined)
+    }
+    return parseAuthorizationCallback(answer, redirectUri, expectedState)
+  } finally {
+    rl.close()
+  }
+}
+
+export function parseAuthorizationCallback(
+  callbackUrl: string,
+  redirectUri: string,
+  expectedState: string,
+): string {
+  const expectedUrl = new URL(redirectUri)
+  const url = new URL(callbackUrl, redirectUri)
+  if (url.pathname !== expectedUrl.pathname) {
+    throw new Error("OAuth callback URL path did not match the configured redirect URI")
+  }
+  const state = url.searchParams.get("state")
+  const code = url.searchParams.get("code")
+  const error = url.searchParams.get("error")
+  if (error !== null) {
+    throw new Error(`NetSuite authorization failed: ${error}`)
+  }
+  if (state !== expectedState) {
+    throw new Error("OAuth state mismatch")
+  }
+  if (code === null || code.length === 0) {
+    throw new Error("OAuth callback did not include a code")
+  }
+  return code
 }
 
 async function exchangeCode(input: {
@@ -155,14 +202,6 @@ async function exchangeCode(input: {
     }
     throw error
   }
-}
-
-async function openBrowser(url: string): Promise<void> {
-  const command =
-    process.platform === "win32" ? "cmd" : process.platform === "darwin" ? "open" : "xdg-open"
-  const args = process.platform === "win32" ? ["/c", "start", "", url] : [url]
-  const child = spawn(command, args, { detached: true, stdio: "ignore" })
-  child.unref()
 }
 
 function createLocalhostCertificate(): CertificatePem {

@@ -1,10 +1,11 @@
-import { spawn, spawnSync } from "node:child_process"
+import { spawnSync } from "node:child_process"
 import { randomUUID } from "node:crypto"
 import { existsSync } from "node:fs"
 import { chmod, copyFile, readFile, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
 import { stdin as input, stdout as output } from "node:process"
 import { createInterface } from "node:readline/promises"
+import { openBrowser } from "./browser-open"
 
 const packageRoot = join(import.meta.dir, "..")
 const workspaceRoot = resolve(process.cwd())
@@ -268,7 +269,7 @@ function buildEnv(current: Map<string, string>, answers: Answers): Map<string, s
   const bearerToken =
     current.get("MCP_BEARER_TOKEN")?.replace("change-me-token-please", "") || randomToken()
   next.set("MCP_SERVER_NAME", current.get("MCP_SERVER_NAME") || "NetSuite SuperMCP")
-  next.set("MCP_SERVER_VERSION", cleanDefault(current.get("MCP_SERVER_VERSION") ?? "") || "0.1.4")
+  next.set("MCP_SERVER_VERSION", cleanDefault(current.get("MCP_SERVER_VERSION") ?? "") || "0.1.5")
   next.set("MCP_HOST", current.get("MCP_HOST") || "127.0.0.1")
   next.set("MCP_PORT", current.get("MCP_PORT") || "3025")
   next.set("MCP_BEARER_TOKEN", bearerToken)
@@ -314,14 +315,6 @@ function run(command: string, args: readonly string[]): void {
   if ((result.status ?? 1) !== 0) {
     throw new Error(`${command} ${args.join(" ")} failed`)
   }
-}
-
-async function openBrowser(url: string): Promise<void> {
-  const command =
-    process.platform === "win32" ? "cmd" : process.platform === "darwin" ? "open" : "xdg-open"
-  const args = process.platform === "win32" ? ["/c", "start", "", url] : [url]
-  const child = spawn(command, args, { detached: true, stdio: "ignore" })
-  child.unref()
 }
 
 function printStep(index: string, title: string): void {
