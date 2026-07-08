@@ -121,6 +121,12 @@ function manifestXml(): string {
   return `${xmlHeader()}<manifest projecttype="ACCOUNTCUSTOMIZATION">
   <projectname>NetSuite SuperMCP</projectname>
   <frameworkversion>1.0</frameworkversion>
+  <dependencies>
+    <features>
+      <feature required="false">CRM</feature>
+      <feature required="true">SERVERSIDESCRIPTING</feature>
+    </features>
+  </dependencies>
 </manifest>
 `
 }
@@ -145,6 +151,7 @@ function restletObjectXml(status: DeploymentStatus): string {
   <scriptfile>[/SuiteScripts/SuperMCP/supermcp_action_restlet.js]</scriptfile>
   <scriptdeployments>
     <scriptdeployment scriptid="customdeploy_supermcp_action">
+      <allroles>T</allroles>
       <isdeployed>T</isdeployed>
       <loglevel>AUDIT</loglevel>
       <status>${status}</status>

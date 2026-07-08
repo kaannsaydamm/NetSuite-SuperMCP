@@ -18,6 +18,15 @@ define(["N/error", "N/record"], (nsError, record) => {
     const recordType = requireText(payload, "recordType")
     const recordId = requireId(payload, "recordId")
     const fields = optionalTextList(payload, "fields")
+    if (actionRequest.phase === "prepare") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        record: { type: recordType, id: String(recordId) },
+        fields,
+      }
+    }
+
     const loadedRecord = record.load({ type: recordType, id: recordId, isDynamic: false })
     return {
       action: actionRequest.action,

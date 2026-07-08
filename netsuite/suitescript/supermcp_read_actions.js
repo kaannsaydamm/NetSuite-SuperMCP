@@ -37,6 +37,15 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     const payload = actionRequest.payload
     const fileId = requireFileId(payload, "fileId")
     const maxBytes = optionalIntInRange(payload, "maxBytes", 1048576, 1, 10485760)
+    if (actionRequest.phase === "prepare") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        file: { id: String(fileId) },
+        maxBytes,
+      }
+    }
+
     const loadedFile = file.load({ id: fileId })
     if (loadedFile.size > maxBytes) {
       throw createRequestError(
@@ -62,12 +71,15 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     const payload = actionRequest.payload
     const pageSize = optionalIntInRange(payload, "pageSize", 100, 1, 1000)
     const pageIndex = optionalIntInRange(payload, "pageIndex", 0, 0, 100000)
-    const loadedSearch = search.load({ id: searchId })
-    const paged = loadedSearch.runPaged({ pageSize })
 
     if (actionRequest.phase === "prepare") {
-      return pagedSearchResponseBase(actionRequest, idKey, searchId, pageSize)
+      const prepared = pagedSearchResponseBase(actionRequest, idKey, searchId, pageSize)
+      prepared.pageIndex = pageIndex
+      return prepared
     }
+
+    const loadedSearch = search.load({ id: searchId })
+    const paged = loadedSearch.runPaged({ pageSize })
 
     if (pageIndex >= paged.pageRanges.length) {
       const emptyResult = pagedSearchResponseBase(actionRequest, idKey, searchId, pageSize)
@@ -104,6 +116,15 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     const recordType = requireText(payload, "recordType")
     const recordId = requireId(payload, "recordId")
     const fields = optionalTextList(payload, "fields")
+    if (actionRequest.phase === "prepare") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        record: { type: recordType, id: String(recordId) },
+        fields,
+      }
+    }
+
     const loadedRecord = record.load({ type: recordType, id: recordId, isDynamic: false })
     const values = readRecordFields(loadedRecord, fields)
 
