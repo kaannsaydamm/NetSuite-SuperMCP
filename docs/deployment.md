@@ -51,6 +51,7 @@ netsuite-supermcp doctor
 
 If you use SuiteCloud CLI instead of the NetSuite UI, Oracle's current CLI package is
 `@oracle/suitecloud-cli`; it requires JDK 17 or 21.
+The `netsuite-supermcp suitecloud` command prints a Java preflight warning before deploy steps.
 
 Generate a ready-to-deploy Account Customization Project:
 

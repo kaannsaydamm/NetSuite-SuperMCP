@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process"
 import { existsSync } from "node:fs"
 import { copyFile, mkdir, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
@@ -50,6 +51,8 @@ async function main(): Promise<void> {
   console.log(green("SuiteCloud RESTlet project generated."))
   console.log(`Project: ${root}`)
   console.log("")
+  printJavaPreflight()
+  console.log("")
   console.log("Next:")
   console.log(`  cd ${shellPath(root)}`)
   console.log("  npx -y @oracle/suitecloud-cli@3.2.0 account:setup -i")
@@ -57,6 +60,46 @@ async function main(): Promise<void> {
   console.log("")
   console.log("After deploy:")
   console.log("  netsuite-supermcp doctor")
+}
+
+function printJavaPreflight(): void {
+  const java = spawnSync("java", ["-version"], {
+    encoding: "utf8",
+    shell: process.platform === "win32",
+  })
+  if (java.error !== undefined || (java.status ?? 1) !== 0) {
+    console.log(
+      yellow("SuiteCloud CLI preflight: Java was not found. Install Oracle JDK 17 or 21."),
+    )
+    return
+  }
+
+  const versionText = `${java.stderr}\n${java.stdout}`
+  const major = parseJavaMajorVersion(versionText)
+  if (major === 17 || major === 21) {
+    console.log(green(`SuiteCloud CLI preflight: Java ${major} is compatible.`))
+    return
+  }
+
+  console.log(
+    yellow(
+      `SuiteCloud CLI preflight: Java ${major ?? "unknown"} detected. Oracle SuiteCloud CLI requires JDK 17 or 21.`,
+    ),
+  )
+}
+
+function parseJavaMajorVersion(value: string): number | null {
+  const quoted = value.match(/version\s+"([^"]+)"/)
+  const version = quoted?.[1]
+  if (version === undefined) {
+    return null
+  }
+  if (version.startsWith("1.")) {
+    const legacy = Number(version.split(".")[1])
+    return Number.isFinite(legacy) ? legacy : null
+  }
+  const major = Number(version.split(".")[0])
+  return Number.isFinite(major) ? major : null
 }
 
 function readOptions(): Options {
@@ -158,6 +201,10 @@ function shellPath(path: string): string {
 
 function green(value: string): string {
   return `\x1b[32m${value}\x1b[0m`
+}
+
+function yellow(value: string): string {
+  return `\x1b[33m${value}\x1b[0m`
 }
 
 function red(value: string): string {

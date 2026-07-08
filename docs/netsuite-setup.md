@@ -195,3 +195,12 @@ Run this before deploying RESTlet changes:
 ```bash
 bun run check:restlet-contract
 ```
+
+To generate a SuiteCloud Account Customization Project for the RESTlet deployment:
+
+```bash
+netsuite-supermcp suitecloud
+```
+
+Oracle SuiteCloud CLI requires JDK 17 or 21. If your machine has a newer Java version, install
+JDK 17 or 21 and point `JAVA_HOME`/`PATH` to that JDK before running SuiteCloud deploy commands.
