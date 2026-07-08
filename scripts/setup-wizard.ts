@@ -279,7 +279,7 @@ function buildEnv(current: Map<string, string>, answers: Answers): Map<string, s
   const bearerToken =
     current.get("MCP_BEARER_TOKEN")?.replace("change-me-token-please", "") || randomToken()
   next.set("MCP_SERVER_NAME", current.get("MCP_SERVER_NAME") || "NetSuite SuperMCP")
-  next.set("MCP_SERVER_VERSION", cleanDefault(current.get("MCP_SERVER_VERSION") ?? "") || "0.1.11")
+  next.set("MCP_SERVER_VERSION", cleanDefault(current.get("MCP_SERVER_VERSION") ?? "") || "0.1.12")
   next.set("MCP_HOST", current.get("MCP_HOST") || "127.0.0.1")
   next.set("MCP_PORT", current.get("MCP_PORT") || "3025")
   next.set("MCP_BEARER_TOKEN", bearerToken)

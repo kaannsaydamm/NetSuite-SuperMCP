@@ -1,6 +1,6 @@
 {
   "name": "netsuite-supermcp",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "A NetSuite MCP server with OAuth, REST/RESTlet tools, client installers, and account permission probes.",
   "private": false,
   "license": "MIT",
@@ -75,6 +75,7 @@
     "postinstall": "node ./bin/postinstall.mjs",
     "test": "bun test",
     "smoke": "bun run scripts/smoke.ts",
+    "probe:live": "bun run scripts/live-tool-probe.ts",
     "check:restlet-contract": "bun run scripts/check-restlet-contract.ts"
   },
   "dependencies": {

@@ -104,6 +104,7 @@ bun run typecheck
 bun run lint
 bun test
 bun run check:restlet-contract
+bun run probe:live
 bun run smoke
 ```
 
@@ -112,6 +113,10 @@ unauthorized MCP rejection, MCP initialize, and `ns_getEnvironment`, then shuts 
 
 `netsuite-supermcp doctor` uses your real `.env` and runs non-mutating live probes for OAuth,
 REST metadata, SuiteQL, and the RESTlet action layer.
+
+`bun run probe:live` uses your real `.env` and calls the MCP tool surface with live-safe probes.
+Read-only tools are called directly when safe IDs can be discovered; write/delete/transform actions
+are exercised through `ns_prepareAction` so NetSuite data is not changed.
 
 Deployment details are in [docs/deployment.md](docs/deployment.md).
 Agent client setup details are in [docs/client-setup.md](docs/client-setup.md).
