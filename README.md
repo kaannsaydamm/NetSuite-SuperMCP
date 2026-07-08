@@ -32,6 +32,7 @@ Useful direct commands:
 ```bash
 netsuite-supermcp setup
 netsuite-supermcp doctor
+netsuite-supermcp suitecloud
 netsuite-supermcp-oauth-login
 netsuite-supermcp-install --list
 netsuite-supermcp-stdio
@@ -42,6 +43,7 @@ Run directly with npm/npx:
 ```bash
 npx netsuite-supermcp setup
 npx netsuite-supermcp doctor
+npx netsuite-supermcp suitecloud
 npx netsuite-supermcp install --all-detected
 npx netsuite-supermcp oauth-login
 npx netsuite-supermcp stdio

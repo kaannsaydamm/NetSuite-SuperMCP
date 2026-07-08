@@ -88,6 +88,12 @@ async function main(): Promise<void> {
     console.log("Expected script/deploy IDs if using the default .env URL:")
     console.log("  customscript_supermcp_action")
     console.log("  customdeploy_supermcp_action")
+    console.log("")
+    console.log("To generate a SuiteCloud project for this RESTlet:")
+    console.log("  netsuite-supermcp suitecloud")
+    console.log("  cd .netsuite-supermcp-suitecloud")
+    console.log("  npx -y @oracle/suitecloud-cli@3.2.0 account:setup -i")
+    console.log("  npx -y @oracle/suitecloud-cli@3.2.0 project:deploy --validate")
   }
 
   process.exit(checks.every((result) => result.ok) ? 0 : 1)
