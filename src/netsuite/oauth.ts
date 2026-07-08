@@ -87,7 +87,7 @@ export class NetSuiteTokenProvider {
     })
     const payload = base64UrlJson({
       iss: required(this.config.consumerKey, "NETSUITE_CONSUMER_KEY"),
-      scope: ["restlets", "rest_webservices"].join(" "),
+      scope: ["restlets", "rest_webservices"].join(","),
       aud: this.config.tokenUrl,
       exp: nowSeconds + 300,
       iat: nowSeconds,

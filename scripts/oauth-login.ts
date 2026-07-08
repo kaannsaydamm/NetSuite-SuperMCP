@@ -71,7 +71,7 @@ function createAuthorizationUrl(input: {
   url.searchParams.set("response_type", "code")
   url.searchParams.set("client_id", input.clientId)
   url.searchParams.set("redirect_uri", input.redirectUri)
-  url.searchParams.set("scope", "restlets rest_webservices")
+  url.searchParams.set("scope", "restlets,rest_webservices")
   url.searchParams.set("state", input.state)
   return url.toString()
 }
