@@ -1,6 +1,6 @@
 {
   "name": "netsuite-supermcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A NetSuite MCP server with OAuth, REST/RESTlet tools, client installers, and account permission probes.",
   "private": false,
   "license": "MIT",
@@ -70,7 +70,9 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
+    "@types/jsrsasign": "^10.5.15",
     "hono": "4.12.28",
+    "jsrsasign": "^11.1.3",
     "ky": "1.14.1",
     "pino": "10.1.0",
     "zod": "4.2.1"

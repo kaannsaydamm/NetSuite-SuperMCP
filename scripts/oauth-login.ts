@@ -1,8 +1,11 @@
 import { spawn } from "node:child_process"
 import { randomBytes } from "node:crypto"
 import { copyFile, readFile, writeFile } from "node:fs/promises"
-import { createServer } from "node:http"
+import type { IncomingMessage, ServerResponse } from "node:http"
+import { createServer as createHttpServer } from "node:http"
+import { createServer as createHttpsServer } from "node:https"
 import { join } from "node:path"
+import jsrsasign from "jsrsasign"
 import ky, { HTTPError } from "ky"
 import { z } from "zod"
 
@@ -11,6 +14,13 @@ const TokenResponseSchema = z.object({
   refresh_token: z.string().min(1),
   expires_in: z.number().int().positive().optional(),
 })
+
+const { KEYUTIL, KJUR } = jsrsasign
+
+type CertificatePem = {
+  readonly cert: string
+  readonly key: string
+}
 
 const packageRoot = join(import.meta.dir, "..")
 const workspaceRoot = process.cwd()
@@ -33,6 +43,11 @@ async function main(): Promise<void> {
   const state = randomBytes(24).toString("base64url")
   const authUrl = createAuthorizationUrl({ authorizationUrl, clientId, redirectUri, state })
 
+  if (new URL(redirectUri).protocol === "https:") {
+    console.log(
+      "Starting local HTTPS OAuth callback listener with an ephemeral self-signed certificate.",
+    )
+  }
   console.log(`Opening NetSuite OAuth consent page: ${authUrl}`)
   await openBrowser(authUrl)
 
@@ -70,7 +85,7 @@ async function waitForAuthorizationCode(
   const path = url.pathname
 
   return await new Promise((resolve, reject) => {
-    const server = createServer((request, response) => {
+    const handleCallback = (request: IncomingMessage, response: ServerResponse): void => {
       try {
         const requestUrl = new URL(request.url ?? "/", redirectUri)
         if (requestUrl.pathname !== path) {
@@ -99,7 +114,12 @@ async function waitForAuthorizationCode(
         server.close()
         reject(error)
       }
-    })
+    }
+    const server =
+      url.protocol === "https:"
+        ? createHttpsServer(createLocalhostCertificate(), handleCallback)
+        : createHttpServer(handleCallback)
+
     server.once("error", reject)
     server.listen(port, url.hostname)
   })
@@ -143,6 +163,46 @@ async function openBrowser(url: string): Promise<void> {
   const args = process.platform === "win32" ? ["/c", "start", "", url] : [url]
   const child = spawn(command, args, { detached: true, stdio: "ignore" })
   child.unref()
+}
+
+function createLocalhostCertificate(): CertificatePem {
+  const keyPair = KEYUTIL.generateKeypair("RSA", 2048)
+  const privateKey = keyPair.prvKeyObj
+  const now = new Date()
+  const notBefore = toUtcTime(new Date(now.getTime() - 60_000))
+  const notAfter = toUtcTime(new Date(now.getTime() + 60 * 60 * 1000))
+  const certificate = new KJUR.asn1.x509.Certificate({
+    version: 3,
+    serial: { hex: randomBytes(16).toString("hex") },
+    sigalg: "SHA256withRSA",
+    issuer: { str: "/CN=NetSuite SuperMCP Local OAuth" },
+    notbefore: notBefore,
+    notafter: notAfter,
+    subject: { str: "/CN=127.0.0.1" },
+    sbjpubkey: keyPair.pubKeyObj,
+    ext: [
+      { extname: "basicConstraints", cA: false },
+      { extname: "keyUsage", critical: true, names: ["digitalSignature", "keyEncipherment"] },
+      { extname: "extKeyUsage", array: [{ name: "serverAuth" }] },
+      { extname: "subjectAltName", array: [{ ip: "127.0.0.1" }, { dns: "localhost" }] },
+    ],
+    cakey: privateKey,
+  })
+
+  return {
+    cert: certificate.getPEM(),
+    key: KEYUTIL.getPEM(privateKey, "PKCS8PRV"),
+  }
+}
+
+function toUtcTime(value: Date): string {
+  const year = String(value.getUTCFullYear()).slice(-2)
+  const month = String(value.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(value.getUTCDate()).padStart(2, "0")
+  const hour = String(value.getUTCHours()).padStart(2, "0")
+  const minute = String(value.getUTCMinutes()).padStart(2, "0")
+  const second = String(value.getUTCSeconds()).padStart(2, "0")
+  return `${year}${month}${day}${hour}${minute}${second}Z`
 }
 
 async function readEnv(path: string): Promise<Map<string, string>> {

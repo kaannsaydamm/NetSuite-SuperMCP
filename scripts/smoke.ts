@@ -23,6 +23,7 @@ const server = spawn("bun", ["run", "start"], {
     NETSUITE_BASE_URL: "https://1234567-sb1.suitetalk.api.netsuite.com",
     NETSUITE_RESTLET_URL:
       "https://1234567-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=customscript_supermcp_action&deploy=customdeploy_supermcp_action",
+    NETSUITE_OAUTH_FLOW: "client_credentials",
     NETSUITE_CONSUMER_KEY: "consumer-key",
     NETSUITE_CERTIFICATE_ID: "cert-id",
     NETSUITE_PRIVATE_KEY_PEM_BASE64: "cGVt",

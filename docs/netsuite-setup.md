@@ -12,7 +12,7 @@ For browser login, enable Authorization Code Grant on the NetSuite integration r
 redirect URI to the same value as `NETSUITE_REDIRECT_URI`, for example:
 
 ```text
-http://127.0.0.1:3025/oauth/callback
+https://127.0.0.1:3026/oauth/callback
 ```
 
 Then set:
