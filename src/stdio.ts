@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { AuditLog } from "./audit"
 import { parseConfig } from "./config"
+import { formatConfigError } from "./config-help"
 import { OAuthNetSuiteClient } from "./netsuite/client"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
 import { registerTools } from "./tools/registry"
@@ -9,7 +10,7 @@ import { registerTools } from "./tools/registry"
 const parsedConfig = parseConfig(process.env)
 
 if (!parsedConfig.ok) {
-  console.error(parsedConfig.error.message)
+  console.error(formatConfigError(parsedConfig.error))
   process.exit(1)
 }
 

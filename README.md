@@ -19,6 +19,17 @@ Install from npm:
 
 ```bash
 npm install -g netsuite-supermcp
+netsuite-supermcp setup
+```
+
+The setup wizard creates `.env`, opens the NetSuite integration page, shows the exact OAuth
+checkboxes and redirect URI, saves your account/client values, can run browser OAuth, and can
+install detected agent-client MCP configs.
+
+Useful direct commands:
+
+```bash
+netsuite-supermcp setup
 netsuite-supermcp-oauth-login
 netsuite-supermcp-install --list
 netsuite-supermcp-stdio
@@ -27,6 +38,7 @@ netsuite-supermcp-stdio
 Run directly with npm/npx:
 
 ```bash
+npx netsuite-supermcp setup
 npx netsuite-supermcp install --all-detected
 npx netsuite-supermcp oauth-login
 npx netsuite-supermcp stdio

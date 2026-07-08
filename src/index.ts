@@ -1,10 +1,11 @@
 import { createApp } from "./app"
 import { parseConfig } from "./config"
+import { formatConfigError } from "./config-help"
 
 const parsedConfig = parseConfig(process.env)
 
 if (!parsedConfig.ok) {
-  console.error(parsedConfig.error.message)
+  console.error(formatConfigError(parsedConfig.error))
   process.exit(1)
 }
 
