@@ -69,7 +69,7 @@ export type NetSuiteEnvironment = z.infer<typeof EnvironmentSchema>
 export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigError> {
   const parsed = ConfigSchema.safeParse({
     serverName: env["MCP_SERVER_NAME"] ?? "NetSuite SuperMCP",
-    serverVersion: env["MCP_SERVER_VERSION_OVERRIDE"] ?? PACKAGE_VERSION,
+    serverVersion: nonEmptyEnv(env["MCP_SERVER_VERSION_OVERRIDE"]) ?? PACKAGE_VERSION,
     host: env["MCP_HOST"] ?? "127.0.0.1",
     port: Number(env["MCP_PORT"] ?? "3025"),
     authMode: env["MCP_AUTH_MODE"] ?? "bearer",
@@ -108,4 +108,11 @@ function requireField(value: string | undefined, path: string, context: z.Refine
       message: `${path} is required`,
     })
   }
+}
+
+function nonEmptyEnv(value: string | undefined): string | undefined {
+  if (value === undefined || value.trim().length === 0) {
+    return undefined
+  }
+  return value
 }

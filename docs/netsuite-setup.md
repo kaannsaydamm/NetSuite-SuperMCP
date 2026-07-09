@@ -109,6 +109,10 @@ clients that approve medium-risk tools.
 The RESTlet owns `record.transform`, script/log access, retry operations, and channel-specific
 actions that cannot be represented cleanly through REST Record CRUD.
 
+Run `ns_getSuperMcpVersion` after deploy. The RESTlet portion should report the deployed RESTlet
+version, action map version, account ID, execution context `RESTLET`, current NetSuite user/role,
+and `toolCount: 54`.
+
 ### Supported transform actions
 
 | Action | Required payload | Transform |
@@ -138,10 +142,13 @@ Optional paging fields:
 
 ```json
 {
-  "pageSize": 100,
+  "limit": 100,
   "pageIndex": 0
 }
 ```
+
+`limit` is accepted as the friendly alias for `pageSize` on paged read actions. If both `limit` and
+`pageSize` are supplied, they must match.
 
 `ns_explainIntegrationError` can also receive a `fields` array. If omitted, the RESTlet reads common
 integration error fields such as `name`, `custrecord_error`, `custrecord_message`,
@@ -164,11 +171,15 @@ defaults to 1 MB and cannot exceed the `File.getContents()` 10 MB in-memory limi
 | `ns_updateSavedSearch` | `searchId`, `values`, `confirmation` | Updates saved search fields through NetSuite permissions |
 | `ns_deleteSavedSearch` | `searchId`, `confirmation` | Deletes a saved search |
 
+Read-only platform/report direct tools run as `phase: "preview"`. Mutating saved-search tools run
+as `phase: "commit"` and require their confirmation string. Direct MCP calls accept either
+top-level arguments or `{ "payload": { ... } }`; both shapes are routed to the same RESTlet payload.
+
 ### Supported File Cabinet management actions
 
 | Action | Required payload | Behavior |
 |---|---|---|
-| `ns_listFileCabinet` | optional `folderId` | Lists File Cabinet folders and files with optional `query` and `maxEntries` |
+| `ns_listFileCabinet` | optional `folderId` or `path` | Lists File Cabinet folders and files with optional `query` and `limit`/`maxEntries` |
 | `ns_writeFile` | `fileId` + `contents` + `confirmation`, or `folderId` + `name` + `contents` + `confirmation` | Writes a text/source file to File Cabinet, including SuiteScript `.js` files |
 | `ns_createFolder` | `name`, `confirmation` | Creates a File Cabinet folder, optionally under `parent` |
 | `ns_updateFolder` | `folderId`, `confirmation` | Updates a folder `name` and/or `parent` |
@@ -181,6 +192,19 @@ defaults to 1 MB and cannot exceed the `File.getContents()` 10 MB in-memory limi
 first to get the required confirmation string, then commit through `ns_writeFile` or
 `ns_commitAction`. Existing files can be targeted by internal ID or File Cabinet path in `fileId`;
 new files require `folderId`, `name`, and optional `fileType` such as `JAVASCRIPT`.
+
+Examples:
+
+```json
+{ "path": "/SuiteScripts", "limit": 10 }
+```
+
+```json
+{ "folderId": -15, "maxEntries": 10 }
+```
+
+`/SuiteScripts` resolves to NetSuite's native SuiteScripts folder ID. Missing folder paths return
+`notFound: true` with empty `files` and `folders` arrays instead of failing output validation.
 
 ### Supported integration actions
 
@@ -221,6 +245,10 @@ Optional body fields can be set with:
 - `prepare`: validates payload and returns the transform plan without loading or saving a target record.
 - `preview`: runs `record.transform`, applies optional body fields, summarizes line counts, and does not save.
 - `commit`: runs `record.transform`, applies optional body fields, saves the target record, and returns the new record reference.
+
+For non-transform read actions, direct MCP tools use `preview` as the read phase. Use
+`ns_prepareAction`, `ns_previewAction`, and `ns_commitAction` when you need explicit phase control
+for any RESTlet action.
 
 Run `ns_checkAccountPermissions` after OAuth mapping, role permission, or RESTlet deployment
 changes to verify the configured account's effective access.

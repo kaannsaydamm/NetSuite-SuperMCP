@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto"
-import { PACKAGE_VERSION } from "../src/version"
 
 export type NetSuiteEnvironment = "production" | "sandbox"
 
@@ -64,10 +63,13 @@ export function buildOAuth2Env(
     "MCP_SERVER_NAME",
     cleanDefault(current.get("MCP_SERVER_NAME") ?? "") || "NetSuite SuperMCP",
   )
-  next.set(
-    "MCP_SERVER_VERSION",
-    cleanDefault(current.get("MCP_SERVER_VERSION") ?? "") || PACKAGE_VERSION,
-  )
+  const versionOverride = cleanDefault(current.get("MCP_SERVER_VERSION_OVERRIDE") ?? "")
+  if (versionOverride.length > 0) {
+    next.set("MCP_SERVER_VERSION_OVERRIDE", versionOverride)
+  } else {
+    next.delete("MCP_SERVER_VERSION")
+    next.delete("MCP_SERVER_VERSION_OVERRIDE")
+  }
   next.set("MCP_HOST", cleanDefault(current.get("MCP_HOST") ?? "") || "127.0.0.1")
   next.set("MCP_PORT", cleanDefault(current.get("MCP_PORT") ?? "") || "3025")
   next.set("MCP_BEARER_TOKEN", bearerToken)

@@ -13,6 +13,7 @@ Includes:
 - NetSuite REST/RESTlet adapter boundaries.
 - Read, write, action, audit, capability, platform, File Cabinet, reporting, and account-permission tools.
 - Inventory stock import preparation and commit tools for XLS/CSV-derived stock counts.
+- Connector-visible version diagnostics with local MCP, npm package, RESTlet, tool-count, account, and execution-context details.
 
 ## Local Setup
 
@@ -151,6 +152,10 @@ version, RESTlet action map version, NetSuite account ID, and RESTlet execution 
 client still shows an old tool count after an update, restart that client/server process and call
 this tool first.
 
+`configuredVersion` normally follows the installed package version. Leave
+`MCP_SERVER_VERSION_OVERRIDE` empty unless you intentionally need a custom server version string in
+client metadata.
+
 `bun run probe:live` uses your real `.env` and calls the MCP tool surface with live-safe probes.
 Read-only tools are called directly when safe IDs can be discovered; write/delete/transform actions
 are exercised through `ns_prepareAction` so NetSuite data is not changed.
@@ -161,10 +166,28 @@ with `ns_getFile`, and managed with `ns_writeFile`, `ns_createFolder`, `ns_updat
 layer. Use `ns_prepareAction`/`ns_previewAction` first to get the required confirmation string
 before committing File Cabinet writes/deletes/moves.
 
+Direct tool calls accept either top-level arguments or a `payload` object. These are equivalent:
+
+```json
+{ "path": "/SuiteScripts", "limit": 10 }
+```
+
+```json
+{ "payload": { "path": "/SuiteScripts", "limit": 10 } }
+```
+
+`ns_listFileCabinet` accepts `folderId` or `path`. NetSuite root folders such as `/SuiteScripts`
+resolve to their native folder IDs, and missing paths return `notFound: true` with empty lists
+instead of failing output validation. Use `limit` as the friendly alias for File Cabinet
+`maxEntries`.
+
 Platform/report discovery tools include `ns_listPlatformObjects`, `ns_getPlatformObject`,
 `ns_searchRecords`, `ns_listReportTypes`, `ns_listReports`, `ns_runSearch`,
 `ns_createSavedSearch`, `ns_updateSavedSearch`, and `ns_deleteSavedSearch`. These run under the
 configured NetSuite OAuth role, so NetSuite permissions decide what the agent can see or mutate.
+Use `limit` or `pageSize` for paged platform/report reads. Read-only direct calls return
+`phase: "preview"`; mutating direct calls still use `phase: "commit"` and rely on client approval
+plus confirmation strings where required.
 
 ## Inventory Stock Imports
 

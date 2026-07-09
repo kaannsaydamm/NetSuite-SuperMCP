@@ -2,7 +2,7 @@ import type { InstallerPaths } from "./targets"
 
 const SERVER_ENV_KEYS = new Set([
   "MCP_SERVER_NAME",
-  "MCP_SERVER_VERSION",
+  "MCP_SERVER_VERSION_OVERRIDE",
   "MCP_HOST",
   "MCP_PORT",
   "MCP_BEARER_TOKEN",

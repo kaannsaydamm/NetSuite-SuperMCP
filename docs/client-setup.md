@@ -71,6 +71,10 @@ Supported targets:
 The installer writes only MCP server registration. It does not set per-tool auto-approval or
 permission toggles. Approval remains owned by the client application, harness, or user settings.
 
+After any npm update or RESTlet deploy, restart the client-side MCP server process and call
+`ns_getSuperMcpVersion` from that client. A healthy current connector reports matching
+`configuredVersion`, `packageVersion`, and `restlet.version`, plus `toolCount: 54`.
+
 ## NetSuite OAuth
 
 Fill `.env` with the NetSuite OAuth 2.0 client credentials / M2M values:
@@ -91,6 +95,10 @@ NETSUITE_CERTIFICATE_ID=...
 NETSUITE_PRIVATE_KEY_PEM_BASE64=...
 NETSUITE_TOKEN_URL=...
 ```
+
+Do not set `MCP_SERVER_VERSION_OVERRIDE` for normal installs. When it is empty or absent,
+SuperMCP reports the installed package version. Set it only when a deployment platform needs a
+custom metadata version string.
 
 For browser login, set the authorization-code values except `NETSUITE_REFRESH_TOKEN`, then run:
 
@@ -132,3 +140,7 @@ Server-side checks still reject:
 Use `ns_listCapabilities` to inspect each tool's risk level and whether it mutates NetSuite. Use
 `ns_checkAccountPermissions` to probe the configured NetSuite account's effective REST, SuiteQL,
 record metadata, and optional RESTlet access.
+
+Read-only RESTlet-backed direct tools are sent with `phase: "preview"` so the response semantics
+match the non-mutating behavior. Mutating direct tools are sent with `phase: "commit"` and should
+be controlled by the client approval flow and, where required, confirmation strings.

@@ -64,6 +64,11 @@ Then verify without changing NetSuite business data:
 netsuite-supermcp doctor
 ```
 
+From any connected MCP client, also run `ns_getSuperMcpVersion`. It should show the same installed
+package version and RESTlet version, `restlet.reachable: true`, the expected NetSuite account ID,
+and `toolCount: 54`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
+the MCP process first and redeploy the RESTlet if `restlet.version` is old.
+
 If you use SuiteCloud CLI instead of the NetSuite UI, Oracle's current CLI package is
 `@oracle/suitecloud-cli`; it requires JDK 17 or 21.
 The `netsuite-supermcp suitecloud` command prints a Java preflight warning before deploy steps.
@@ -117,7 +122,8 @@ NetSuite environment and endpoint values:
 Operational values:
 
 - `MCP_SERVER_NAME`
-- `MCP_SERVER_VERSION`
+- `MCP_SERVER_VERSION_OVERRIDE` only when you intentionally need to override package-derived
+  version metadata.
 - `MCP_HOST`
 - `MCP_PORT`
 - `AUDIT_LOG_PATH`
@@ -132,3 +138,5 @@ Operational values:
 - Terminate TLS at a reverse proxy or managed ingress. Do not expose the MCP endpoint over plain
   HTTP outside a private network.
 - Use separate deployments and secret sets for sandbox and production.
+- Keep generated `.netsuite-supermcp-suitecloud*` folders out of source control; they are deploy
+  artifacts and can be regenerated with `netsuite-supermcp suitecloud`.
