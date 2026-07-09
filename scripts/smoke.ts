@@ -46,6 +46,7 @@ try {
   await assertUnauthorized(config.baseUrl)
   await assertMcpInitialize(config.baseUrl, config.token)
   await assertEnvironmentTool(config.baseUrl, config.token)
+  await assertVersionTool(config.baseUrl, config.token)
   await assertTunnelMode()
   console.log("smoke ok")
 } finally {
@@ -163,6 +164,19 @@ async function assertEnvironmentTool(baseUrl: string, token: string): Promise<vo
   })
   if (!JSON.stringify(body).includes("sandbox")) {
     throw new Error("environment tool response did not include sandbox")
+  }
+}
+
+async function assertVersionTool(baseUrl: string, token: string): Promise<void> {
+  const body = await postMcp(baseUrl, token, {
+    jsonrpc: "2.0",
+    id: 4,
+    method: "tools/call",
+    params: { name: "ns_getSuperMcpVersion", arguments: {} },
+  })
+  const text = JSON.stringify(body)
+  if (!text.includes("0.1.25") || !text.includes("toolCount")) {
+    throw new Error("version tool response did not include package version and tool count")
   }
 }
 

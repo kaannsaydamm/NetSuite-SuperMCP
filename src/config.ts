@@ -2,6 +2,7 @@ import { z } from "zod"
 import { ConfigError } from "./shared/errors"
 import type { Result } from "./shared/result"
 import { err, ok } from "./shared/result"
+import { PACKAGE_VERSION } from "./version"
 
 const EnvironmentSchema = z.enum(["sandbox", "production"])
 const OAuthFlowSchema = z.enum(["client_credentials", "authorization_code"])
@@ -68,7 +69,7 @@ export type NetSuiteEnvironment = z.infer<typeof EnvironmentSchema>
 export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigError> {
   const parsed = ConfigSchema.safeParse({
     serverName: env["MCP_SERVER_NAME"] ?? "NetSuite SuperMCP",
-    serverVersion: env["MCP_SERVER_VERSION"] ?? "0.1.10",
+    serverVersion: env["MCP_SERVER_VERSION"] ?? PACKAGE_VERSION,
     host: env["MCP_HOST"] ?? "127.0.0.1",
     port: Number(env["MCP_PORT"] ?? "3025"),
     authMode: env["MCP_AUTH_MODE"] ?? "bearer",

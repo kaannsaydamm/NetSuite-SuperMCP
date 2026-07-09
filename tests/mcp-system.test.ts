@@ -42,6 +42,7 @@ describe("MCP system tools", () => {
     // Then
     expect(response.status).toBe(200)
     expect(JSON.stringify(body)).toContain(ToolName.GetEnvironment)
+    expect(JSON.stringify(body)).toContain(ToolName.GetSuperMcpVersion)
     expect(JSON.stringify(body)).toContain(ToolName.GetAuditLog)
     expect(JSON.stringify(body)).toContain(ToolName.ListCapabilities)
     expect(JSON.stringify(body)).toContain(ToolName.BillPurchaseOrder)
@@ -49,6 +50,52 @@ describe("MCP system tools", () => {
       .array(z.object({ name: z.string(), outputSchema: z.object({ type: z.literal("object") }) }))
       .parse(body.result.tools)
     expect(tools).toHaveLength(Object.keys(ToolName).length)
+  })
+
+  it("returns MCP and deployed RESTlet version details", async () => {
+    // Given
+    const fakeNetSuite = new FakeNetSuiteClient()
+    const app = createApp(testConfig({ serverVersion: "local-dev" }), { netsuite: fakeNetSuite })
+
+    // When
+    const response = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 5,
+      method: "tools/call",
+      params: {
+        name: ToolName.GetSuperMcpVersion,
+        arguments: {},
+      },
+    })
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const payload = JSON.parse(body.result.content[0].text)
+
+    // Then
+    expect(response.status).toBe(200)
+    expect(body.result.structuredContent).toEqual(payload)
+    expect(payload.server).toMatchObject({
+      name: "NetSuite SuperMCP",
+      configuredVersion: "local-dev",
+      packageVersion: "0.1.25",
+      toolCount: Object.keys(ToolName).length,
+    })
+    expect(payload.netsuite).toMatchObject({
+      accountId: "1234567_SB1",
+      environment: "sandbox",
+    })
+    expect(payload.restlet).toMatchObject({
+      reachable: true,
+      action: ToolName.GetSuperMcpVersion,
+      phase: "preview",
+      ok: true,
+    })
+    expect(fakeNetSuite.actions).toEqual([
+      {
+        action: ToolName.GetSuperMcpVersion,
+        phase: "preview",
+        payload: {},
+      },
+    ])
   })
 
   it("returns risk metadata through ns_listCapabilities", async () => {

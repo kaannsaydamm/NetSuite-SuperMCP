@@ -94,6 +94,7 @@ function buildProbes(discovered: {
 }): MpcToolCall[] {
   const probes: MpcToolCall[] = [
     { name: ToolName.GetEnvironment, arguments: {} },
+    { name: ToolName.GetSuperMcpVersion, arguments: {} },
     { name: ToolName.ListCapabilities, arguments: {} },
     { name: ToolName.GetAuditLog, arguments: { limit: 1 } },
     {

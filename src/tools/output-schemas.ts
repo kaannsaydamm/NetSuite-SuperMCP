@@ -142,6 +142,32 @@ const CapabilitiesOutputSchema = z.object({
   ),
 })
 
+const SuperMcpVersionOutputSchema = z
+  .object({
+    server: z.object({
+      name: z.string(),
+      configuredVersion: z.string(),
+      packageVersion: z.string(),
+      toolCount: z.number(),
+    }),
+    netsuite: z.object({
+      accountId: z.string(),
+      environment: z.enum(["sandbox", "production"]),
+      baseUrl: z.string(),
+      restletUrl: z.string(),
+    }),
+    restlet: z
+      .object({
+        reachable: z.boolean(),
+        version: z.string().optional(),
+        actionMapVersion: z.string().optional(),
+        toolCount: z.number().optional(),
+        error: z.string().optional(),
+      })
+      .loose(),
+  })
+  .loose()
+
 export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
   switch (toolName) {
     case ToolName.GetEnvironment:
@@ -149,6 +175,8 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
         accountId: z.string(),
         environment: z.enum(["sandbox", "production"]),
       })
+    case ToolName.GetSuperMcpVersion:
+      return SuperMcpVersionOutputSchema
     case ToolName.CheckAccountPermissions:
       return AccountPermissionOutputSchema
     case ToolName.ListCapabilities:

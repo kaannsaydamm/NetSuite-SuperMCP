@@ -17,6 +17,7 @@ import { JsonValueSchema } from "../shared/json"
 
 export const ToolName = {
   GetEnvironment: "ns_getEnvironment",
+  GetSuperMcpVersion: "ns_getSuperMcpVersion",
   CheckAccountPermissions: "ns_checkAccountPermissions",
   GetRecord: "ns_getRecord",
   RunSuiteQl: "ns_runSuiteQL",
@@ -75,6 +76,7 @@ export type ToolName = (typeof ToolName)[keyof typeof ToolName]
 
 export const toolPolicies = {
   [ToolName.GetEnvironment]: low(ToolName.GetEnvironment),
+  [ToolName.GetSuperMcpVersion]: low(ToolName.GetSuperMcpVersion),
   [ToolName.CheckAccountPermissions]: low(ToolName.CheckAccountPermissions),
   [ToolName.GetRecord]: low(ToolName.GetRecord),
   [ToolName.RunSuiteQl]: low(ToolName.RunSuiteQl),

@@ -1,5 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { JsonObject } from "../shared/json"
+import { PACKAGE_VERSION } from "../version"
 import {
   AccountPermissionCheckInputSchema,
   AuditLogInputSchema,
@@ -22,6 +23,24 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
     },
     async () =>
       respond(ToolName.GetEnvironment, dependencies, {}, environmentPayload(dependencies)),
+  )
+
+  server.registerTool(
+    ToolName.GetSuperMcpVersion,
+    {
+      title: "Get NetSuite SuperMCP version",
+      description:
+        "Returns local MCP package/catalog details and the deployed NetSuite RESTlet version.",
+      inputSchema: EmptyInputSchema,
+      outputSchema: outputSchemaFor(ToolName.GetSuperMcpVersion),
+    },
+    async () =>
+      respond(
+        ToolName.GetSuperMcpVersion,
+        dependencies,
+        {},
+        await superMcpVersionPayload(dependencies),
+      ),
   )
 
   server.registerTool(
@@ -84,6 +103,40 @@ function environmentPayload(dependencies: ToolDependencies): JsonObject {
   return {
     accountId: dependencies.config.netsuite.accountId,
     environment: dependencies.config.netsuite.environment,
+  }
+}
+
+async function superMcpVersionPayload(dependencies: ToolDependencies): Promise<JsonObject> {
+  return {
+    server: {
+      name: dependencies.config.serverName,
+      configuredVersion: dependencies.config.serverVersion,
+      packageVersion: PACKAGE_VERSION,
+      toolCount: Object.keys(toolPolicies).length,
+    },
+    netsuite: {
+      accountId: dependencies.config.netsuite.accountId,
+      environment: dependencies.config.netsuite.environment,
+      baseUrl: dependencies.config.netsuite.baseUrl,
+      restletUrl: dependencies.config.netsuite.restletUrl,
+    },
+    restlet: await restletVersionPayload(dependencies),
+  }
+}
+
+async function restletVersionPayload(dependencies: ToolDependencies): Promise<JsonObject> {
+  try {
+    const payload = await dependencies.netsuite.runRestletAction({
+      action: ToolName.GetSuperMcpVersion,
+      phase: "preview",
+      payload: {},
+    })
+    return { reachable: true, ...payload }
+  } catch (error) {
+    return {
+      reachable: false,
+      error: error instanceof Error ? error.message : "Unknown RESTlet version check error",
+    }
   }
 }
 

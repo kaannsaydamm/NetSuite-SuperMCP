@@ -24,7 +24,11 @@ define([
   transformActions,
 ) => {
   const PHASES = ["prepare", "preview", "commit"]
+  const RESTLET_VERSION = "0.1.25"
+  const ACTION_MAP_VERSION = "2026-07-09.2"
+  const TOOL_COUNT = 54
   const SYSTEM_ACTIONS = {
+    ns_getSuperMcpVersion: getSuperMcpVersion,
     ns_checkAccountPermissions: checkAccountPermissions,
   }
 
@@ -84,6 +88,28 @@ define([
         roleId: currentUser.roleId,
         roleCenter: currentUser.roleCenter,
       },
+    }
+  }
+
+  function getSuperMcpVersion(actionRequest) {
+    const currentUser = runtime.getCurrentUser()
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      version: RESTLET_VERSION,
+      actionMapVersion: ACTION_MAP_VERSION,
+      toolCount: TOOL_COUNT,
+      accountId: runtime.accountId,
+      executionContext: runtime.executionContext,
+      currentUser: {
+        id: currentUser.id,
+        name: currentUser.name,
+        role: currentUser.role,
+        roleId: currentUser.roleId,
+        roleCenter: currentUser.roleCenter,
+      },
+      systemActions: Object.keys(SYSTEM_ACTIONS),
+      actionModules: ["transform", "platform", "report", "file", "read", "integration", "mapping"],
     }
   }
 

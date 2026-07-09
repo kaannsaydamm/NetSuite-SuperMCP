@@ -56,7 +56,7 @@ const mcpReportActions = [
 ]
 const mcpIntegrationActions = [ToolName.RetryIntegrationJob]
 const mcpMappingActions = [ToolName.GetMapping, ToolName.UpdateMapping]
-const mcpSystemRestletActions = [ToolName.CheckAccountPermissions]
+const mcpSystemRestletActions = [ToolName.GetSuperMcpVersion, ToolName.CheckAccountPermissions]
 
 const transformSource = await readFile(transformPath, "utf8")
 const readSource = await readFile(readPath, "utf8")

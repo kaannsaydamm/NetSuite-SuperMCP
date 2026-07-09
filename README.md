@@ -145,6 +145,12 @@ unauthorized MCP rejection, MCP initialize, and `ns_getEnvironment`, then shuts 
 `netsuite-supermcp doctor` uses your real `.env` and runs non-mutating live probes for OAuth,
 REST metadata, SuiteQL, and the RESTlet action layer.
 
+Use `ns_getSuperMcpVersion` from any connected MCP client to verify what that client is actually
+seeing. It returns the local MCP package/configured version, MCP tool count, deployed RESTlet
+version, RESTlet action map version, NetSuite account ID, and RESTlet execution context. If a
+client still shows an old tool count after an update, restart that client/server process and call
+this tool first.
+
 `bun run probe:live` uses your real `.env` and calls the MCP tool surface with live-safe probes.
 Read-only tools are called directly when safe IDs can be discovered; write/delete/transform actions
 are exercised through `ns_prepareAction` so NetSuite data is not changed.
