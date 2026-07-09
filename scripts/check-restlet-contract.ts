@@ -4,6 +4,8 @@ import { ToolName } from "../src/tools/catalog"
 const transformPath = "netsuite/suitescript/supermcp_transform_actions.js"
 const readPath = "netsuite/suitescript/supermcp_read_actions.js"
 const filePath = "netsuite/suitescript/supermcp_file_actions.js"
+const platformPath = "netsuite/suitescript/supermcp_platform_actions.js"
+const reportPath = "netsuite/suitescript/supermcp_report_actions.js"
 const integrationPath = "netsuite/suitescript/supermcp_integration_actions.js"
 const mappingPath = "netsuite/suitescript/supermcp_mapping_actions.js"
 const actionRestletPath = "netsuite/suitescript/supermcp_action_restlet.js"
@@ -29,7 +31,29 @@ const mcpReadActions = [
   ToolName.ExplainIntegrationError,
 ]
 
-const mcpFileActions = [ToolName.WriteFile]
+const mcpFileActions = [
+  ToolName.ListFileCabinet,
+  ToolName.WriteFile,
+  ToolName.CreateFolder,
+  ToolName.UpdateFolder,
+  ToolName.DeleteFolder,
+  ToolName.CopyFile,
+  ToolName.MoveFile,
+  ToolName.DeleteFile,
+]
+const mcpPlatformActions = [
+  ToolName.ListPlatformObjects,
+  ToolName.GetPlatformObject,
+  ToolName.SearchRecords,
+]
+const mcpReportActions = [
+  ToolName.ListReportTypes,
+  ToolName.ListReports,
+  ToolName.RunSearch,
+  ToolName.CreateSavedSearch,
+  ToolName.UpdateSavedSearch,
+  ToolName.DeleteSavedSearch,
+]
 const mcpIntegrationActions = [ToolName.RetryIntegrationJob]
 const mcpMappingActions = [ToolName.GetMapping, ToolName.UpdateMapping]
 const mcpSystemRestletActions = [ToolName.CheckAccountPermissions]
@@ -37,12 +61,16 @@ const mcpSystemRestletActions = [ToolName.CheckAccountPermissions]
 const transformSource = await readFile(transformPath, "utf8")
 const readSource = await readFile(readPath, "utf8")
 const fileSource = await readFile(filePath, "utf8")
+const platformSource = await readFile(platformPath, "utf8")
+const reportSource = await readFile(reportPath, "utf8")
 const integrationSource = await readFile(integrationPath, "utf8")
 const mappingSource = await readFile(mappingPath, "utf8")
 const actionRestletSource = await readFile(actionRestletPath, "utf8")
 const restletTransformActions = extractRestletActions(transformSource, "TRANSFORM_ACTIONS")
 const restletReadActions = extractRestletActions(readSource, "READ_ACTIONS")
 const restletFileActions = extractRestletActions(fileSource, "FILE_ACTIONS")
+const restletPlatformActions = extractRestletActions(platformSource, "PLATFORM_ACTIONS")
+const restletReportActions = extractRestletActions(reportSource, "REPORT_ACTIONS")
 const restletIntegrationActions = extractRestletActions(integrationSource, "INTEGRATION_ACTIONS")
 const restletMappingActions = extractRestletActions(mappingSource, "MAPPING_ACTIONS")
 const restletSystemActions = extractRestletActions(actionRestletSource, "SYSTEM_ACTIONS")
@@ -50,6 +78,8 @@ const restletSystemActions = extractRestletActions(actionRestletSource, "SYSTEM_
 const transformResult = compareActions(mcpTransformActions, restletTransformActions)
 const readResult = compareActions(mcpReadActions, restletReadActions)
 const fileResult = compareActions(mcpFileActions, restletFileActions)
+const platformResult = compareActions(mcpPlatformActions, restletPlatformActions)
+const reportResult = compareActions(mcpReportActions, restletReportActions)
 const integrationResult = compareActions(mcpIntegrationActions, restletIntegrationActions)
 const mappingResult = compareActions(mcpMappingActions, restletMappingActions)
 const systemResult = compareActions(mcpSystemRestletActions, restletSystemActions)
@@ -58,6 +88,8 @@ if (
   !transformResult.ok ||
   !readResult.ok ||
   !fileResult.ok ||
+  !platformResult.ok ||
+  !reportResult.ok ||
   !integrationResult.ok ||
   !mappingResult.ok ||
   !systemResult.ok
@@ -69,12 +101,16 @@ if (
         transformPath,
         readPath,
         filePath,
+        platformPath,
+        reportPath,
         integrationPath,
         mappingPath,
         system: systemResult,
         transform: transformResult,
         read: readResult,
         file: fileResult,
+        platform: platformResult,
+        report: reportResult,
         integration: integrationResult,
         mapping: mappingResult,
       },
@@ -86,7 +122,7 @@ if (
 }
 
 console.log(
-  `restlet contract ok: ${restletSystemActions.length} system actions, ${restletTransformActions.length} transform actions, ${restletReadActions.length} read actions, ${restletFileActions.length} file actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
+  `restlet contract ok: ${restletSystemActions.length} system actions, ${restletTransformActions.length} transform actions, ${restletReadActions.length} read actions, ${restletFileActions.length} file actions, ${restletPlatformActions.length} platform actions, ${restletReportActions.length} report actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
 )
 
 function compareActions(expected: readonly string[], actual: readonly string[]) {

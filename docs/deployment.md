@@ -45,6 +45,8 @@ NetSuite:
 
 - `netsuite/suitescript/supermcp_action_restlet.js`
 - `netsuite/suitescript/supermcp_file_actions.js`
+- `netsuite/suitescript/supermcp_platform_actions.js`
+- `netsuite/suitescript/supermcp_report_actions.js`
 - `netsuite/suitescript/supermcp_read_actions.js`
 - `netsuite/suitescript/supermcp_transform_actions.js`
 - `netsuite/suitescript/supermcp_integration_actions.js`

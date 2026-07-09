@@ -1,0 +1,65 @@
+import { describe, expect, it } from "bun:test"
+import { createApp } from "../src/app"
+import { ToolName } from "../src/tools/catalog"
+import { mcpCall } from "./mcp-support"
+import { FakeNetSuiteClient, testConfig } from "./test-support"
+
+describe("MCP RESTlet-backed report actions", () => {
+  it("routes report and saved search actions through the RESTlet action layer", async () => {
+    // Given
+    const fakeNetSuite = new FakeNetSuiteClient()
+    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
+    const calls = [
+      { name: ToolName.ListReportTypes, payload: {} },
+      { name: ToolName.ListReports, payload: { query: "Inventory", pageSize: 20 } },
+      {
+        name: ToolName.RunSearch,
+        payload: {
+          recordType: "inventorybalance",
+          columns: ["item", "location", "quantityonhand"],
+        },
+      },
+      {
+        name: ToolName.CreateSavedSearch,
+        payload: { recordType: "customer", title: "SuperMCP Customers", columns: ["internalid"] },
+      },
+      {
+        name: ToolName.UpdateSavedSearch,
+        payload: { searchId: "customsearch_supermcp_customers", values: { title: "Customers" } },
+      },
+      {
+        name: ToolName.DeleteSavedSearch,
+        payload: {
+          searchId: "customsearch_supermcp_customers",
+          confirmation: "deleteSavedSearch:customsearch_supermcp_customers",
+        },
+      },
+    ]
+
+    // When
+    for (const [index, call] of calls.entries()) {
+      const response = await mcpCall(app, {
+        jsonrpc: "2.0",
+        id: 50 + index,
+        method: "tools/call",
+        params: {
+          name: call.name,
+          arguments: {
+            action: "ignored-by-mcp",
+            payload: call.payload,
+          },
+        },
+      })
+      expect(response.status).toBe(200)
+    }
+
+    // Then
+    expect(fakeNetSuite.actions).toEqual(
+      calls.map((call) => ({
+        action: call.name,
+        phase: "commit",
+        payload: call.payload,
+      })),
+    )
+  })
+})

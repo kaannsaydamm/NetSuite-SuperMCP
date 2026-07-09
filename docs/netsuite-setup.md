@@ -76,6 +76,8 @@ Deploy these SuiteScript files together:
 
 - [supermcp_action_restlet.js](../netsuite/suitescript/supermcp_action_restlet.js)
 - [supermcp_file_actions.js](../netsuite/suitescript/supermcp_file_actions.js)
+- [supermcp_platform_actions.js](../netsuite/suitescript/supermcp_platform_actions.js)
+- [supermcp_report_actions.js](../netsuite/suitescript/supermcp_report_actions.js)
 - [supermcp_integration_actions.js](../netsuite/suitescript/supermcp_integration_actions.js)
 - [supermcp_mapping_actions.js](../netsuite/suitescript/supermcp_mapping_actions.js)
 - [supermcp_transform_actions.js](../netsuite/suitescript/supermcp_transform_actions.js)
@@ -124,7 +126,6 @@ actions that cannot be represented cleanly through REST Record CRUD.
 | `ns_runSavedSearch` | `savedSearchId` | Runs a saved search page and returns serialized result values/text |
 | `ns_runReport` | `reportId` | Runs a saved-search-backed report page and returns serialized result values/text |
 | `ns_getFile` | `fileId` | Loads a File Cabinet text/source file and returns metadata plus contents |
-| `ns_writeFile` | `fileId` + `contents` + `confirmation`, or `folderId` + `name` + `contents` + `confirmation` | Writes a text/source file to File Cabinet, including SuiteScript `.js` files |
 | `ns_getIntegrationLogs` | `savedSearchId` | Runs the configured integration-log saved search page |
 | `ns_getScriptLogs` | `savedSearchId` | Runs the configured script execution log saved search page |
 | `ns_findScriptErrors` | `savedSearchId` | Runs the configured script execution error saved search page |
@@ -148,6 +149,33 @@ integration error fields such as `name`, `custrecord_error`, `custrecord_message
 
 `ns_getFile` accepts a numeric internal ID or File Cabinet path in `fileId`. Optional `maxBytes`
 defaults to 1 MB and cannot exceed the `File.getContents()` 10 MB in-memory limit.
+
+### Supported platform and report actions
+
+| Action | Required payload | Behavior |
+|---|---|---|
+| `ns_listPlatformObjects` | optional `category` | Lists platform objects such as scripts, deployments, integrations, files, folders, custom lists, custom record types, and saved searches |
+| `ns_getPlatformObject` | `recordType`, `recordId` | Loads a platform record and returns selected fields |
+| `ns_searchRecords` | `recordType` | Runs a generic paged `N/search` over any searchable record type |
+| `ns_listReportTypes` | none | Returns report/search categories exposed by the RESTlet |
+| `ns_listReports` | optional `query` | Lists saved-search-backed reports/searches |
+| `ns_runSearch` | `recordType` | Runs an ad hoc paged search with optional `filters` and `columns` |
+| `ns_createSavedSearch` | `recordType`, `title`, `confirmation` | Creates a saved search with optional `filters`, `columns`, `searchId`, and `isPublic` |
+| `ns_updateSavedSearch` | `searchId`, `values`, `confirmation` | Updates saved search fields through NetSuite permissions |
+| `ns_deleteSavedSearch` | `searchId`, `confirmation` | Deletes a saved search |
+
+### Supported File Cabinet management actions
+
+| Action | Required payload | Behavior |
+|---|---|---|
+| `ns_listFileCabinet` | optional `folderId` | Lists File Cabinet folders and files with optional `query` and `maxEntries` |
+| `ns_writeFile` | `fileId` + `contents` + `confirmation`, or `folderId` + `name` + `contents` + `confirmation` | Writes a text/source file to File Cabinet, including SuiteScript `.js` files |
+| `ns_createFolder` | `name`, `confirmation` | Creates a File Cabinet folder, optionally under `parent` |
+| `ns_updateFolder` | `folderId`, `confirmation` | Updates a folder `name` and/or `parent` |
+| `ns_deleteFolder` | `folderId`, `confirmation` | Deletes a File Cabinet folder |
+| `ns_copyFile` | `fileId`, `targetFolderId`, `confirmation` | Copies a File Cabinet file, optionally with a new `name` |
+| `ns_moveFile` | `fileId`, `targetFolderId`, `confirmation` | Moves a File Cabinet file to another folder |
+| `ns_deleteFile` | `fileId`, `confirmation` | Deletes a File Cabinet file |
 
 `ns_writeFile` uses NetSuite `N/file`. Call it through `ns_prepareAction` or `ns_previewAction`
 first to get the required confirmation string, then commit through `ns_writeFile` or

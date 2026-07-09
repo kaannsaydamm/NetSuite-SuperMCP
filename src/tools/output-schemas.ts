@@ -39,6 +39,31 @@ const FileWriteOutputSchema = z
   })
   .loose()
 
+const FileCabinetOutputSchema = z
+  .object({
+    action: z.string().optional(),
+    phase: z.enum(["prepare", "preview", "commit"]).optional(),
+    files: z.array(z.record(z.string(), JsonValueSchema)).optional(),
+    folders: z.array(z.record(z.string(), JsonValueSchema)).optional(),
+    file: z.record(z.string(), JsonValueSchema).optional(),
+    folder: z.record(z.string(), JsonValueSchema).optional(),
+    confirmation: z.string().optional(),
+  })
+  .loose()
+
+const SearchActionOutputSchema = z
+  .object({
+    action: z.string().optional(),
+    phase: z.enum(["prepare", "preview", "commit"]).optional(),
+    pageSize: z.number().optional(),
+    pageIndex: z.number().optional(),
+    totalCount: z.number().optional(),
+    results: z.array(z.record(z.string(), JsonValueSchema)).optional(),
+    reports: z.array(z.record(z.string(), JsonValueSchema)).optional(),
+    reportTypes: z.array(z.record(z.string(), JsonValueSchema)).optional(),
+  })
+  .loose()
+
 const SuiteQlOutputSchema = z
   .object({
     count: z.number().optional(),
@@ -152,9 +177,26 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
       return InventoryStockCommitOutputSchema
     case ToolName.RunSavedSearch:
     case ToolName.RunReport:
+    case ToolName.ListPlatformObjects:
+    case ToolName.GetPlatformObject:
+    case ToolName.SearchRecords:
+    case ToolName.ListReportTypes:
+    case ToolName.ListReports:
+    case ToolName.RunSearch:
+    case ToolName.CreateSavedSearch:
+    case ToolName.UpdateSavedSearch:
+    case ToolName.DeleteSavedSearch:
+      return SearchActionOutputSchema
+    case ToolName.ListFileCabinet:
     case ToolName.GetFile:
     case ToolName.WriteFile:
-      return toolName === ToolName.WriteFile ? FileWriteOutputSchema : RestletActionOutputSchema
+    case ToolName.CreateFolder:
+    case ToolName.UpdateFolder:
+    case ToolName.DeleteFolder:
+    case ToolName.CopyFile:
+    case ToolName.MoveFile:
+    case ToolName.DeleteFile:
+      return toolName === ToolName.WriteFile ? FileWriteOutputSchema : FileCabinetOutputSchema
     case ToolName.GetIntegrationLogs:
     case ToolName.GetScriptLogs:
     case ToolName.FindScriptErrors:

@@ -71,6 +71,13 @@ async function main(): Promise<void> {
       detail: "mutating direct tool; covered by unit tests, not committed against live NetSuite",
     })
   }
+  for (const toolName of restletDeploymentPendingTools()) {
+    results.push({
+      name: toolName,
+      status: "skip",
+      detail: "requires SuperMCP RESTlet 0.1.22 SuiteCloud deployment before live probing",
+    })
+  }
 
   const toolCount = Object.keys(toolPolicies).length
   const passed = new Set(
@@ -205,11 +212,32 @@ function liveUnsafeTools(): readonly ToolName[] {
   return [
     ToolName.CreateRecord,
     ToolName.WriteFile,
+    ToolName.CreateFolder,
+    ToolName.UpdateFolder,
+    ToolName.DeleteFolder,
+    ToolName.CopyFile,
+    ToolName.MoveFile,
+    ToolName.DeleteFile,
+    ToolName.CreateSavedSearch,
+    ToolName.UpdateSavedSearch,
+    ToolName.DeleteSavedSearch,
     ToolName.UpdateRecord,
     ToolName.SubmitFields,
     ToolName.DeleteRecord,
     ToolName.CommitAction,
     ToolName.CommitInventoryStockImport,
+  ]
+}
+
+function restletDeploymentPendingTools(): readonly ToolName[] {
+  return [
+    ToolName.ListPlatformObjects,
+    ToolName.GetPlatformObject,
+    ToolName.SearchRecords,
+    ToolName.ListReportTypes,
+    ToolName.ListReports,
+    ToolName.RunSearch,
+    ToolName.ListFileCabinet,
   ]
 }
 

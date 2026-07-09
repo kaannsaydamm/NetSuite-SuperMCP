@@ -8,7 +8,9 @@ define([
   "./supermcp_file_actions",
   "./supermcp_integration_actions",
   "./supermcp_mapping_actions",
+  "./supermcp_platform_actions",
   "./supermcp_read_actions",
+  "./supermcp_report_actions",
   "./supermcp_transform_actions",
 ], (
   nsError,
@@ -16,7 +18,9 @@ define([
   fileActions,
   integrationActions,
   mappingActions,
+  platformActions,
   readActions,
+  reportActions,
   transformActions,
 ) => {
   const PHASES = ["prepare", "preview", "commit"]
@@ -29,6 +33,8 @@ define([
     const result =
       runSystemAction(actionRequest) ||
       transformActions.run(actionRequest) ||
+      platformActions.run(actionRequest) ||
+      reportActions.run(actionRequest) ||
       fileActions.run(actionRequest) ||
       readActions.run(actionRequest) ||
       integrationActions.run(actionRequest) ||

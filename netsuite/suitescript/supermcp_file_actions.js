@@ -2,14 +2,138 @@
  * @NApiVersion 2.1
  * @NModuleScope SameAccount
  */
-define(["N/error", "N/file"], (nsError, file) => {
+define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, search) => {
   const FILE_ACTIONS = {
+    ns_copyFile: copyFileAction,
+    ns_createFolder: createFolder,
+    ns_deleteFile: deleteFileAction,
+    ns_deleteFolder: deleteFolder,
+    ns_listFileCabinet: listFileCabinet,
+    ns_moveFile: moveFile,
+    ns_updateFolder: updateFolder,
     ns_writeFile: writeFile,
   }
 
   function run(actionRequest) {
     const handler = FILE_ACTIONS[actionRequest.action]
     return handler ? handler(actionRequest) : null
+  }
+
+  function listFileCabinet(actionRequest) {
+    const payload = actionRequest.payload
+    const folderId = optionalPositiveInt(payload, "folderId")
+    const maxEntries = optionalIntInRange(payload, "maxEntries", 200, 1, 1000)
+    const query = optionalText(payload, "query")
+    const folderFilters = folderId === null ? [] : [["parent", "anyof", String(folderId)]]
+    const fileFilters = folderId === null ? [] : [["folder", "anyof", String(folderId)]]
+    const folderQueryFilters = query ? [["name", "contains", query]] : []
+    const fileQueryFilters = query ? [["name", "contains", query]] : []
+    const folders = runObjectSearch(
+      "folder",
+      combineFilters(folderFilters, folderQueryFilters),
+      ["internalid", "name", "parent"],
+      maxEntries,
+    )
+    const files = runObjectSearch(
+      "file",
+      combineFilters(fileFilters, fileQueryFilters),
+      ["internalid", "name", "folder", "filetype", "filesize", "url", "modified"],
+      maxEntries,
+    )
+
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      folder: folderId === null ? null : { id: String(folderId) },
+      files,
+      folders,
+      maxEntries,
+    }
+  }
+
+  function createFolder(actionRequest) {
+    const payload = actionRequest.payload
+    const name = requireText(payload, "name")
+    const parent = optionalPositiveInt(payload, "parent")
+    const confirmation = `createFolder:${parent === null ? "root" : parent}:${name}`
+    if (actionRequest.phase === "prepare" || actionRequest.phase === "preview") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        folder: { name, parent },
+        confirmation,
+      }
+    }
+    requireConfirmation(payload, confirmation)
+    const folder = record.create({ type: record.Type.FOLDER })
+    folder.setValue({ fieldId: "name", value: name })
+    if (parent !== null) {
+      folder.setValue({ fieldId: "parent", value: parent })
+    }
+    const id = folder.save()
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      folder: { id: String(id), name, parent },
+      confirmation,
+    }
+  }
+
+  function updateFolder(actionRequest) {
+    const payload = actionRequest.payload
+    const folderId = requirePositiveInt(payload, "folderId")
+    const confirmation = `updateFolder:${folderId}`
+    if (actionRequest.phase === "prepare" || actionRequest.phase === "preview") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        folder: { id: String(folderId) },
+        confirmation,
+      }
+    }
+    requireConfirmation(payload, confirmation)
+    const values = {}
+    const name = optionalText(payload, "name")
+    const parent = optionalPositiveInt(payload, "parent")
+    if (name !== null) {
+      values.name = name
+    }
+    if (parent !== null) {
+      values.parent = parent
+    }
+    if (Object.keys(values).length === 0) {
+      throw createRequestError("INVALID_VALUES", "name or parent must be provided")
+    }
+    record.submitFields({ type: record.Type.FOLDER, id: folderId, values })
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      folder: { id: String(folderId), values },
+      confirmation,
+    }
+  }
+
+  function deleteFolder(actionRequest) {
+    const payload = actionRequest.payload
+    const folderId = requirePositiveInt(payload, "folderId")
+    const confirmation = `deleteFolder:${folderId}`
+    if (actionRequest.phase === "prepare" || actionRequest.phase === "preview") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        folder: { id: String(folderId) },
+        confirmation,
+      }
+    }
+    requireConfirmation(payload, confirmation)
+    record.delete({ type: record.Type.FOLDER, id: folderId })
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      deleted: true,
+      folder: { id: String(folderId) },
+      confirmation,
+    }
   }
 
   function writeFile(actionRequest) {
@@ -63,6 +187,91 @@ define(["N/error", "N/file"], (nsError, file) => {
     }
   }
 
+  function copyFileAction(actionRequest) {
+    const payload = actionRequest.payload
+    const sourceId = requireFileId(payload, "fileId")
+    const loadedFile = file.load({ id: sourceId })
+    const targetFolder = requirePositiveInt(payload, "targetFolderId")
+    const name = optionalText(payload, "name") || loadedFile.name
+    const confirmation = `copyFile:${sourceId}:${targetFolder}:${name}`
+    if (actionRequest.phase === "prepare" || actionRequest.phase === "preview") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        file: { id: String(sourceId), name: loadedFile.name, targetFolder, targetName: name },
+        confirmation,
+      }
+    }
+    requireConfirmation(payload, confirmation)
+    const copiedFile = file.create({
+      name,
+      fileType: loadedFile.fileType,
+      contents: loadedFile.getContents(),
+      folder: targetFolder,
+    })
+    const id = copiedFile.save()
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      file: { id: String(id), name },
+      confirmation,
+    }
+  }
+
+  function moveFile(actionRequest) {
+    const payload = actionRequest.payload
+    const fileId = requireFileId(payload, "fileId")
+    const loadedFile = file.load({ id: fileId })
+    const targetFolder = requirePositiveInt(payload, "targetFolderId")
+    const confirmation = `moveFile:${fileId}:${targetFolder}`
+    if (actionRequest.phase === "prepare" || actionRequest.phase === "preview") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        file: {
+          id: String(fileId),
+          name: loadedFile.name,
+          folder: loadedFile.folder,
+          targetFolder,
+        },
+        confirmation,
+      }
+    }
+    requireConfirmation(payload, confirmation)
+    loadedFile.folder = targetFolder
+    const id = loadedFile.save()
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      file: { id: String(id), targetFolder },
+      confirmation,
+    }
+  }
+
+  function deleteFileAction(actionRequest) {
+    const payload = actionRequest.payload
+    const fileId = requireFileId(payload, "fileId")
+    const loadedFile = file.load({ id: fileId })
+    const confirmation = `deleteFile:${fileId}`
+    if (actionRequest.phase === "prepare" || actionRequest.phase === "preview") {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        file: { id: String(fileId), name: loadedFile.name, folder: loadedFile.folder },
+        confirmation,
+      }
+    }
+    requireConfirmation(payload, confirmation)
+    file.delete({ id: fileId })
+    return {
+      action: actionRequest.action,
+      phase: actionRequest.phase,
+      deleted: true,
+      file: { id: String(fileId) },
+      confirmation,
+    }
+  }
+
   function resolveTarget(payload) {
     const fileId = optionalFileId(payload, "fileId")
     if (fileId !== null) {
@@ -97,6 +306,38 @@ define(["N/error", "N/file"], (nsError, file) => {
   function writeConfirmation(target) {
     const idOrName = target.file.id || `${target.file.folder}:${target.file.name}`
     return `writeFile:${idOrName}`
+  }
+
+  function runObjectSearch(type, filters, columns, maxEntries) {
+    const loadedSearch = search.create({ type, filters, columns })
+    const rows = []
+    loadedSearch.run().each((result) => {
+      rows.push(serializeSearchResult(result, loadedSearch.columns))
+      return rows.length < maxEntries
+    })
+    return rows
+  }
+
+  function combineFilters(left, right) {
+    if (left.length === 0) {
+      return right
+    }
+    if (right.length === 0) {
+      return left
+    }
+    return [left[0], "AND", right[0]]
+  }
+
+  function serializeSearchResult(result, columns) {
+    const values = {}
+    for (const column of columns) {
+      values[columnKey(column)] = { value: result.getValue(column), text: result.getText(column) }
+    }
+    return { id: result.id, recordType: result.recordType, values }
+  }
+
+  function columnKey(column) {
+    return [column.join, column.name, column.summary, column.label].filter(Boolean).join(".")
   }
 
   function requireText(payload, fieldId) {
@@ -143,15 +384,59 @@ define(["N/error", "N/file"], (nsError, file) => {
     throw createRequestError("INVALID_FILE_ID", `${fieldId} must be a file internal ID or path`)
   }
 
-  function requirePositiveInt(payload, fieldId) {
+  function requireFileId(payload, fieldId) {
+    const value = optionalFileId(payload, fieldId)
+    if (value !== null) {
+      return value
+    }
+    throw createRequestError("MISSING_FILE_ID", `${fieldId} must be a file internal ID or path`)
+  }
+
+  function optionalPositiveInt(payload, fieldId) {
     const value = payload[fieldId]
+    if (value === undefined || value === null) {
+      return null
+    }
     if (typeof value === "number" && Number.isInteger(value) && value > 0) {
       return value
     }
     if (typeof value === "string" && /^[1-9]\d*$/.test(value)) {
       return Number(value)
     }
+    throw createRequestError("INVALID_ID", `${fieldId} must be a positive internal ID`)
+  }
+
+  function requirePositiveInt(payload, fieldId) {
+    const value = optionalPositiveInt(payload, fieldId)
+    if (value !== null) {
+      return value
+    }
     throw createRequestError("MISSING_ID", `${fieldId} must be a positive internal ID`)
+  }
+
+  function optionalIntInRange(payload, fieldId, defaultValue, minValue, maxValue) {
+    const value = payload[fieldId]
+    if (value === undefined || value === null) {
+      return defaultValue
+    }
+    if (
+      typeof value === "number" &&
+      Number.isInteger(value) &&
+      value >= minValue &&
+      value <= maxValue
+    ) {
+      return value
+    }
+    throw createRequestError(
+      "INVALID_INT",
+      `${fieldId} must be an integer between ${minValue} and ${maxValue}`,
+    )
+  }
+
+  function requireConfirmation(payload, expected) {
+    if (payload.confirmation !== expected) {
+      throw createRequestError("INVALID_CONFIRMATION", `confirmation must match ${expected}`)
+    }
   }
 
   function createRequestError(name, message) {

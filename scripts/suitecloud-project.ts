@@ -9,6 +9,8 @@ const suiteScriptFiles = [
   "supermcp_action_restlet.js",
   "supermcp_file_actions.js",
   "supermcp_read_actions.js",
+  "supermcp_platform_actions.js",
+  "supermcp_report_actions.js",
   "supermcp_transform_actions.js",
   "supermcp_integration_actions.js",
   "supermcp_mapping_actions.js",

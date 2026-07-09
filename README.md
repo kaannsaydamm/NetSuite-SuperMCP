@@ -11,7 +11,7 @@ Includes:
 - Tool risk metadata and audit logging.
 - File-backed audit log.
 - NetSuite REST/RESTlet adapter boundaries.
-- Read, write, action, audit, capability, and account-permission tools.
+- Read, write, action, audit, capability, platform, File Cabinet, reporting, and account-permission tools.
 - Inventory stock import preparation and commit tools for XLS/CSV-derived stock counts.
 
 ## Local Setup
@@ -148,9 +148,16 @@ REST metadata, SuiteQL, and the RESTlet action layer.
 Read-only tools are called directly when safe IDs can be discovered; write/delete/transform actions
 are exercised through `ns_prepareAction` so NetSuite data is not changed.
 
-SuiteScript source files can be read with `ns_getFile` and written with `ns_writeFile` through the
-RESTlet action layer. Use `ns_prepareAction`/`ns_previewAction` first to get the required
-confirmation string before committing a File Cabinet write.
+SuiteScript source files and File Cabinet folders can be listed with `ns_listFileCabinet`, read
+with `ns_getFile`, and managed with `ns_writeFile`, `ns_createFolder`, `ns_updateFolder`,
+`ns_deleteFolder`, `ns_copyFile`, `ns_moveFile`, and `ns_deleteFile` through the RESTlet action
+layer. Use `ns_prepareAction`/`ns_previewAction` first to get the required confirmation string
+before committing File Cabinet writes/deletes/moves.
+
+Platform/report discovery tools include `ns_listPlatformObjects`, `ns_getPlatformObject`,
+`ns_searchRecords`, `ns_listReportTypes`, `ns_listReports`, `ns_runSearch`,
+`ns_createSavedSearch`, `ns_updateSavedSearch`, and `ns_deleteSavedSearch`. These run under the
+configured NetSuite OAuth role, so NetSuite permissions decide what the agent can see or mutate.
 
 ## Inventory Stock Imports
 

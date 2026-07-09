@@ -72,4 +72,45 @@ describe("MCP RESTlet-backed file actions", () => {
       },
     ])
   })
+
+  it("routes File Cabinet management actions through the RESTlet action layer", async () => {
+    // Given
+    const fakeNetSuite = new FakeNetSuiteClient()
+    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
+    const calls = [
+      { name: ToolName.ListFileCabinet, payload: { folderId: 1, maxEntries: 25 } },
+      { name: ToolName.CreateFolder, payload: { name: "Exports", parent: 1 } },
+      { name: ToolName.UpdateFolder, payload: { folderId: 2, name: "Exports 2026" } },
+      { name: ToolName.DeleteFolder, payload: { folderId: 3, confirmation: "deleteFolder:3" } },
+      { name: ToolName.CopyFile, payload: { fileId: 4, targetFolderId: 5 } },
+      { name: ToolName.MoveFile, payload: { fileId: 6, targetFolderId: 7 } },
+      { name: ToolName.DeleteFile, payload: { fileId: 8, confirmation: "deleteFile:8" } },
+    ]
+
+    // When
+    for (const [index, call] of calls.entries()) {
+      const response = await mcpCall(app, {
+        jsonrpc: "2.0",
+        id: 31 + index,
+        method: "tools/call",
+        params: {
+          name: call.name,
+          arguments: {
+            action: "ignored-by-mcp",
+            payload: call.payload,
+          },
+        },
+      })
+      expect(response.status).toBe(200)
+    }
+
+    // Then
+    expect(fakeNetSuite.actions).toEqual(
+      calls.map((call) => ({
+        action: call.name,
+        phase: "commit",
+        payload: call.payload,
+      })),
+    )
+  })
 })
