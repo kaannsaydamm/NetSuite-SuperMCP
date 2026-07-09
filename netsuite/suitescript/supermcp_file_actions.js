@@ -37,7 +37,7 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     const files = runObjectSearch(
       "file",
       combineFilters(fileFilters, fileQueryFilters),
-      ["internalid", "name", "folder", "filetype", "filesize", "url", "modified"],
+      ["internalid", "name", "folder", "filetype", "documentsize", "url", "modified"],
       maxEntries,
     )
 

@@ -40,6 +40,7 @@ netsuite-supermcp public-url
 netsuite-supermcp setup
 netsuite-supermcp doctor
 netsuite-supermcp suitecloud
+netsuite-supermcp suitecloud --deploy --auth-id supermcp-11675047
 netsuite-supermcp-public-url
 netsuite-supermcp-oauth2
 netsuite-supermcp-oauth-login
@@ -201,7 +202,9 @@ Integration record or change NetSuite data.
 ## SuiteCloud Deploy
 
 `netsuite-supermcp suitecloud --deploy` generates the bundled SuiteCloud project and runs Oracle
-SuiteCloud CLI through `npx -y @oracle/suitecloud-cli@3.2.0`. On Windows, if Java 17/21 is not
+SuiteCloud CLI through `npx -y @oracle/suitecloud-cli@3.2.0`. Pass `--auth-id <id>` to reuse an
+existing SuiteCloud browser-auth ID without the interactive account picker. When only one matching
+auth ID is configured, SuperMCP selects it automatically. On Windows, if Java 17/21 is not
 available, it installs a portable Temurin JDK 21 under the user profile and uses it only for that
 SuiteCloud process.
 

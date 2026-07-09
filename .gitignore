@@ -9,3 +9,4 @@ data/
 .mcp.json
 .vscode/mcp.json
 generated/
+.netsuite-supermcp-suitecloud*/

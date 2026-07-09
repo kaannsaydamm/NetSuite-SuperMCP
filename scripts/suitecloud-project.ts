@@ -19,6 +19,7 @@ const suiteScriptFiles = [
 type DeploymentStatus = "RELEASED" | "TESTING"
 
 type Options = {
+  readonly authId?: string
   readonly deploy: boolean
   readonly outDir: string
   readonly status: DeploymentStatus
@@ -59,7 +60,7 @@ async function main(): Promise<void> {
   const javaEnv = ensureSuiteCloudJavaEnv()
   console.log("")
   if (options.deploy) {
-    runSuiteCloud(root, javaEnv, options.validate)
+    runSuiteCloud(root, javaEnv, options)
   } else {
     console.log("Next:")
     console.log(`  netsuite-supermcp suitecloud --deploy`)
@@ -125,6 +126,7 @@ function parseJavaMajorVersion(value: string): number | null {
 function readOptions(): Options {
   const outDir = argValue("--out") ?? ".netsuite-supermcp-suitecloud"
   const statusValue = argValue("--status") ?? "RELEASED"
+  const authId = argValue("--auth-id") ?? process.env["NETSUITE_SUITECLOUD_AUTH_ID"]
   const deploy = process.argv.includes("--deploy")
   const validate = !process.argv.includes("--no-validate")
   if (statusValue !== "RELEASED" && statusValue !== "TESTING") {
@@ -136,21 +138,107 @@ function readOptions(): Options {
   if (!existsSync(suiteScriptSourceDir)) {
     throw new Error(`Missing bundled SuiteScript directory: ${suiteScriptSourceDir}`)
   }
-  return { deploy, outDir, status: statusValue, validate }
+  return {
+    ...(authId === undefined || authId.trim().length === 0 ? {} : { authId }),
+    deploy,
+    outDir,
+    status: statusValue,
+    validate,
+  }
 }
 
-function runSuiteCloud(root: string, env: NodeJS.ProcessEnv, validate: boolean): void {
+function runSuiteCloud(root: string, env: NodeJS.ProcessEnv, options: Options): void {
   console.log("Running Oracle SuiteCloud CLI through npx.")
-  run("npx", ["-y", "@oracle/suitecloud-cli@3.2.0", "account:setup", "-i"], root, env)
+  const authIds = listAuthIds(root, env)
+  const authId = options.authId ?? findAuthIdForAccount(env, authIds)
+  if (authId === null) {
+    run("npx", ["-y", "@oracle/suitecloud-cli@3.2.0", "account:setup", "-i"], root, env)
+  } else {
+    console.log(green(`SuiteCloud auth: using ${authId}`))
+    selectBrowserAuthId(root, env, authIds, authId)
+  }
   run(
     "npx",
-    ["-y", "@oracle/suitecloud-cli@3.2.0", "project:deploy", ...(validate ? ["--validate"] : [])],
+    [
+      "-y",
+      "@oracle/suitecloud-cli@3.2.0",
+      "project:deploy",
+      ...(options.validate ? ["--validate"] : []),
+    ],
     root,
     env,
   )
   console.log("")
   console.log(green("SuiteCloud deploy command finished."))
   console.log("Run: netsuite-supermcp doctor")
+}
+
+function listAuthIds(root: string, env: NodeJS.ProcessEnv): readonly string[] {
+  const result = spawnSync(
+    "npx",
+    ["-y", "@oracle/suitecloud-cli@3.2.0", "account:manageauth", "--list"],
+    {
+      cwd: root,
+      env,
+      encoding: "utf8",
+      shell: process.platform === "win32",
+    },
+  )
+  if ((result.status ?? 1) !== 0) {
+    return []
+  }
+
+  const ansiEscapePattern = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*[A-Za-z]`, "g")
+  return result.stdout
+    .split(/\r?\n/)
+    .map((line) => line.replace(ansiEscapePattern, "").trim())
+    .filter((line) => line.length > 0)
+    .map((line) => line.split("|")[0]?.trim())
+    .filter((authId): authId is string => authId !== undefined && authId.length > 0)
+}
+
+function findAuthIdForAccount(
+  env: NodeJS.ProcessEnv,
+  candidates: readonly string[],
+): string | null {
+  const accountId = env["NETSUITE_ACCOUNT_ID"]?.replace(/_/g, "-").toLowerCase()
+  if (accountId === undefined) {
+    return onlyEntry(candidates)
+  }
+
+  const matching = candidates.filter((authId) => authId.toLowerCase().includes(accountId))
+  return onlyEntry(matching) ?? onlyEntry(candidates)
+}
+
+function selectBrowserAuthId(
+  root: string,
+  env: NodeJS.ProcessEnv,
+  authIds: readonly string[],
+  authId: string,
+): void {
+  const index = authIds.indexOf(authId)
+  if (index < 0) {
+    throw new Error(`SuiteCloud auth ID was not found: ${authId}`)
+  }
+  const input = `${"\u001b[B".repeat(index + 1)}\n`
+  const result = spawnSync("npx", ["-y", "@oracle/suitecloud-cli@3.2.0", "account:setup", "-i"], {
+    cwd: root,
+    env,
+    input,
+    stdio: ["pipe", "inherit", "inherit"],
+    shell: process.platform === "win32",
+  })
+  if ((result.status ?? 1) !== 0) {
+    throw new Error("SuiteCloud account:setup interactive auth selection failed")
+  }
+}
+
+function onlyEntry(values: readonly string[]): string | null {
+  if (values.length !== 1) {
+    return null
+  }
+  const value = values[0]
+  return value === undefined ? null : value
 }
 
 function run(command: string, args: readonly string[], cwd: string, env: NodeJS.ProcessEnv): void {

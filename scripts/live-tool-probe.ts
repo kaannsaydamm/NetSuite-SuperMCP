@@ -71,14 +71,6 @@ async function main(): Promise<void> {
       detail: "mutating direct tool; covered by unit tests, not committed against live NetSuite",
     })
   }
-  for (const toolName of restletDeploymentPendingTools()) {
-    results.push({
-      name: toolName,
-      status: "skip",
-      detail: "requires SuperMCP RESTlet 0.1.22 SuiteCloud deployment before live probing",
-    })
-  }
-
   const toolCount = Object.keys(toolPolicies).length
   const passed = new Set(
     results.filter((result) => result.status === "pass").map((result) => result.name),
@@ -171,6 +163,25 @@ function preparePayloads(): Partial<Record<ToolName, JsonObject>> {
       fileId: "SuiteScripts/SuperMCP/supermcp_action_restlet.js",
       maxBytes: 1024,
     },
+    [ToolName.ListPlatformObjects]: {
+      category: "scripts",
+      columns: ["name", "internalid"],
+      pageSize: 5,
+    },
+    [ToolName.GetPlatformObject]: { recordType: "script", recordId: "1", fields: ["name"] },
+    [ToolName.SearchRecords]: {
+      recordType: "customer",
+      columns: ["internalid", "entityid"],
+      pageSize: 5,
+    },
+    [ToolName.ListReportTypes]: {},
+    [ToolName.ListReports]: { pageSize: 5 },
+    [ToolName.RunSearch]: {
+      recordType: "customer",
+      columns: ["internalid", "entityid"],
+      pageSize: 5,
+    },
+    [ToolName.ListFileCabinet]: { maxEntries: 1 },
     [ToolName.GetIntegrationLogs]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
     [ToolName.GetScriptLogs]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
     [ToolName.FindScriptErrors]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
@@ -226,18 +237,6 @@ function liveUnsafeTools(): readonly ToolName[] {
     ToolName.DeleteRecord,
     ToolName.CommitAction,
     ToolName.CommitInventoryStockImport,
-  ]
-}
-
-function restletDeploymentPendingTools(): readonly ToolName[] {
-  return [
-    ToolName.ListPlatformObjects,
-    ToolName.GetPlatformObject,
-    ToolName.SearchRecords,
-    ToolName.ListReportTypes,
-    ToolName.ListReports,
-    ToolName.RunSearch,
-    ToolName.ListFileCabinet,
   ]
 }
 

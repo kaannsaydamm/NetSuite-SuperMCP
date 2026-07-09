@@ -237,5 +237,11 @@ To generate a SuiteCloud Account Customization Project for the RESTlet deploymen
 netsuite-supermcp suitecloud
 ```
 
+Existing SuiteCloud browser-auth IDs can be reused non-interactively:
+
+```bash
+netsuite-supermcp suitecloud --deploy --auth-id supermcp-11675047
+```
+
 Oracle SuiteCloud CLI requires JDK 17 or 21. If your machine has a newer Java version, install
 JDK 17 or 21 and point `JAVA_HOME`/`PATH` to that JDK before running SuiteCloud deploy commands.

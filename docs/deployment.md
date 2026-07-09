@@ -77,6 +77,12 @@ npx -y @oracle/suitecloud-cli@3.2.0 account:setup -i
 npx -y @oracle/suitecloud-cli@3.2.0 project:deploy --validate
 ```
 
+If an auth ID already exists, SuperMCP can select it without the SuiteCloud interactive picker:
+
+```bash
+netsuite-supermcp suitecloud --deploy --auth-id supermcp-11675047
+```
+
 ## Run As A Service
 
 Use the deployment platform's process manager, systemd, PM2, or a managed Node/Bun service runner
