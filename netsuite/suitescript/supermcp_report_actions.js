@@ -35,7 +35,7 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
   function listReports(actionRequest) {
     const payload = actionRequest.payload
     const query = optionalText(payload, "query")
-    const pageSize = optionalIntInRange(payload, "pageSize", 100, 1, 1000)
+    const pageSize = optionalLimit(payload, "pageSize", "limit", 100, 1, 1000)
     const pageIndex = optionalIntInRange(payload, "pageIndex", 0, 0, 100000)
     const filters = query ? [["title", "contains", query]] : []
     const columns = ["title", "id", "recordtype", "owner", "internalid", "access"]
@@ -65,7 +65,7 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
     const type = requireText(payload, "recordType")
     const filters = optionalRawArray(payload, "filters")
     const columns = optionalTextList(payload, "columns", ["internalid"])
-    const pageSize = optionalIntInRange(payload, "pageSize", 100, 1, 1000)
+    const pageSize = optionalLimit(payload, "pageSize", "limit", 100, 1, 1000)
     const pageIndex = optionalIntInRange(payload, "pageIndex", 0, 0, 100000)
     if (actionRequest.phase === "prepare") {
       return {
@@ -286,6 +286,24 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
     throw createRequestError(
       "INVALID_INT",
       `${fieldId} must be an integer between ${minValue} and ${maxValue}`,
+    )
+  }
+
+  function optionalLimit(payload, primaryFieldId, aliasFieldId, defaultValue, minValue, maxValue) {
+    const primaryValue = payload[primaryFieldId]
+    const aliasValue = payload[aliasFieldId]
+    if (primaryValue !== undefined && aliasValue !== undefined && primaryValue !== aliasValue) {
+      throw createRequestError(
+        "INVALID_LIMIT",
+        `${primaryFieldId} and ${aliasFieldId} must match when both are provided`,
+      )
+    }
+    return optionalIntInRange(
+      { [primaryFieldId]: primaryValue === undefined ? aliasValue : primaryValue },
+      primaryFieldId,
+      defaultValue,
+      minValue,
+      maxValue,
     )
   }
 

@@ -21,9 +21,23 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
 
   function listFileCabinet(actionRequest) {
     const payload = actionRequest.payload
-    const folderId = optionalPositiveInt(payload, "folderId")
-    const maxEntries = optionalIntInRange(payload, "maxEntries", 200, 1, 1000)
+    const folderRef = resolveListFolder(payload)
+    const maxEntries = optionalLimit(payload, "maxEntries", "limit", 200, 1, 1000)
     const query = optionalText(payload, "query")
+    if (folderRef.notFound) {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        folder: null,
+        path: folderRef.path,
+        notFound: true,
+        files: [],
+        folders: [],
+        maxEntries,
+      }
+    }
+
+    const folderId = folderRef.id
     const folderFilters = folderId === null ? [] : [["parent", "anyof", String(folderId)]]
     const fileFilters = folderId === null ? [] : [["folder", "anyof", String(folderId)]]
     const folderQueryFilters = query ? [["name", "contains", query]] : []
@@ -44,7 +58,7 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     return {
       action: actionRequest.action,
       phase: actionRequest.phase,
-      folder: folderId === null ? null : { id: String(folderId) },
+      folder: folderId === null ? null : { id: String(folderId), path: folderRef.path },
       files,
       folders,
       maxEntries,
@@ -308,6 +322,50 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     return `writeFile:${idOrName}`
   }
 
+  function resolveListFolder(payload) {
+    const folderId = optionalSignedInt(payload, "folderId")
+    const path = optionalText(payload, "path")
+    if (folderId !== null && path !== null) {
+      throw createRequestError("INVALID_FOLDER_TARGET", "Use either folderId or path, not both")
+    }
+    if (path === null || path.length === 0 || path === "/") {
+      return { id: folderId, path: path || null, notFound: false }
+    }
+    const resolvedId = resolveFolderPath(path)
+    if (resolvedId === null) {
+      return { id: null, path, notFound: true }
+    }
+    return { id: resolvedId, path, notFound: false }
+  }
+
+  function resolveFolderPath(path) {
+    const parts = path
+      .split(/[\\/]+/)
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0)
+    if (parts.length === 0) {
+      return null
+    }
+    let parentId = null
+    for (const part of parts) {
+      const nextId = findChildFolderId(parentId, part)
+      if (nextId === null) {
+        return null
+      }
+      parentId = nextId
+    }
+    return parentId
+  }
+
+  function findChildFolderId(parentId, name) {
+    const filters = [["name", "is", name]]
+    if (parentId !== null) {
+      filters.push("AND", ["parent", "anyof", String(parentId)])
+    }
+    const rows = runObjectSearch("folder", filters, ["internalid", "name", "parent"], 1)
+    return rows.length === 0 ? null : Number(rows[0].id)
+  }
+
   function runObjectSearch(type, filters, columns, maxEntries) {
     const loadedSearch = search.create({ type, filters, columns })
     const rows = []
@@ -406,6 +464,20 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     throw createRequestError("INVALID_ID", `${fieldId} must be a positive internal ID`)
   }
 
+  function optionalSignedInt(payload, fieldId) {
+    const value = payload[fieldId]
+    if (value === undefined || value === null) {
+      return null
+    }
+    if (typeof value === "number" && Number.isInteger(value) && value !== 0) {
+      return value
+    }
+    if (typeof value === "string" && /^-?[1-9]\d*$/.test(value)) {
+      return Number(value)
+    }
+    throw createRequestError("INVALID_ID", `${fieldId} must be a non-zero internal ID`)
+  }
+
   function requirePositiveInt(payload, fieldId) {
     const value = optionalPositiveInt(payload, fieldId)
     if (value !== null) {
@@ -430,6 +502,24 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     throw createRequestError(
       "INVALID_INT",
       `${fieldId} must be an integer between ${minValue} and ${maxValue}`,
+    )
+  }
+
+  function optionalLimit(payload, primaryFieldId, aliasFieldId, defaultValue, minValue, maxValue) {
+    const primaryValue = payload[primaryFieldId]
+    const aliasValue = payload[aliasFieldId]
+    if (primaryValue !== undefined && aliasValue !== undefined && primaryValue !== aliasValue) {
+      throw createRequestError(
+        "INVALID_LIMIT",
+        `${primaryFieldId} and ${aliasFieldId} must match when both are provided`,
+      )
+    }
+    return optionalIntInRange(
+      { [primaryFieldId]: primaryValue === undefined ? aliasValue : primaryValue },
+      primaryFieldId,
+      defaultValue,
+      minValue,
+      maxValue,
     )
   }
 

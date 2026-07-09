@@ -1,5 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { RestletAction } from "../netsuite/types"
+import type { JsonObject, JsonValue } from "../shared/json"
 import { GenericActionInputSchema, RestletActionInputSchema, ToolName } from "./catalog"
 import { outputSchemaFor } from "./output-schemas"
 import { runNetSuiteTool } from "./response"
@@ -43,6 +44,27 @@ const actionTools = [
   ToolName.UpdateMapping,
 ] as const
 
+const readOnlyActionTools = new Set<ToolName>([
+  ToolName.RunSavedSearch,
+  ToolName.RunReport,
+  ToolName.ListPlatformObjects,
+  ToolName.GetPlatformObject,
+  ToolName.SearchRecords,
+  ToolName.ListReportTypes,
+  ToolName.ListReports,
+  ToolName.RunSearch,
+  ToolName.ListFileCabinet,
+  ToolName.GetFile,
+  ToolName.GetIntegrationLogs,
+  ToolName.GetScriptLogs,
+  ToolName.FindScriptErrors,
+  ToolName.ListScripts,
+  ToolName.ListScriptDeployments,
+  ToolName.GetFailedIntegrationJobs,
+  ToolName.ExplainIntegrationError,
+  ToolName.GetMapping,
+])
+
 const phasedActionTools = [
   ToolName.PrepareAction,
   ToolName.PreviewAction,
@@ -75,8 +97,8 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
           execute: () =>
             dependencies.netsuite.runRestletAction({
               action: toolName,
-              phase: "commit",
-              payload: input.payload,
+              phase: readOnlyActionTools.has(toolName) ? "preview" : "commit",
+              payload: normalizeDirectActionPayload(input),
             }),
         }),
     )
@@ -102,6 +124,23 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
       },
     )
   }
+}
+
+function normalizeDirectActionPayload(input: {
+  readonly action?: string | undefined
+  readonly payload?: JsonObject | undefined
+  readonly [key: string]: JsonValue | JsonObject | undefined
+}): JsonObject {
+  if (input.payload !== undefined) {
+    return input.payload
+  }
+  const payload: Record<string, JsonValue> = {}
+  for (const [key, value] of Object.entries(input)) {
+    if (key !== "action" && key !== "payload" && value !== undefined) {
+      payload[key] = value as JsonValue
+    }
+  }
+  return payload
 }
 
 function normalizePhasedAction(

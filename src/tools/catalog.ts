@@ -148,10 +148,12 @@ export const AccountPermissionCheckInputSchema = z.object({
   includeRestlet: z.boolean().default(false),
 })
 
-export const GenericActionInputSchema = z.object({
-  action: z.string().min(1),
-  payload: z.record(z.string(), JsonValueSchema).default({}),
-})
+export const GenericActionInputSchema = z
+  .object({
+    action: z.string().min(1).optional(),
+    payload: z.record(z.string(), JsonValueSchema).optional(),
+  })
+  .catchall(JsonValueSchema)
 
 export const RestletActionInputSchema = RestletActionSchema
 export const InventoryAdjustmentAccountSearchInputSchema =

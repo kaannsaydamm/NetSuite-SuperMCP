@@ -29,7 +29,7 @@ describe("MCP RESTlet-backed read actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.RunSavedSearch,
-        phase: "commit",
+        phase: "preview",
         payload: { savedSearchId: "customsearch_failed_orders", pageSize: 50 },
       },
     ])
@@ -59,7 +59,7 @@ describe("MCP RESTlet-backed read actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.RunReport,
-        phase: "commit",
+        phase: "preview",
         payload: { reportId: "customsearch_monthly_sales", pageSize: 100 },
       },
     ])
@@ -89,7 +89,7 @@ describe("MCP RESTlet-backed read actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.GetIntegrationLogs,
-        phase: "commit",
+        phase: "preview",
         payload: { savedSearchId: "customsearch_integration_logs", pageIndex: 1 },
       },
     ])
@@ -119,7 +119,7 @@ describe("MCP RESTlet-backed read actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.GetFailedIntegrationJobs,
-        phase: "commit",
+        phase: "preview",
         payload: { savedSearchId: "customsearch_failed_integration_jobs", pageSize: 25 },
       },
     ])
@@ -153,7 +153,7 @@ describe("MCP RESTlet-backed read actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.ExplainIntegrationError,
-        phase: "commit",
+        phase: "preview",
         payload: {
           recordType: "customrecord_integration_job",
           recordId: "456",

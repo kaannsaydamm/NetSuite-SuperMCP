@@ -69,7 +69,7 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
 
   function runSearch(actionRequest, type, query) {
     const payload = actionRequest.payload
-    const pageSize = optionalIntInRange(payload, "pageSize", 100, 1, 1000)
+    const pageSize = optionalLimit(payload, "pageSize", "limit", 100, 1, 1000)
     const pageIndex = optionalIntInRange(payload, "pageIndex", 0, 0, 100000)
     const filters = query ? [["name", "contains", query]] : []
     const columns = optionalTextList(payload, "columns", ["name", "internalid"])
@@ -197,6 +197,24 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
     throw createRequestError(
       "INVALID_INT",
       `${fieldId} must be an integer between ${minValue} and ${maxValue}`,
+    )
+  }
+
+  function optionalLimit(payload, primaryFieldId, aliasFieldId, defaultValue, minValue, maxValue) {
+    const primaryValue = payload[primaryFieldId]
+    const aliasValue = payload[aliasFieldId]
+    if (primaryValue !== undefined && aliasValue !== undefined && primaryValue !== aliasValue) {
+      throw createRequestError(
+        "INVALID_LIMIT",
+        `${primaryFieldId} and ${aliasFieldId} must match when both are provided`,
+      )
+    }
+    return optionalIntInRange(
+      { [primaryFieldId]: primaryValue === undefined ? aliasValue : primaryValue },
+      primaryFieldId,
+      defaultValue,
+      minValue,
+      maxValue,
     )
   }
 

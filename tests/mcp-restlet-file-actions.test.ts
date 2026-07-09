@@ -29,7 +29,7 @@ describe("MCP RESTlet-backed file actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.GetFile,
-        phase: "commit",
+        phase: "preview",
         payload: { fileId: "SuiteScripts/supermcp_action_restlet.js", maxBytes: 1048576 },
       },
     ])
@@ -78,7 +78,7 @@ describe("MCP RESTlet-backed file actions", () => {
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
     const calls = [
-      { name: ToolName.ListFileCabinet, payload: { folderId: 1, maxEntries: 25 } },
+      { name: ToolName.ListFileCabinet, phase: "preview", payload: { folderId: 1, limit: 25 } },
       { name: ToolName.CreateFolder, payload: { name: "Exports", parent: 1 } },
       { name: ToolName.UpdateFolder, payload: { folderId: 2, name: "Exports 2026" } },
       { name: ToolName.DeleteFolder, payload: { folderId: 3, confirmation: "deleteFolder:3" } },
@@ -108,7 +108,7 @@ describe("MCP RESTlet-backed file actions", () => {
     expect(fakeNetSuite.actions).toEqual(
       calls.map((call) => ({
         action: call.name,
-        phase: "commit",
+        phase: call.name === ToolName.ListFileCabinet ? "preview" : "commit",
         payload: call.payload,
       })),
     )

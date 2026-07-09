@@ -33,7 +33,7 @@ describe("MCP RESTlet-backed mapping actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.GetMapping,
-        phase: "commit",
+        phase: "preview",
         payload: {
           recordType: "customrecord_channel_mapping",
           recordId: "321",

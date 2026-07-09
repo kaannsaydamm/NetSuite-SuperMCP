@@ -24,8 +24,8 @@ define([
   transformActions,
 ) => {
   const PHASES = ["prepare", "preview", "commit"]
-  const RESTLET_VERSION = "0.1.25"
-  const ACTION_MAP_VERSION = "2026-07-09.2"
+  const RESTLET_VERSION = "0.1.26"
+  const ACTION_MAP_VERSION = "2026-07-09.3"
   const TOOL_COUNT = 54
   const SYSTEM_ACTIONS = {
     ns_getSuperMcpVersion: getSuperMcpVersion,

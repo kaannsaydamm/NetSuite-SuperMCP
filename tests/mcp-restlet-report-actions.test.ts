@@ -11,7 +11,7 @@ describe("MCP RESTlet-backed report actions", () => {
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
     const calls = [
       { name: ToolName.ListReportTypes, payload: {} },
-      { name: ToolName.ListReports, payload: { query: "Inventory", pageSize: 20 } },
+      { name: ToolName.ListReports, payload: { query: "Inventory", limit: 20 } },
       {
         name: ToolName.RunSearch,
         payload: {
@@ -57,7 +57,12 @@ describe("MCP RESTlet-backed report actions", () => {
     expect(fakeNetSuite.actions).toEqual(
       calls.map((call) => ({
         action: call.name,
-        phase: "commit",
+        phase:
+          call.name === ToolName.CreateSavedSearch ||
+          call.name === ToolName.UpdateSavedSearch ||
+          call.name === ToolName.DeleteSavedSearch
+            ? "commit"
+            : "preview",
         payload: call.payload,
       })),
     )

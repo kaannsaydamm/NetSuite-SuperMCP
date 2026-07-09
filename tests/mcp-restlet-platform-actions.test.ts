@@ -10,7 +10,7 @@ describe("MCP RESTlet-backed platform actions", () => {
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
     const calls = [
-      { name: ToolName.ListPlatformObjects, payload: { category: "scripts", pageSize: 10 } },
+      { name: ToolName.ListPlatformObjects, payload: { category: "scripts", limit: 10 } },
       {
         name: ToolName.GetPlatformObject,
         payload: { recordType: "script", recordId: 12, fields: ["name", "scriptid"] },
@@ -39,7 +39,7 @@ describe("MCP RESTlet-backed platform actions", () => {
     expect(fakeNetSuite.actions).toEqual(
       calls.map((call) => ({
         action: call.name,
-        phase: "commit",
+        phase: "preview",
         payload: call.payload,
       })),
     )

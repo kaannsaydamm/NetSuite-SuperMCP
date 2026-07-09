@@ -46,7 +46,7 @@ const FileCabinetOutputSchema = z
     files: z.array(z.record(z.string(), JsonValueSchema)).optional(),
     folders: z.array(z.record(z.string(), JsonValueSchema)).optional(),
     file: z.record(z.string(), JsonValueSchema).optional(),
-    folder: z.record(z.string(), JsonValueSchema).optional(),
+    folder: z.union([z.record(z.string(), JsonValueSchema), z.null()]).optional(),
     confirmation: z.string().optional(),
   })
   .loose()

@@ -29,7 +29,7 @@ describe("MCP RESTlet-backed script actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.ListScripts,
-        phase: "commit",
+        phase: "preview",
         payload: { savedSearchId: "customsearch_supermcp_scripts", pageSize: 100 },
       },
     ])
@@ -59,7 +59,7 @@ describe("MCP RESTlet-backed script actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.ListScriptDeployments,
-        phase: "commit",
+        phase: "preview",
         payload: { savedSearchId: "customsearch_supermcp_script_deployments", pageSize: 100 },
       },
     ])
@@ -89,7 +89,7 @@ describe("MCP RESTlet-backed script actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.GetScriptLogs,
-        phase: "commit",
+        phase: "preview",
         payload: { savedSearchId: "customsearch_supermcp_script_logs", pageSize: 100 },
       },
     ])
@@ -119,7 +119,7 @@ describe("MCP RESTlet-backed script actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.FindScriptErrors,
-        phase: "commit",
+        phase: "preview",
         payload: { savedSearchId: "customsearch_supermcp_script_errors", pageSize: 100 },
       },
     ])
