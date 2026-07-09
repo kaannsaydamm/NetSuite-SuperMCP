@@ -14,10 +14,16 @@ type DownloadSpec = {
   readonly url: string
 }
 
+type NgrokVersion = {
+  readonly major: number
+  readonly minor: number
+  readonly patch: number
+}
+
 const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)))
+const minimumNgrokVersion: NgrokVersion = { major: 3, minor: 20, patch: 0 }
 const args = new Set(process.argv.slice(2))
 const requestedPort = readNumberArg("--port") ?? 3025
-const requestedWebPort = readNumberArg("--ngrok-web-port") ?? 4040
 const authtoken = readStringArg("--ngrok-authtoken") ?? process.env["NGROK_AUTHTOKEN"]
 
 if (args.has("--help") || args.has("-h")) {
@@ -26,7 +32,6 @@ if (args.has("--help") || args.has("-h")) {
 }
 
 const port = await findFreePort(requestedPort)
-const ngrokWebPort = await findFreePort(requestedWebPort)
 const ngrokPath = await ensureNgrok()
 await ensureNgrokAuthtoken(ngrokPath, authtoken)
 
@@ -50,11 +55,9 @@ server.stderr.on("data", (chunk: Buffer) => {
   serverOutput += chunk.toString("utf8")
 })
 
-const ngrok = spawn(
-  ngrokPath,
-  ["http", localUrl, "--log=stdout", `--web-addr=127.0.0.1:${ngrokWebPort}`],
-  { stdio: ["ignore", "pipe", "pipe"] },
-)
+const ngrok = spawn(ngrokPath, ["http", localUrl, "--log=stdout", "--log-format=logfmt"], {
+  stdio: ["ignore", "pipe", "pipe"],
+})
 let ngrokOutput = ""
 ngrok.stdout.on("data", (chunk: Buffer) => {
   ngrokOutput += chunk.toString("utf8")
@@ -63,7 +66,9 @@ ngrok.stderr.on("data", (chunk: Buffer) => {
   ngrokOutput += chunk.toString("utf8")
 })
 
+let isShuttingDown = false
 const shutdown = (): void => {
+  isShuttingDown = true
   ngrok.kill()
   server.kill()
 }
@@ -78,7 +83,7 @@ process.on("SIGTERM", () => {
 
 try {
   await waitForHealth(localUrl)
-  const publicUrl = await waitForNgrokUrl(ngrokWebPort)
+  const publicUrl = await waitForNgrokUrl()
   const mcpUrl = `${publicUrl}/mcp`
   console.log("")
   console.log("NetSuite SuperMCP public URL is ready.")
@@ -146,11 +151,21 @@ async function ensureNgrok(): Promise<string> {
 }
 
 function findExistingNgrok(): string | undefined {
-  const wingetInstalled = findWingetNgrok()
-  if (wingetInstalled !== undefined) {
-    return wingetInstalled
+  const candidates = [findManagedNgrok(), findOnPathNgrok(), findWingetNgrok()].filter(
+    (path): path is string => path !== undefined,
+  )
+
+  for (const candidate of candidates) {
+    const usable = ensureUsableNgrokVersion(candidate)
+    if (usable !== undefined) {
+      return usable
+    }
   }
 
+  return undefined
+}
+
+function findOnPathNgrok(): string | undefined {
   const result = spawnSync(process.platform === "win32" ? "where.exe" : "which", ["ngrok"], {
     encoding: "utf8",
     shell: process.platform === "win32",
@@ -162,6 +177,65 @@ function findExistingNgrok(): string | undefined {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .find((line) => line.length > 0)
+}
+
+function findManagedNgrok(): string | undefined {
+  const executableName = process.platform === "win32" ? "ngrok.exe" : "ngrok"
+  const executablePath = join(userDataDir(), "ngrok", executableName)
+  return existsSync(executablePath) ? executablePath : undefined
+}
+
+function ensureUsableNgrokVersion(ngrokPath: string): string | undefined {
+  const version = readNgrokVersion(ngrokPath)
+  if (version === undefined) {
+    return undefined
+  }
+  if (isAtLeastVersion(version, minimumNgrokVersion)) {
+    return ngrokPath
+  }
+
+  console.log(
+    `ngrok ${formatVersion(version)} is too old; updating to ${formatVersion(minimumNgrokVersion)} or newer...`,
+  )
+  const updated = spawnSync(ngrokPath, ["update"], { encoding: "utf8" })
+  if ((updated.status ?? 1) !== 0) {
+    return undefined
+  }
+  const updatedVersion = readNgrokVersion(ngrokPath)
+  if (updatedVersion !== undefined && isAtLeastVersion(updatedVersion, minimumNgrokVersion)) {
+    return ngrokPath
+  }
+  return undefined
+}
+
+function readNgrokVersion(ngrokPath: string): NgrokVersion | undefined {
+  const result = spawnSync(ngrokPath, ["version"], { encoding: "utf8" })
+  if ((result.status ?? 1) !== 0) {
+    return undefined
+  }
+  const match = result.stdout.match(/ngrok version\s+(\d+)\.(\d+)\.(\d+)/i)
+  if (match === null) {
+    return undefined
+  }
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+  }
+}
+
+function isAtLeastVersion(actual: NgrokVersion, minimum: NgrokVersion): boolean {
+  if (actual.major !== minimum.major) {
+    return actual.major > minimum.major
+  }
+  if (actual.minor !== minimum.minor) {
+    return actual.minor > minimum.minor
+  }
+  return actual.patch >= minimum.patch
+}
+
+function formatVersion(version: NgrokVersion): string {
+  return `${version.major}.${version.minor}.${version.patch}`
 }
 
 function findWingetNgrok(): string | undefined {
@@ -386,12 +460,18 @@ async function waitForHealth(baseUrl: string): Promise<void> {
   throw new Error(`MCP health check timed out: ${serverOutput}`)
 }
 
-async function waitForNgrokUrl(webPort: number): Promise<string> {
-  const apiUrl = `http://127.0.0.1:${webPort}/api/tunnels`
+async function waitForNgrokUrl(): Promise<string> {
+  const apiUrl = "http://127.0.0.1:4040/api/tunnels"
   for (let attempt = 0; attempt < 150; attempt += 1) {
     if (ngrok.exitCode !== null) {
       throw new Error(`ngrok exited before public URL was ready: ${ngrokOutput}`)
     }
+
+    const loggedUrl = parseNgrokPublicUrl(ngrokOutput)
+    if (loggedUrl !== undefined) {
+      return loggedUrl
+    }
+
     try {
       const response = await fetch(apiUrl)
       if (response.ok) {
@@ -403,11 +483,22 @@ async function waitForNgrokUrl(webPort: number): Promise<string> {
           return url
         }
       }
-    } catch {
-      await delay(200)
-    }
+    } catch {}
+    await delay(200)
   }
   throw new Error(`ngrok public URL timed out: ${ngrokOutput}`)
+}
+
+function parseNgrokPublicUrl(output: string): string | undefined {
+  const match =
+    output.match(/url=(https:\/\/[^\\s"]+)/) ??
+    output.match(/started tunnel.*(https:\/\/[^\\s"]+)/) ??
+    output.match(/Forwarding\\s+https:\/\/[^\\s]+/i)
+  if (match === null) {
+    return undefined
+  }
+  const value = match[1] ?? match[0].replace(/^Forwarding\s+/i, "")
+  return value.replace(/[,"\r\n]+$/g, "")
 }
 
 async function waitUntilChildExits(): Promise<void> {
@@ -415,6 +506,9 @@ async function waitUntilChildExits(): Promise<void> {
     server.once("exit", resolve)
     ngrok.once("exit", resolve)
   })
+  if (isShuttingDown) {
+    return
+  }
   if (server.exitCode !== null && server.exitCode !== 0) {
     throw new Error(`MCP server exited: ${serverOutput}`)
   }
