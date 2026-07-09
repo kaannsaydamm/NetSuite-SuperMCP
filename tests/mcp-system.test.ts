@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test"
+import { z } from "zod"
 import { createApp } from "../src/app"
 import { ToolName } from "../src/tools/catalog"
 import {
@@ -36,7 +37,7 @@ describe("MCP system tools", () => {
       method: "tools/list",
       params: {},
     })
-    const body = await response.json()
+    const body = z.object({ result: z.object({ tools: z.unknown() }) }).parse(await response.json())
 
     // Then
     expect(response.status).toBe(200)
@@ -44,6 +45,10 @@ describe("MCP system tools", () => {
     expect(JSON.stringify(body)).toContain(ToolName.GetAuditLog)
     expect(JSON.stringify(body)).toContain(ToolName.ListCapabilities)
     expect(JSON.stringify(body)).toContain(ToolName.BillPurchaseOrder)
+    const tools = z
+      .array(z.object({ name: z.string(), outputSchema: z.object({ type: z.literal("object") }) }))
+      .parse(body.result.tools)
+    expect(tools).toHaveLength(Object.keys(ToolName).length)
   })
 
   it("returns risk metadata through ns_listCapabilities", async () => {
@@ -66,6 +71,7 @@ describe("MCP system tools", () => {
 
     // Then
     expect(response.status).toBe(200)
+    expect(body.result.structuredContent).toEqual(payload)
     expect(billPurchaseOrder).toEqual({
       name: ToolName.BillPurchaseOrder,
       risk: "high",

@@ -15,6 +15,7 @@ import {
 } from "./catalog"
 import { findInventoryAdjustmentAccounts } from "./inventory-adjustment-accounts"
 import { commitInventoryStockImport, prepareInventoryStockImport } from "./inventory-stock-import"
+import { outputSchemaFor } from "./output-schemas"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
 
@@ -25,6 +26,7 @@ export function registerRecordTools(server: McpServer, dependencies: ToolDepende
       title: "Get NetSuite record",
       description: "Reads one NetSuite record by record type and internal ID.",
       inputSchema: RecordInputSchema,
+      outputSchema: outputSchemaFor(ToolName.GetRecord),
     },
     async (input) =>
       runNetSuiteTool({
@@ -53,6 +55,7 @@ function registerSuiteQlTool(server: McpServer, dependencies: ToolDependencies):
       title: "Run SuiteQL",
       description: "Runs a read-only SuiteQL query through the integration role.",
       inputSchema: SuiteQlInputSchema,
+      outputSchema: outputSchemaFor(ToolName.RunSuiteQl),
     },
     async (input) =>
       runNetSuiteTool({
@@ -71,6 +74,7 @@ function registerMetadataTool(server: McpServer, dependencies: ToolDependencies)
       title: "Get NetSuite record metadata",
       description: "Reads REST record metadata catalog entries for one or more record types.",
       inputSchema: RecordMetadataInputSchema,
+      outputSchema: outputSchemaFor(ToolName.GetRecordMetadata),
     },
     async (input) =>
       runNetSuiteTool({
@@ -89,6 +93,7 @@ function registerTransactionLinesTool(server: McpServer, dependencies: ToolDepen
       title: "Get NetSuite transaction lines",
       description: "Reads a transaction line sublist through the REST record subresource endpoint.",
       inputSchema: TransactionLinesInputSchema,
+      outputSchema: outputSchemaFor(ToolName.GetTransactionLines),
     },
     async (input) =>
       runNetSuiteTool({
@@ -107,6 +112,7 @@ function registerCreateRecordTool(server: McpServer, dependencies: ToolDependenc
       title: "Create NetSuite record",
       description: "Creates one NetSuite record through REST Record API POST.",
       inputSchema: RecordCreateInputSchema,
+      outputSchema: outputSchemaFor(ToolName.CreateRecord),
     },
     async (input) =>
       runNetSuiteTool({
@@ -129,6 +135,7 @@ function registerRecordPatchTool(
       title: toolName,
       description: "Updates one NetSuite record through REST Record API PATCH.",
       inputSchema: RecordUpdateInputSchema,
+      outputSchema: outputSchemaFor(toolName),
     },
     async (input) =>
       runNetSuiteTool({
@@ -150,6 +157,7 @@ function registerDeleteRecordTool(server: McpServer, dependencies: ToolDependenc
       title: "Delete NetSuite record",
       description: "Deletes one NetSuite record through REST Record API DELETE.",
       inputSchema: RecordDeleteInputSchema,
+      outputSchema: outputSchemaFor(ToolName.DeleteRecord),
     },
     async (input) =>
       runNetSuiteTool({
@@ -172,6 +180,7 @@ function registerInventoryStockImportTools(
       description:
         "Builds a dry-run NetSuite inventory adjustment from target stock rows. It matches items, reads current stock, calculates deltas, and returns a commit confirmation string without changing NetSuite.",
       inputSchema: InventoryStockImportPrepareInputSchema,
+      outputSchema: outputSchemaFor(ToolName.PrepareInventoryStockImport),
     },
     async (input) =>
       runNetSuiteTool({
@@ -189,6 +198,7 @@ function registerInventoryStockImportTools(
       description:
         "Creates one NetSuite inventoryAdjustment for target stock rows after recomputing deltas and validating the prepare confirmation string.",
       inputSchema: InventoryStockImportCommitInputSchema,
+      outputSchema: outputSchemaFor(ToolName.CommitInventoryStockImport),
     },
     async (input) =>
       runNetSuiteTool({
@@ -211,6 +221,7 @@ function registerInventoryAdjustmentAccountTool(
       description:
         "Finds likely NetSuite account internal IDs for inventoryAdjustment account using read-only SuiteQL. Prefer the returned candidate id as adjustmentAccountId.",
       inputSchema: InventoryAdjustmentAccountSearchInputSchema,
+      outputSchema: outputSchemaFor(ToolName.FindInventoryAdjustmentAccounts),
     },
     async (input) =>
       runNetSuiteTool({

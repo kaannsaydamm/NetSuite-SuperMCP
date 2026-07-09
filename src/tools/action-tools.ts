@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { RestletAction } from "../netsuite/types"
 import { GenericActionInputSchema, RestletActionInputSchema, ToolName } from "./catalog"
+import { outputSchemaFor } from "./output-schemas"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
 
@@ -47,6 +48,7 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
         title: toolName,
         description: `Runs NetSuite action ${toolName} through the RESTlet action layer.`,
         inputSchema: GenericActionInputSchema,
+        outputSchema: outputSchemaFor(toolName),
       },
       async (input) =>
         runNetSuiteTool({
@@ -70,6 +72,7 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
         title: toolName,
         description: `Runs a generic ${toolName} request against the RESTlet action layer.`,
         inputSchema: RestletActionInputSchema,
+        outputSchema: outputSchemaFor(toolName),
       },
       async (input) => {
         const action = normalizePhasedAction(toolName, input)

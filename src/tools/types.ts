@@ -13,4 +13,5 @@ export type ToolDependencies = {
 export type ToolResponse = {
   readonly content: { readonly type: "text"; readonly text: string }[]
   readonly isError?: boolean
+  readonly structuredContent?: Record<string, unknown>
 }

@@ -7,6 +7,7 @@ import {
   ToolName,
   toolPolicies,
 } from "./catalog"
+import { outputSchemaFor } from "./output-schemas"
 import { respond } from "./response"
 import type { ToolDependencies } from "./types"
 
@@ -17,6 +18,7 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
       title: "Get NetSuite SuperMCP environment",
       description: "Returns the configured NetSuite account and sandbox/production environment.",
       inputSchema: EmptyInputSchema,
+      outputSchema: outputSchemaFor(ToolName.GetEnvironment),
     },
     async () =>
       respond(ToolName.GetEnvironment, dependencies, {}, environmentPayload(dependencies)),
@@ -29,6 +31,7 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
       description:
         "Runs safe probes with the configured NetSuite OAuth account and reports allowed or denied access.",
       inputSchema: AccountPermissionCheckInputSchema,
+      outputSchema: outputSchemaFor(ToolName.CheckAccountPermissions),
     },
     async (input) =>
       respond(
@@ -45,6 +48,7 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
       title: "List NetSuite SuperMCP capabilities",
       description: "Returns tool risk and mutation metadata for client-side approval decisions.",
       inputSchema: EmptyInputSchema,
+      outputSchema: outputSchemaFor(ToolName.ListCapabilities),
     },
     async () =>
       respond(
@@ -67,6 +71,7 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
       title: "Get SuperMCP audit log",
       description: "Reads recent SuperMCP audit events, newest first.",
       inputSchema: AuditLogInputSchema,
+      outputSchema: outputSchemaFor(ToolName.GetAuditLog),
     },
     async (input) =>
       respond(ToolName.GetAuditLog, dependencies, input, {

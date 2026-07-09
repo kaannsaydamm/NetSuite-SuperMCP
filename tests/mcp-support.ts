@@ -15,6 +15,7 @@ export const initializeRequest = {
 export const ToolTextResponseSchema = z.object({
   result: z.object({
     content: z.tuple([z.object({ type: z.literal("text"), text: z.string() })]),
+    structuredContent: z.record(z.string(), z.unknown()).optional(),
   }),
 })
 

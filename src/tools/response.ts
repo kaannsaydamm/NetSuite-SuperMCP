@@ -1,5 +1,5 @@
 import { authorizeTool } from "../policy"
-import type { JsonObject, JsonValue } from "../shared/json"
+import type { JsonObject } from "../shared/json"
 import type { ToolName } from "./catalog"
 import { toolPolicies } from "./catalog"
 import type { ToolDependencies, ToolResponse } from "./types"
@@ -60,8 +60,11 @@ async function writeAudit(request: AuditWriteRequest): Promise<void> {
   })
 }
 
-function toolText(value: JsonValue): ToolResponse {
-  return { content: [{ type: "text", text: JSON.stringify(value, null, 2) }] }
+function toolText(value: JsonObject): ToolResponse {
+  return {
+    content: [{ type: "text", text: JSON.stringify(value, null, 2) }],
+    structuredContent: value,
+  }
 }
 
 function toolError(message: string): ToolResponse {
