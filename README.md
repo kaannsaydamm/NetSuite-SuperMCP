@@ -148,6 +148,10 @@ REST metadata, SuiteQL, and the RESTlet action layer.
 Read-only tools are called directly when safe IDs can be discovered; write/delete/transform actions
 are exercised through `ns_prepareAction` so NetSuite data is not changed.
 
+SuiteScript source files can be read with `ns_getFile` and written with `ns_writeFile` through the
+RESTlet action layer. Use `ns_prepareAction`/`ns_previewAction` first to get the required
+confirmation string before committing a File Cabinet write.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

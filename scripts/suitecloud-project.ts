@@ -7,6 +7,7 @@ const packageRoot = join(import.meta.dir, "..")
 const suiteScriptSourceDir = join(packageRoot, "netsuite", "suitescript")
 const suiteScriptFiles = [
   "supermcp_action_restlet.js",
+  "supermcp_file_actions.js",
   "supermcp_read_actions.js",
   "supermcp_transform_actions.js",
   "supermcp_integration_actions.js",

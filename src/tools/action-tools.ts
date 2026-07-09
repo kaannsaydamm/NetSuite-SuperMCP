@@ -9,6 +9,7 @@ const actionTools = [
   ToolName.RunSavedSearch,
   ToolName.RunReport,
   ToolName.GetFile,
+  ToolName.WriteFile,
   ToolName.GetIntegrationLogs,
   ToolName.GetScriptLogs,
   ToolName.FindScriptErrors,

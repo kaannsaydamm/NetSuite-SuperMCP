@@ -44,6 +44,7 @@ configured. RESTlet-backed tools also require the bundled SuiteScript files to b
 NetSuite:
 
 - `netsuite/suitescript/supermcp_action_restlet.js`
+- `netsuite/suitescript/supermcp_file_actions.js`
 - `netsuite/suitescript/supermcp_read_actions.js`
 - `netsuite/suitescript/supermcp_transform_actions.js`
 - `netsuite/suitescript/supermcp_integration_actions.js`

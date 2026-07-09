@@ -204,6 +204,7 @@ function preparePayloads(): Partial<Record<ToolName, JsonObject>> {
 function liveUnsafeTools(): readonly ToolName[] {
   return [
     ToolName.CreateRecord,
+    ToolName.WriteFile,
     ToolName.UpdateRecord,
     ToolName.SubmitFields,
     ToolName.DeleteRecord,

@@ -75,6 +75,7 @@ does not bypass NetSuite authorization.
 Deploy these SuiteScript files together:
 
 - [supermcp_action_restlet.js](../netsuite/suitescript/supermcp_action_restlet.js)
+- [supermcp_file_actions.js](../netsuite/suitescript/supermcp_file_actions.js)
 - [supermcp_integration_actions.js](../netsuite/suitescript/supermcp_integration_actions.js)
 - [supermcp_mapping_actions.js](../netsuite/suitescript/supermcp_mapping_actions.js)
 - [supermcp_transform_actions.js](../netsuite/suitescript/supermcp_transform_actions.js)
@@ -123,6 +124,7 @@ actions that cannot be represented cleanly through REST Record CRUD.
 | `ns_runSavedSearch` | `savedSearchId` | Runs a saved search page and returns serialized result values/text |
 | `ns_runReport` | `reportId` | Runs a saved-search-backed report page and returns serialized result values/text |
 | `ns_getFile` | `fileId` | Loads a File Cabinet text/source file and returns metadata plus contents |
+| `ns_writeFile` | `fileId` + `contents` + `confirmation`, or `folderId` + `name` + `contents` + `confirmation` | Writes a text/source file to File Cabinet, including SuiteScript `.js` files |
 | `ns_getIntegrationLogs` | `savedSearchId` | Runs the configured integration-log saved search page |
 | `ns_getScriptLogs` | `savedSearchId` | Runs the configured script execution log saved search page |
 | `ns_findScriptErrors` | `savedSearchId` | Runs the configured script execution error saved search page |
@@ -146,6 +148,11 @@ integration error fields such as `name`, `custrecord_error`, `custrecord_message
 
 `ns_getFile` accepts a numeric internal ID or File Cabinet path in `fileId`. Optional `maxBytes`
 defaults to 1 MB and cannot exceed the `File.getContents()` 10 MB in-memory limit.
+
+`ns_writeFile` uses NetSuite `N/file`. Call it through `ns_prepareAction` or `ns_previewAction`
+first to get the required confirmation string, then commit through `ns_writeFile` or
+`ns_commitAction`. Existing files can be targeted by internal ID or File Cabinet path in `fileId`;
+new files require `folderId`, `name`, and optional `fileType` such as `JAVASCRIPT`.
 
 ### Supported integration actions
 

@@ -5,11 +5,20 @@
 define([
   "N/error",
   "N/runtime",
+  "./supermcp_file_actions",
   "./supermcp_integration_actions",
   "./supermcp_mapping_actions",
   "./supermcp_read_actions",
   "./supermcp_transform_actions",
-], (nsError, runtime, integrationActions, mappingActions, readActions, transformActions) => {
+], (
+  nsError,
+  runtime,
+  fileActions,
+  integrationActions,
+  mappingActions,
+  readActions,
+  transformActions,
+) => {
   const PHASES = ["prepare", "preview", "commit"]
   const SYSTEM_ACTIONS = {
     ns_checkAccountPermissions: checkAccountPermissions,
@@ -20,6 +29,7 @@ define([
     const result =
       runSystemAction(actionRequest) ||
       transformActions.run(actionRequest) ||
+      fileActions.run(actionRequest) ||
       readActions.run(actionRequest) ||
       integrationActions.run(actionRequest) ||
       mappingActions.run(actionRequest)

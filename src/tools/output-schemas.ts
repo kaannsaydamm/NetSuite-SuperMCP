@@ -20,6 +20,25 @@ const RestletActionOutputSchema = z
   })
   .loose()
 
+const FileWriteOutputSchema = z
+  .object({
+    action: z.string(),
+    phase: z.enum(["prepare", "preview", "commit"]),
+    file: z
+      .object({
+        id: z.string().optional(),
+        name: z.string().optional(),
+        fileType: z.string().optional(),
+        folder: z.union([z.string(), z.number()]).optional(),
+        size: z.number().optional(),
+      })
+      .loose(),
+    contentLength: z.number().optional(),
+    confirmation: z.string().optional(),
+    saved: z.boolean().optional(),
+  })
+  .loose()
+
 const SuiteQlOutputSchema = z
   .object({
     count: z.number().optional(),
@@ -134,6 +153,8 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.RunSavedSearch:
     case ToolName.RunReport:
     case ToolName.GetFile:
+    case ToolName.WriteFile:
+      return toolName === ToolName.WriteFile ? FileWriteOutputSchema : RestletActionOutputSchema
     case ToolName.GetIntegrationLogs:
     case ToolName.GetScriptLogs:
     case ToolName.FindScriptErrors:
