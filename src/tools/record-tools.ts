@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { JsonObject, JsonValue } from "../shared/json"
 import {
+  InventoryStockImportCommitInputSchema,
+  InventoryStockImportPrepareInputSchema,
   RecordCreateInputSchema,
   RecordDeleteInputSchema,
   RecordInputSchema,
@@ -10,6 +12,7 @@ import {
   ToolName,
   TransactionLinesInputSchema,
 } from "./catalog"
+import { commitInventoryStockImport, prepareInventoryStockImport } from "./inventory-stock-import"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
 
@@ -37,6 +40,7 @@ export function registerRecordTools(server: McpServer, dependencies: ToolDepende
   registerRecordPatchTool(server, dependencies, ToolName.UpdateRecord)
   registerRecordPatchTool(server, dependencies, ToolName.SubmitFields)
   registerDeleteRecordTool(server, dependencies)
+  registerInventoryStockImportTools(server, dependencies)
 }
 
 function registerSuiteQlTool(server: McpServer, dependencies: ToolDependencies): void {
@@ -152,6 +156,49 @@ function registerDeleteRecordTool(server: McpServer, dependencies: ToolDependenc
         execute: () => dependencies.netsuite.deleteRecord(input),
       }),
   )
+}
+
+function registerInventoryStockImportTools(
+  server: McpServer,
+  dependencies: ToolDependencies,
+): void {
+  server.registerTool(
+    ToolName.PrepareInventoryStockImport,
+    {
+      title: "Prepare inventory stock import",
+      description:
+        "Builds a dry-run NetSuite inventory adjustment from target stock rows. It matches items, reads current stock, calculates deltas, and returns a commit confirmation string without changing NetSuite.",
+      inputSchema: InventoryStockImportPrepareInputSchema,
+    },
+    async (input) =>
+      runNetSuiteTool({
+        toolName: ToolName.PrepareInventoryStockImport,
+        dependencies,
+        input: jsonAuditInput(input),
+        execute: () => prepareInventoryStockImport(dependencies.netsuite, input),
+      }),
+  )
+
+  server.registerTool(
+    ToolName.CommitInventoryStockImport,
+    {
+      title: "Commit inventory stock import",
+      description:
+        "Creates one NetSuite inventoryAdjustment for target stock rows after recomputing deltas and validating the prepare confirmation string.",
+      inputSchema: InventoryStockImportCommitInputSchema,
+    },
+    async (input) =>
+      runNetSuiteTool({
+        toolName: ToolName.CommitInventoryStockImport,
+        dependencies,
+        input: jsonAuditInput(input),
+        execute: () => commitInventoryStockImport(dependencies.netsuite, input),
+      }),
+  )
+}
+
+function jsonAuditInput(input: unknown): JsonObject {
+  return JSON.parse(JSON.stringify(input)) as JsonObject
 }
 
 function suiteQlAuditInput(input: {

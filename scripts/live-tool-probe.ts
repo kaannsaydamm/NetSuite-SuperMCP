@@ -57,6 +57,13 @@ async function main(): Promise<void> {
       detail: "no sales order found",
     })
   }
+  if (discovered.inventoryStock === undefined) {
+    results.push({
+      name: ToolName.PrepareInventoryStockImport,
+      status: "skip",
+      detail: "no inventory balance row with item UPC found",
+    })
+  }
   for (const toolName of liveUnsafeTools()) {
     results.push({
       name: toolName,
@@ -79,6 +86,11 @@ async function main(): Promise<void> {
 
 function buildProbes(discovered: {
   readonly customerId?: string
+  readonly inventoryStock?: {
+    readonly itemKey: string
+    readonly locationId: string
+    readonly quantity: number
+  }
   readonly salesOrderId?: string
 }): MpcToolCall[] {
   const probes: MpcToolCall[] = [
@@ -114,6 +126,21 @@ function buildProbes(discovered: {
     probes.push({
       name: ToolName.GetTransactionLines,
       arguments: { type: "salesOrder", id: discovered.salesOrderId, sublist: "item" },
+    })
+  }
+  if (discovered.inventoryStock !== undefined) {
+    probes.push({
+      name: ToolName.PrepareInventoryStockImport,
+      arguments: {
+        locationId: discovered.inventoryStock.locationId,
+        adjustmentAccountId: "1",
+        rows: [
+          {
+            itemKey: discovered.inventoryStock.itemKey,
+            targetQuantity: discovered.inventoryStock.quantity,
+          },
+        ],
+      },
     })
   }
 
@@ -180,17 +207,26 @@ function liveUnsafeTools(): readonly ToolName[] {
     ToolName.SubmitFields,
     ToolName.DeleteRecord,
     ToolName.CommitAction,
+    ToolName.CommitInventoryStockImport,
   ]
 }
 
-async function discoverSafeIds(
-  netsuite: OAuthNetSuiteClient,
-): Promise<{ readonly customerId?: string; readonly salesOrderId?: string }> {
+async function discoverSafeIds(netsuite: OAuthNetSuiteClient): Promise<{
+  readonly customerId?: string
+  readonly inventoryStock?: {
+    readonly itemKey: string
+    readonly locationId: string
+    readonly quantity: number
+  }
+  readonly salesOrderId?: string
+}> {
   const customerId = await firstId(netsuite, "SELECT id FROM customer")
   const salesOrderId = await firstId(netsuite, "SELECT id FROM transaction WHERE type = 'SalesOrd'")
+  const inventoryStock = await firstInventoryStock(netsuite)
   return {
     ...(customerId === undefined ? {} : { customerId }),
     ...(salesOrderId === undefined ? {} : { salesOrderId }),
+    ...(inventoryStock === undefined ? {} : { inventoryStock }),
   }
 }
 
@@ -206,6 +242,34 @@ async function firstId(netsuite: OAuthNetSuiteClient, query: string): Promise<st
   }
   const id = row["id"]
   return typeof id === "string" || typeof id === "number" ? String(id) : undefined
+}
+
+async function firstInventoryStock(
+  netsuite: OAuthNetSuiteClient,
+): Promise<
+  { readonly itemKey: string; readonly locationId: string; readonly quantity: number } | undefined
+> {
+  const response = await netsuite.runSuiteQl({
+    query:
+      "SELECT item.upccode AS itemkey, inventorybalance.location AS locationid, inventorybalance.quantityonhand AS quantity FROM inventorybalance JOIN item ON item.id = inventorybalance.item WHERE item.upccode IS NOT NULL",
+    params: [],
+    limit: 1,
+  })
+  const items = response["items"]
+  if (!Array.isArray(items)) {
+    return undefined
+  }
+  const row = items[0]
+  if (!isJsonObject(row)) {
+    return undefined
+  }
+  const itemKey = row["itemkey"]
+  const locationId = row["locationid"]
+  const quantity = row["quantity"]
+  if (typeof itemKey !== "string" || typeof locationId !== "string") {
+    return undefined
+  }
+  return { itemKey, locationId, quantity: Number(quantity ?? 0) }
 }
 
 async function callMcpTool(

@@ -1,5 +1,7 @@
 import { z } from "zod"
 import {
+  InventoryStockImportCommitRequestSchema,
+  InventoryStockImportPrepareRequestSchema,
   RecordCreateRequestSchema,
   RecordDeleteRequestSchema,
   RecordMetadataRequestSchema,
@@ -41,6 +43,8 @@ export const ToolName = {
   RetryIntegrationJob: "ns_retryIntegrationJob",
   GetMapping: "ns_getMapping",
   UpdateMapping: "ns_updateMapping",
+  PrepareInventoryStockImport: "ns_prepareInventoryStockImport",
+  CommitInventoryStockImport: "ns_commitInventoryStockImport",
   PrepareAction: "ns_prepareAction",
   PreviewAction: "ns_previewAction",
   CommitAction: "ns_commitAction",
@@ -75,6 +79,8 @@ export const toolPolicies = {
   [ToolName.SubmitFields]: medium(ToolName.SubmitFields),
   [ToolName.DeleteRecord]: high(ToolName.DeleteRecord),
   [ToolName.UpdateMapping]: medium(ToolName.UpdateMapping),
+  [ToolName.PrepareInventoryStockImport]: low(ToolName.PrepareInventoryStockImport),
+  [ToolName.CommitInventoryStockImport]: high(ToolName.CommitInventoryStockImport),
   [ToolName.TransformRecord]: high(ToolName.TransformRecord),
   [ToolName.FulfillSalesOrder]: high(ToolName.FulfillSalesOrder),
   [ToolName.InvoiceSalesOrder]: high(ToolName.InvoiceSalesOrder),
@@ -109,6 +115,8 @@ export const GenericActionInputSchema = z.object({
 })
 
 export const RestletActionInputSchema = RestletActionSchema
+export const InventoryStockImportPrepareInputSchema = InventoryStockImportPrepareRequestSchema
+export const InventoryStockImportCommitInputSchema = InventoryStockImportCommitRequestSchema
 
 function low(toolName: ToolName): ToolPolicy {
   return { toolName, risk: ToolRisk.Low, mutatesNetSuite: false }

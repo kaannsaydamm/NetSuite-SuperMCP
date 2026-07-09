@@ -12,6 +12,7 @@ Includes:
 - File-backed audit log.
 - NetSuite REST/RESTlet adapter boundaries.
 - Read, write, action, audit, capability, and account-permission tools.
+- Inventory stock import preparation and commit tools for XLS/CSV-derived stock counts.
 
 ## Local Setup
 
@@ -146,6 +147,23 @@ REST metadata, SuiteQL, and the RESTlet action layer.
 `bun run probe:live` uses your real `.env` and calls the MCP tool surface with live-safe probes.
 Read-only tools are called directly when safe IDs can be discovered; write/delete/transform actions
 are exercised through `ns_prepareAction` so NetSuite data is not changed.
+
+## Inventory Stock Imports
+
+For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:
+
+- `ns_prepareInventoryStockImport`
+- `ns_commitInventoryStockImport`
+
+The prepare tool matches each row to NetSuite items with `itemMatchField` (`upccode` by default),
+reads current stock from `inventorybalance` for the target `locationId`, calculates
+`targetQuantity - currentQuantity`, and returns rejected rows plus a confirmation string. It does
+not change NetSuite.
+
+The commit tool recomputes the same plan, requires the exact confirmation string, rejects commits
+while missing/duplicate/ambiguous rows exist, and creates one `inventoryAdjustment` with
+`adjustQtyBy` lines. Required NetSuite IDs are `locationId` and `adjustmentAccountId`; provide
+`subsidiaryId` when the account requires it.
 
 Deployment details are in [docs/deployment.md](docs/deployment.md).
 Agent client setup details are in [docs/client-setup.md](docs/client-setup.md).

@@ -65,3 +65,45 @@ export const RestletActionSchema = z.object({
 })
 
 export type RestletAction = z.infer<typeof RestletActionSchema>
+
+export const InventoryStockImportRowSchema = z.object({
+  itemKey: z.string().min(1),
+  targetQuantity: z.number().finite(),
+  barcode: z.string().optional(),
+  description: z.string().optional(),
+  color: z.string().optional(),
+  size: z.string().optional(),
+  sourceLine: z.number().int().min(1).optional(),
+})
+
+export type InventoryStockImportRow = z.infer<typeof InventoryStockImportRowSchema>
+
+const InventoryStockImportBaseSchema = z.object({
+  rows: z.array(InventoryStockImportRowSchema).min(1).max(1000),
+  locationId: z.string().min(1),
+  adjustmentAccountId: z.string().min(1),
+  subsidiaryId: z.string().min(1).optional(),
+  tranDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  memo: z.string().min(1).max(999).optional(),
+  externalId: z.string().min(1).max(255).optional(),
+  itemMatchField: z.enum(["upccode", "itemid", "externalid"]).default("upccode"),
+  stockField: z.enum(["quantityonhand", "quantityavailable"]).default("quantityonhand"),
+  zeroMissingCurrentStock: z.boolean().default(true),
+})
+
+export const InventoryStockImportPrepareRequestSchema = InventoryStockImportBaseSchema
+
+export type InventoryStockImportPrepareRequest = z.infer<
+  typeof InventoryStockImportPrepareRequestSchema
+>
+
+export const InventoryStockImportCommitRequestSchema = InventoryStockImportBaseSchema.extend({
+  confirmation: z.string().min(1),
+})
+
+export type InventoryStockImportCommitRequest = z.infer<
+  typeof InventoryStockImportCommitRequestSchema
+>
