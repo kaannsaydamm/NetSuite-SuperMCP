@@ -8,6 +8,34 @@ import { FakeNetSuiteClient, testConfig } from "./test-support"
 
 class InventoryImportNetSuiteClient extends FakeNetSuiteClient {
   async runSuiteQl(request: SuiteQlRequest): Promise<JsonObject> {
+    if (request.query.includes("FROM account")) {
+      return {
+        count: 3,
+        items: [
+          {
+            id: "410",
+            acctnumber: "153.01",
+            fullname: "153 Ticari Mallar",
+            accttype: "Other Current Asset",
+            isinactive: "F",
+          },
+          {
+            id: "901",
+            acctnumber: "689.01",
+            fullname: "Inventory Adjustment Expense",
+            accttype: "Expense",
+            isinactive: "F",
+          },
+          {
+            id: "999",
+            acctnumber: "153.99",
+            fullname: "Inactive Stock Account",
+            accttype: "Other Current Asset",
+            isinactive: "T",
+          },
+        ],
+      }
+    }
     if (request.query.includes("FROM item")) {
       return {
         count: 2,
@@ -31,6 +59,40 @@ class InventoryImportNetSuiteClient extends FakeNetSuiteClient {
 }
 
 describe("MCP inventory stock import", () => {
+  it("finds inventory adjustment account candidates without mutating NetSuite", async () => {
+    // Given
+    const fakeNetSuite = new InventoryImportNetSuiteClient()
+    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
+
+    // When
+    const response = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 30,
+      method: "tools/call",
+      params: {
+        name: ToolName.FindInventoryAdjustmentAccounts,
+        arguments: {
+          search: "ticari mallar",
+          preferredAccountNumberPrefix: "153",
+        },
+      },
+    })
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const payload = JSON.parse(body.result.content[0].text)
+
+    // Then
+    expect(response.status).toBe(200)
+    expect(payload.candidates[0]).toMatchObject({
+      id: "410",
+      accountNumber: "153.01",
+      fullName: "153 Ticari Mallar",
+    })
+    expect(payload.candidates.some((candidate: { id: string }) => candidate.id === "999")).toBe(
+      false,
+    )
+    expect(fakeNetSuite.createdRecords).toHaveLength(0)
+  })
+
   it("prepares inventory adjustment deltas without creating records", async () => {
     // Given
     const fakeNetSuite = new InventoryImportNetSuiteClient()

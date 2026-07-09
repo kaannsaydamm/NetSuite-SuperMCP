@@ -165,6 +165,11 @@ while missing/duplicate/ambiguous rows exist, and creates one `inventoryAdjustme
 `adjustQtyBy` lines. Required NetSuite IDs are `locationId` and `adjustmentAccountId`; provide
 `subsidiaryId` when the account requires it.
 
+Use `ns_findInventoryAdjustmentAccounts` to find likely `adjustmentAccountId` values from NetSuite
+accounts without leaving the agent. Pass `search` or `preferredAccountNumberPrefix` when the user
+knows the local chart-of-accounts convention; otherwise it searches generic inventory/stock
+adjustment terms and returns candidate internal IDs for review.
+
 Deployment details are in [docs/deployment.md](docs/deployment.md).
 Agent client setup details are in [docs/client-setup.md](docs/client-setup.md).
 

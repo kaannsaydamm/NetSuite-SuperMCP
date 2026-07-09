@@ -1,5 +1,6 @@
 import { z } from "zod"
 import {
+  InventoryAdjustmentAccountSearchRequestSchema,
   InventoryStockImportCommitRequestSchema,
   InventoryStockImportPrepareRequestSchema,
   RecordCreateRequestSchema,
@@ -43,6 +44,7 @@ export const ToolName = {
   RetryIntegrationJob: "ns_retryIntegrationJob",
   GetMapping: "ns_getMapping",
   UpdateMapping: "ns_updateMapping",
+  FindInventoryAdjustmentAccounts: "ns_findInventoryAdjustmentAccounts",
   PrepareInventoryStockImport: "ns_prepareInventoryStockImport",
   CommitInventoryStockImport: "ns_commitInventoryStockImport",
   PrepareAction: "ns_prepareAction",
@@ -79,6 +81,7 @@ export const toolPolicies = {
   [ToolName.SubmitFields]: medium(ToolName.SubmitFields),
   [ToolName.DeleteRecord]: high(ToolName.DeleteRecord),
   [ToolName.UpdateMapping]: medium(ToolName.UpdateMapping),
+  [ToolName.FindInventoryAdjustmentAccounts]: low(ToolName.FindInventoryAdjustmentAccounts),
   [ToolName.PrepareInventoryStockImport]: low(ToolName.PrepareInventoryStockImport),
   [ToolName.CommitInventoryStockImport]: high(ToolName.CommitInventoryStockImport),
   [ToolName.TransformRecord]: high(ToolName.TransformRecord),
@@ -115,6 +118,8 @@ export const GenericActionInputSchema = z.object({
 })
 
 export const RestletActionInputSchema = RestletActionSchema
+export const InventoryAdjustmentAccountSearchInputSchema =
+  InventoryAdjustmentAccountSearchRequestSchema
 export const InventoryStockImportPrepareInputSchema = InventoryStockImportPrepareRequestSchema
 export const InventoryStockImportCommitInputSchema = InventoryStockImportCommitRequestSchema
 

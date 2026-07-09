@@ -107,3 +107,14 @@ export const InventoryStockImportCommitRequestSchema = InventoryStockImportBaseS
 export type InventoryStockImportCommitRequest = z.infer<
   typeof InventoryStockImportCommitRequestSchema
 >
+
+export const InventoryAdjustmentAccountSearchRequestSchema = z.object({
+  search: z.string().min(1).max(100).optional(),
+  preferredAccountNumberPrefix: z.string().min(1).max(20).optional(),
+  includeInactive: z.boolean().default(false),
+  limit: z.number().int().min(1).max(100).default(25),
+})
+
+export type InventoryAdjustmentAccountSearchRequest = z.infer<
+  typeof InventoryAdjustmentAccountSearchRequestSchema
+>

@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { JsonObject, JsonValue } from "../shared/json"
 import {
+  InventoryAdjustmentAccountSearchInputSchema,
   InventoryStockImportCommitInputSchema,
   InventoryStockImportPrepareInputSchema,
   RecordCreateInputSchema,
@@ -12,6 +13,7 @@ import {
   ToolName,
   TransactionLinesInputSchema,
 } from "./catalog"
+import { findInventoryAdjustmentAccounts } from "./inventory-adjustment-accounts"
 import { commitInventoryStockImport, prepareInventoryStockImport } from "./inventory-stock-import"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
@@ -40,6 +42,7 @@ export function registerRecordTools(server: McpServer, dependencies: ToolDepende
   registerRecordPatchTool(server, dependencies, ToolName.UpdateRecord)
   registerRecordPatchTool(server, dependencies, ToolName.SubmitFields)
   registerDeleteRecordTool(server, dependencies)
+  registerInventoryAdjustmentAccountTool(server, dependencies)
   registerInventoryStockImportTools(server, dependencies)
 }
 
@@ -193,6 +196,28 @@ function registerInventoryStockImportTools(
         dependencies,
         input: jsonAuditInput(input),
         execute: () => commitInventoryStockImport(dependencies.netsuite, input),
+      }),
+  )
+}
+
+function registerInventoryAdjustmentAccountTool(
+  server: McpServer,
+  dependencies: ToolDependencies,
+): void {
+  server.registerTool(
+    ToolName.FindInventoryAdjustmentAccounts,
+    {
+      title: "Find inventory adjustment accounts",
+      description:
+        "Finds likely NetSuite account internal IDs for inventoryAdjustment account using read-only SuiteQL. Prefer the returned candidate id as adjustmentAccountId.",
+      inputSchema: InventoryAdjustmentAccountSearchInputSchema,
+    },
+    async (input) =>
+      runNetSuiteTool({
+        toolName: ToolName.FindInventoryAdjustmentAccounts,
+        dependencies,
+        input: jsonAuditInput(input),
+        execute: () => findInventoryAdjustmentAccounts(dependencies.netsuite, input),
       }),
   )
 }

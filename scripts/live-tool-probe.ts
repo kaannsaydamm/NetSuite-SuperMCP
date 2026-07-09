@@ -101,6 +101,7 @@ function buildProbes(discovered: {
       name: ToolName.CheckAccountPermissions,
       arguments: { recordTypes: ["customer"], includeRestlet: true },
     },
+    { name: ToolName.FindInventoryAdjustmentAccounts, arguments: { limit: 5 } },
     {
       name: ToolName.GetRecordMetadata,
       arguments: { type: "customer", mediaType: "application/schema+json" },
