@@ -11,6 +11,7 @@ const integrationPath = "netsuite/suitescript/supermcp_integration_actions.js"
 const mappingPath = "netsuite/suitescript/supermcp_mapping_actions.js"
 const diagnosticPath = "netsuite/suitescript/supermcp_diagnostic_actions.js"
 const recordExplorerPath = "netsuite/suitescript/supermcp_record_explorer_actions.js"
+const scriptObservabilityPath = "netsuite/suitescript/supermcp_script_observability_actions.js"
 const actionRestletPath = "netsuite/suitescript/supermcp_action_restlet.js"
 
 const mcpTransformActions = [
@@ -28,12 +29,16 @@ const mcpReadActions = [
   ToolName.RunReport,
   ToolName.GetFile,
   ToolName.GetIntegrationLogs,
+  ToolName.GetFailedIntegrationJobs,
+  ToolName.ExplainIntegrationError,
+]
+const mcpScriptObservabilityActions = [
   ToolName.GetScriptLogs,
   ToolName.FindScriptErrors,
   ToolName.ListScripts,
   ToolName.ListScriptDeployments,
-  ToolName.GetFailedIntegrationJobs,
-  ToolName.ExplainIntegrationError,
+  ToolName.GetScriptObservability,
+  "ns_getScriptSources",
 ]
 
 const mcpFileActions = [
@@ -81,6 +86,7 @@ const integrationSource = await readFile(integrationPath, "utf8")
 const mappingSource = await readFile(mappingPath, "utf8")
 const diagnosticSource = await readFile(diagnosticPath, "utf8")
 const recordExplorerSource = await readFile(recordExplorerPath, "utf8")
+const scriptObservabilitySource = await readFile(scriptObservabilityPath, "utf8")
 const actionRestletSource = await readFile(actionRestletPath, "utf8")
 const restletTransformActions = extractRestletActions(transformSource, "TRANSFORM_ACTIONS")
 const restletInventoryActions = extractRestletActions(inventorySource, "INVENTORY_ACTIONS")
@@ -95,6 +101,10 @@ const restletRecordExplorerActions = extractRestletActions(
   recordExplorerSource,
   "RECORD_EXPLORER_ACTIONS",
 )
+const restletScriptObservabilityActions = extractRestletActions(
+  scriptObservabilitySource,
+  "SCRIPT_OBSERVABILITY_ACTIONS",
+)
 const restletSystemActions = extractRestletActions(actionRestletSource, "SYSTEM_ACTIONS")
 
 const transformResult = compareActions(mcpTransformActions, restletTransformActions)
@@ -108,6 +118,10 @@ const mappingResult = compareActions(mcpMappingActions, restletMappingActions)
 const systemResult = compareActions(mcpSystemRestletActions, restletSystemActions)
 const diagnosticResult = compareActions(mcpDiagnosticActions, restletDiagnosticActions)
 const recordExplorerResult = compareActions(mcpRecordExplorerActions, restletRecordExplorerActions)
+const scriptObservabilityResult = compareActions(
+  mcpScriptObservabilityActions,
+  restletScriptObservabilityActions,
+)
 
 if (
   !transformResult.ok ||
@@ -120,6 +134,7 @@ if (
   !mappingResult.ok ||
   !diagnosticResult.ok ||
   !recordExplorerResult.ok ||
+  !scriptObservabilityResult.ok ||
   !systemResult.ok
 ) {
   console.error(
@@ -136,6 +151,7 @@ if (
         mappingPath,
         diagnosticPath,
         recordExplorerPath,
+        scriptObservabilityPath,
         system: systemResult,
         transform: transformResult,
         inventory: inventoryResult,
@@ -147,6 +163,7 @@ if (
         mapping: mappingResult,
         diagnostic: diagnosticResult,
         recordExplorer: recordExplorerResult,
+        scriptObservability: scriptObservabilityResult,
       },
       null,
       2,
@@ -156,7 +173,7 @@ if (
 }
 
 console.log(
-  `restlet contract ok: ${restletSystemActions.length} system actions, ${restletDiagnosticActions.length} diagnostic actions, ${restletRecordExplorerActions.length} record explorer actions, ${restletTransformActions.length} transform actions, ${restletInventoryActions.length} inventory actions, ${restletReadActions.length} read actions, ${restletFileActions.length} file actions, ${restletPlatformActions.length} platform actions, ${restletReportActions.length} report actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
+  `restlet contract ok: ${restletSystemActions.length} system actions, ${restletDiagnosticActions.length} diagnostic actions, ${restletRecordExplorerActions.length} record explorer actions, ${restletScriptObservabilityActions.length} script observability actions, ${restletTransformActions.length} transform actions, ${restletInventoryActions.length} inventory actions, ${restletReadActions.length} read actions, ${restletFileActions.length} file actions, ${restletPlatformActions.length} platform actions, ${restletReportActions.length} report actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
 )
 
 function compareActions(expected: readonly string[], actual: readonly string[]) {

@@ -226,6 +226,19 @@ MCP resources and can be gzip-compressed. Deterministic chunk files prevent comp
 being duplicated after resume. Saved Search definition export, diff, and clone preview are also
 read-only; a clone is created only through the normal prepare/commit operation-plan flow.
 
+## SuiteScript Observability And Source Audit
+
+`ns_getScriptObservability` reads native script, deployment, execution-log, and scheduled-instance
+evidence directly by script or deployment ID; it does not require an account-specific Saved Search.
+`ns_analyzeScript`, `ns_findScriptDependencies`, `ns_findRecordWriters`,
+`ns_findRecordReaders`, `ns_findFieldUsage`, and `ns_findDuplicateScriptLogic` read bounded source
+sets through the permanent RESTlet module. Findings include file, line, rule, severity, confidence,
+and redacted evidence. Secret-like literals are represented only by a SHA-256 fingerprint.
+
+Static analysis is deliberately conservative. Dynamic AMD dependencies and unsupported dependency
+types are returned as `unknown`; they are never invented. Execution values remain as NetSuite
+returns them. SuperMCP does not compare or normalize date/time values to infer stuck executions.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

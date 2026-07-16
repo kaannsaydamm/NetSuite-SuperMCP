@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolCount": 101,
+  "toolCount": 108,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -190,6 +190,120 @@
       ],
       "risk": "low",
       "title": "analyze Role Access"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "maxScripts": 1,
+          "scriptId": "customscript_example"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "deploymentId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "maxScripts": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "scriptId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "required": [
+          "maxScripts"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_analyzeScript",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "sourceCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "SuiteScript"
+      ],
+      "risk": "low",
+      "title": "analyze Script"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -8768,6 +8882,114 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "maxScripts": 10,
+          "scriptIds": [
+            "customscript_example"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "maxScripts": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "scriptIds": {
+            "items": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "maxScripts"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_findDuplicateScriptLogic",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "sourceCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "SuiteScript"
+      ],
+      "risk": "low",
+      "title": "find Duplicate Script Logic"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "label": "Customer",
           "limit": 10,
           "type": "salesOrder"
@@ -8968,6 +9190,123 @@
       ],
       "risk": "low",
       "title": "find Field By Label"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "fieldId": "custbody_external_id",
+          "scriptIds": [
+            "customscript_example"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "fieldId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxScripts": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "scriptIds": {
+            "items": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "maxScripts",
+          "fieldId"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_findFieldUsage",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "sourceCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "find Field Usage"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -9281,6 +9620,340 @@
       ],
       "risk": "low",
       "title": "find Record By External Id"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "recordType": "salesorder",
+          "scriptIds": [
+            "customscript_example"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "maxScripts": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "scriptIds": {
+            "items": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "maxScripts",
+          "recordType"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_findRecordReaders",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "sourceCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "find Record Readers"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "recordType": "salesorder",
+          "scriptIds": [
+            "customscript_example"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "maxScripts": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "scriptIds": {
+            "items": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "maxScripts",
+          "recordType"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_findRecordWriters",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "sourceCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "find Record Writers"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "maxScripts": 10,
+          "scriptIds": [
+            "customscript_example"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "maxScripts": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "scriptIds": {
+            "items": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "maxScripts"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_findScriptDependencies",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "sourceCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "SuiteScript"
+      ],
+      "risk": "low",
+      "title": "find Script Dependencies"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -12276,6 +12949,120 @@
       ],
       "risk": "low",
       "title": "get Script Logs"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "maxExecutions": 25,
+          "scriptId": "customscript_example"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "deploymentId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "maxExecutions": {
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "scriptId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "required": [
+          "maxExecutions"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getScriptObservability",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "sourceCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "SuiteScript"
+      ],
+      "risk": "low",
+      "title": "get Script Observability"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",

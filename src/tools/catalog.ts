@@ -124,6 +124,13 @@ export const ToolName = {
   ExportSavedSearchDefinition: "ns_exportSavedSearchDefinition",
   DiffSavedSearchDefinitions: "ns_diffSavedSearchDefinitions",
   PreviewCloneSavedSearch: "ns_previewCloneSavedSearch",
+  GetScriptObservability: "ns_getScriptObservability",
+  AnalyzeScript: "ns_analyzeScript",
+  FindScriptDependencies: "ns_findScriptDependencies",
+  FindRecordWriters: "ns_findRecordWriters",
+  FindRecordReaders: "ns_findRecordReaders",
+  FindFieldUsage: "ns_findFieldUsage",
+  FindDuplicateScriptLogic: "ns_findDuplicateScriptLogic",
 } as const
 
 export type ToolName = (typeof ToolName)[keyof typeof ToolName]
@@ -212,6 +219,13 @@ export const toolPolicies = {
   [ToolName.ExportSavedSearchDefinition]: low(ToolName.ExportSavedSearchDefinition),
   [ToolName.DiffSavedSearchDefinitions]: low(ToolName.DiffSavedSearchDefinitions),
   [ToolName.PreviewCloneSavedSearch]: low(ToolName.PreviewCloneSavedSearch),
+  [ToolName.GetScriptObservability]: low(ToolName.GetScriptObservability),
+  [ToolName.AnalyzeScript]: low(ToolName.AnalyzeScript),
+  [ToolName.FindScriptDependencies]: low(ToolName.FindScriptDependencies),
+  [ToolName.FindRecordWriters]: low(ToolName.FindRecordWriters),
+  [ToolName.FindRecordReaders]: low(ToolName.FindRecordReaders),
+  [ToolName.FindFieldUsage]: low(ToolName.FindFieldUsage),
+  [ToolName.FindDuplicateScriptLogic]: low(ToolName.FindDuplicateScriptLogic),
   [ToolName.CreateRecord]: medium(ToolName.CreateRecord),
   [ToolName.UpdateRecord]: medium(ToolName.UpdateRecord),
   [ToolName.SubmitFields]: medium(ToolName.SubmitFields),

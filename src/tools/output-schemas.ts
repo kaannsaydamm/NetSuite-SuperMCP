@@ -142,6 +142,13 @@ const ToolDescriptionOutputSchema = z.object({
   outputSchema: JsonValueSchema,
 })
 
+const ScriptAnalysisOutputSchema = z
+  .object({
+    sourceCount: z.number().int().nonnegative().optional(),
+    gaps: z.array(JsonValueSchema).optional(),
+  })
+  .loose()
+
 const ToolExampleOutputSchema = z.object({
   name: z.string(),
   valid: JsonValueSchema,
@@ -312,6 +319,14 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.ListScripts:
     case ToolName.ListScriptDeployments:
       return RestletActionOutputSchema
+    case ToolName.GetScriptObservability:
+    case ToolName.AnalyzeScript:
+    case ToolName.FindScriptDependencies:
+    case ToolName.FindRecordWriters:
+    case ToolName.FindRecordReaders:
+    case ToolName.FindFieldUsage:
+    case ToolName.FindDuplicateScriptLogic:
+      return ScriptAnalysisOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:

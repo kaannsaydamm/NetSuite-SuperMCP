@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.33
+
+- Added native script/deployment discovery and execution evidence without caller-supplied Saved
+  Search IDs.
+- Added bounded SuiteScript source retrieval through a permanent RESTlet action.
+- Added conservative source audit, AMD dependency graph, record reader/writer, field usage, and
+  exact duplicate-logic tools.
+- Findings include file, line, rule, severity, confidence, and redacted evidence; secret-like
+  literals are never returned.
+- Unsupported dependency types and date-dependent stuck/governance assessments are reported as
+  unknown instead of inferred.
+
 ## 0.1.32
 
 - Added tokenized read-only SuiteQL validation, parameterized query building, cost warnings, and

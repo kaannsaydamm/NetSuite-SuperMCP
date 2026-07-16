@@ -5,13 +5,9 @@
 define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, search) => {
   const READ_ACTIONS = {
     ns_explainIntegrationError: explainIntegrationError,
-    ns_findScriptErrors: runSavedSearch,
     ns_getFailedIntegrationJobs: runSavedSearch,
     ns_getFile: getFile,
     ns_getIntegrationLogs: runSavedSearch,
-    ns_getScriptLogs: runSavedSearch,
-    ns_listScriptDeployments: runSavedSearch,
-    ns_listScripts: runSavedSearch,
     ns_runReport: runReport,
     ns_runSavedSearch: runSavedSearch,
   }

@@ -322,17 +322,17 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Add permanent script-observability RESTlet actions backed by supported script, deployment, and execution-log searches.
-- [ ] Parse AMD `define` dependencies and known SuiteScript API calls into an indexed dependency graph.
-- [ ] Add conservative static rules with evidence lines and severity; never claim full semantic proof from regex alone.
-- [ ] Scan secrets locally and return redacted fingerprints, never secret contents.
-- [ ] Correlate script executions with affected records and operation audit IDs where evidence exists.
+- [x] Add permanent script-observability RESTlet actions backed by supported script, deployment, and execution-log searches.
+- [x] Parse AMD `define` dependencies and known SuiteScript API calls into an indexed dependency graph.
+- [x] Add conservative static rules with evidence lines and severity; never claim full semantic proof from regex alone.
+- [x] Scan secrets locally and return redacted fingerprints, never secret contents.
+- [x] Correlate script executions with affected records and operation audit IDs where evidence exists; otherwise return explicit gaps.
 
 ### Acceptance Gate
 
-- [ ] Script tools work with script/deployment IDs directly.
-- [ ] Every finding includes file, line, rule, severity, and evidence.
-- [ ] Unsupported dependency types are reported as unknown rather than inferred.
+- [x] Script tools work with script/deployment IDs directly.
+- [x] Every finding includes file, line, rule, severity, and evidence.
+- [x] Unsupported dependency types are reported as unknown rather than inferred.
 
 ---
 

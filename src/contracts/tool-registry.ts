@@ -70,6 +70,13 @@ import {
   SystemNotesInputSchema,
   TransactionChainInputSchema,
 } from "./record-explorer-schemas"
+import {
+  FieldUsageInputSchema,
+  RecordUsageInputSchema,
+  ScriptGraphInputSchema,
+  ScriptObservabilityInputSchema,
+  ScriptSelectorSchema,
+} from "./script-schemas"
 
 export type ToolContract = {
   readonly name: ToolName
@@ -284,6 +291,18 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return DiffSavedSearchDefinitionsInputSchema
     case ToolName.PreviewCloneSavedSearch:
       return PreviewCloneSavedSearchInputSchema
+    case ToolName.GetScriptObservability:
+      return ScriptObservabilityInputSchema
+    case ToolName.AnalyzeScript:
+      return ScriptSelectorSchema
+    case ToolName.FindScriptDependencies:
+    case ToolName.FindDuplicateScriptLogic:
+      return ScriptGraphInputSchema
+    case ToolName.FindRecordWriters:
+    case ToolName.FindRecordReaders:
+      return RecordUsageInputSchema
+    case ToolName.FindFieldUsage:
+      return FieldUsageInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -505,6 +524,18 @@ function validExampleFor(name: ToolName): JsonValue {
         targetTitle: "Example clone",
         targetSearchId: "customsearch_example_clone",
       }
+    case ToolName.GetScriptObservability:
+      return { scriptId: "customscript_example", maxExecutions: 25 }
+    case ToolName.AnalyzeScript:
+      return { scriptId: "customscript_example", maxScripts: 1 }
+    case ToolName.FindScriptDependencies:
+    case ToolName.FindDuplicateScriptLogic:
+      return { scriptIds: ["customscript_example"], maxScripts: 10 }
+    case ToolName.FindRecordWriters:
+    case ToolName.FindRecordReaders:
+      return { recordType: "salesorder", scriptIds: ["customscript_example"] }
+    case ToolName.FindFieldUsage:
+      return { fieldId: "custbody_external_id", scriptIds: ["customscript_example"] }
     default:
       return actionExampleFor(name)
   }

@@ -3,8 +3,8 @@
 This file is generated from the current MCP contract registry.
 
 - Contract schema version: `1`
-- Contract fingerprint: `629daa61cd52db1335d0505d7c153568da7f2a700820e5285b10390f614f4ce9`
-- Tool count: `101`
+- Contract fingerprint: `64eebf61bd53e1f4555b02851ffc5a69b6508312e99b5b0ccdffb7855b2bcfd4`
+- Tool count: `108`
 - Cache behavior: ChatGPT custom apps cache MCP tool definitions.
 
 After any fingerprint or tool-count change, refresh or recreate the ChatGPT custom app connector before testing. A connector that still reports an older fingerprint or tool count is incompatible with this build even when the HTTP endpoint is reachable.
