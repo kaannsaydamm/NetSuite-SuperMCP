@@ -276,6 +276,26 @@ Rollback output includes only files whose previous content and checksum were cap
 cleanup, technical-debt, orphan, and documentation outputs never invent owners or delete objects;
 cleanup remains a proposal for the normal operation-plan flow.
 
+## Business Metrics And Lineage
+
+Business terms and metrics are requester-owned, immutable `id + version` definitions stored in
+`SEMANTIC_STORE_PATH`. Define them with `ns_defineBusinessTerm` and `ns_defineMetric`; retrieve and
+compare them with `ns_getMetricDefinition` and `ns_compareMetricDefinitions`. Definitions explicitly
+name their NetSuite table, fields, aggregation, dimensions, filters, exclusions, currency metadata,
+owner, and source references. SuperMCP ships no account-specific meaning for sales, stock, margin,
+returns, active items, or other ambiguous business terms.
+
+`ns_planBusinessQuery` and `ns_validateMetricPlan` compile only the selected metric version into a
+parameterized, read-only SuiteQL plan and return its table, fields, formula, filters, exclusions,
+lineage, and deterministic fingerprint before execution. `ns_runMetric` executes the bounded plan.
+Every result row carries its formula, query and plan fingerprints, term references, source table and
+fields, and caller-supplied record, integration, Saved Search, or query references.
+
+`ns_generateMetricReport` returns the same evidence-backed rows as a structured report.
+`ns_exportMetricResult` writes a bounded JSONL or CSV resource, optionally gzip-compressed, with the
+evidence attached. No semantic tool normalizes, converts, compares, infers, or rewrites date/time
+values.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

@@ -8,6 +8,7 @@ import type { NetSuiteClient } from "../netsuite/client"
 import type { OAuthControl } from "../netsuite/oauth"
 import type { OperationStore } from "../operations/operation-store"
 import type { CursorCodec } from "../query/suiteql"
+import type { SemanticStore } from "../semantics/semantic-store"
 
 export type ToolDependencies = {
   readonly config: AppConfig
@@ -22,6 +23,7 @@ export type ToolDependencies = {
   readonly cursorCodec: CursorCodec
   readonly integrationStore: IntegrationStore
   readonly customizationStore: CustomizationStore
+  readonly semanticStore: SemanticStore
   readonly requester: string
   readonly client: string
 }

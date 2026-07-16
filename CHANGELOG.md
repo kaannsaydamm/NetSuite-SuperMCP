@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.36
+
+- Added requester-owned, immutable versioned business terms and metric definitions.
+- Added deterministic compilation of supported metrics into parameterized read-only SuiteQL plans.
+- Added metric planning, validation, bounded execution, definition drift, and lineage tracing.
+- Added evidence-backed reports and JSONL/CSV metric exports with optional gzip compression.
+- Every metric result includes its formula, query and plan fingerprints, source fields, and explicit
+  source references.
+- No account-specific metric meanings or date/time normalization behavior were added.
+
 ## 0.1.35
 
 - Added native customization inventory with explicit gaps for inaccessible or unstable-ID objects.

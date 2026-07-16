@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolCount": 143,
+  "toolCount": 153,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -2544,6 +2544,86 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "after": {
+            "metricId": "inventory.onhand",
+            "metricVersion": "2.0"
+          },
+          "before": {
+            "metricId": "inventory.onhand",
+            "metricVersion": "1.0"
+          }
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "additionalProperties": false,
+            "properties": {
+              "metricId": {
+                "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+                "type": "string"
+              },
+              "metricVersion": {
+                "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "metricId",
+              "metricVersion"
+            ],
+            "type": "object"
+          },
+          "before": {
+            "additionalProperties": false,
+            "properties": {
+              "metricId": {
+                "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+                "type": "string"
+              },
+              "metricVersion": {
+                "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "metricId",
+              "metricVersion"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "before",
+          "after"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_compareMetricDefinitions",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "compare Metric Definitions"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "permissions": [],
           "recordFamilies": [
             "customer"
@@ -4829,6 +4909,109 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "description": "Location field used by this account's approved inventory metric.",
+          "field": "location",
+          "id": "inventory.location",
+          "label": "Inventory location",
+          "sourceRefs": [
+            "record:location"
+          ],
+          "table": "inventorybalance",
+          "valueType": "identifier",
+          "version": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "field": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "owner": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "sourceRefs": {
+            "default": [],
+            "items": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "type": "array"
+          },
+          "table": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+            "type": "string"
+          },
+          "valueType": {
+            "enum": [
+              "string",
+              "number",
+              "boolean",
+              "currency",
+              "identifier"
+            ],
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "label",
+          "description",
+          "table",
+          "field",
+          "valueType",
+          "sourceRefs"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_defineBusinessTerm",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "define Business Term"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "domain": "orders",
           "fields": {
             "amount": {
@@ -4998,6 +5181,338 @@
       ],
       "risk": "low",
       "title": "define Integration Contract"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "aggregation": "sum",
+          "businessTerms": [
+            "stock",
+            "inventory"
+          ],
+          "description": "Physical on-hand units using this account's approved inventory balance definition.",
+          "dimensions": [
+            {
+              "alias": "location",
+              "field": "location",
+              "termId": "inventory.location",
+              "termVersion": "1.0"
+            }
+          ],
+          "exclusions": [],
+          "filters": [],
+          "id": "inventory.onhand",
+          "label": "On-hand inventory",
+          "measureField": "onhand",
+          "sourceRefs": [
+            "savedsearch:customsearch_inventory_source"
+          ],
+          "table": "inventorybalance",
+          "version": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "aggregation": {
+            "enum": [
+              "count",
+              "countDistinct",
+              "sum",
+              "avg",
+              "min",
+              "max"
+            ],
+            "type": "string"
+          },
+          "businessTerms": {
+            "default": [],
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "type": "array"
+          },
+          "currency": {
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "maxLength": 16,
+                "minLength": 3,
+                "type": "string"
+              },
+              "field": {
+                "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "code"
+            ],
+            "type": "object"
+          },
+          "description": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "dimensions": {
+            "default": [],
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "alias": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+                  "type": "string"
+                },
+                "field": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+                  "type": "string"
+                },
+                "termId": {
+                  "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+                  "type": "string"
+                },
+                "termVersion": {
+                  "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "field",
+                "alias"
+              ],
+              "type": "object"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "exclusions": {
+            "default": [],
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "field": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+                  "type": "string"
+                },
+                "operator": {
+                  "enum": [
+                    "=",
+                    "!=",
+                    "<>",
+                    ">",
+                    ">=",
+                    "<",
+                    "<=",
+                    "LIKE",
+                    "IN",
+                    "IS NULL",
+                    "IS NOT NULL"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "values": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "maxItems": 200,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "field",
+                "operator"
+              ],
+              "type": "object"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "filters": {
+            "default": [],
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "field": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+                  "type": "string"
+                },
+                "operator": {
+                  "enum": [
+                    "=",
+                    "!=",
+                    "<>",
+                    ">",
+                    ">=",
+                    "<",
+                    "<=",
+                    "LIKE",
+                    "IN",
+                    "IS NULL",
+                    "IS NOT NULL"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "values": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "maxItems": 200,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "field",
+                "operator"
+              ],
+              "type": "object"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "id": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "measureField": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+            "type": "string"
+          },
+          "measureTermId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "measureTermVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          },
+          "owner": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "sourceRefs": {
+            "default": [],
+            "items": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "table": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "label",
+          "description",
+          "table",
+          "aggregation",
+          "businessTerms",
+          "dimensions",
+          "filters",
+          "exclusions",
+          "sourceRefs"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_defineMetric",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "define Metric"
     },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
@@ -8987,6 +9502,100 @@
         "invalid": null,
         "valid": {
           "compression": "gzip",
+          "dimensions": [
+            "location"
+          ],
+          "format": "jsonl",
+          "limit": 100,
+          "metricId": "inventory.onhand",
+          "metricVersion": "1.0",
+          "query": "Export the defined stock metric by location"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "compression": {
+            "default": "gzip",
+            "enum": [
+              "none",
+              "gzip"
+            ],
+            "type": "string"
+          },
+          "dimensions": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "format": {
+            "default": "jsonl",
+            "enum": [
+              "jsonl",
+              "csv"
+            ],
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "metricId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "metricVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          },
+          "query": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "metricId",
+          "metricVersion",
+          "query",
+          "dimensions",
+          "limit",
+          "format",
+          "compression"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_exportMetricResult",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "export Metric Result"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "compression": "gzip",
           "format": "csv",
           "kind": "savedSearch",
           "pageSize": 500,
@@ -11384,6 +11993,87 @@
       ],
       "risk": "high",
       "title": "fulfill Sales Order"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "dimensions": [
+            "location"
+          ],
+          "limit": 100,
+          "metricId": "inventory.onhand",
+          "metricVersion": "1.0",
+          "query": "Show the defined stock metric by location",
+          "title": "On-hand inventory by location"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "dimensions": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "limit": {
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "metricId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "metricVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          },
+          "query": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "metricId",
+          "metricVersion",
+          "query",
+          "dimensions",
+          "limit",
+          "title"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_generateMetricReport",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "generate Metric Report"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -13800,6 +14490,52 @@
       ],
       "risk": "low",
       "title": "get Mapping"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "metricId": "inventory.onhand",
+          "metricVersion": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "metricId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "metricVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metricId",
+          "metricVersion"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getMetricDefinition",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Metric Definition"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -18434,6 +19170,80 @@
       ],
       "risk": "medium",
       "title": "move File"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "dimensions": [
+            "location"
+          ],
+          "limit": 100,
+          "metricId": "inventory.onhand",
+          "metricVersion": "1.0",
+          "query": "Show the defined stock metric by location"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "dimensions": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "limit": {
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "metricId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "metricVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          },
+          "query": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "metricId",
+          "metricVersion",
+          "query",
+          "dimensions",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_planBusinessQuery",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "plan Business Query"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -24460,6 +25270,80 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "dimensions": [
+            "location"
+          ],
+          "limit": 100,
+          "metricId": "inventory.onhand",
+          "metricVersion": "1.0",
+          "query": "Show the defined stock metric by location"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "dimensions": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "limit": {
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "metricId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "metricVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          },
+          "query": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "metricId",
+          "metricVersion",
+          "query",
+          "dimensions",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_runMetric",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "run Metric"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "cases": [
             {
               "action": "ns_createSavedSearch",
@@ -26676,6 +27560,52 @@
       "title": "test OAuth Credentials"
     },
     {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "metricId": "inventory.onhand",
+          "metricVersion": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "metricId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "metricVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metricId",
+          "metricVersion"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_traceMetricLineage",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "trace Metric Lineage"
+    },
+    {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
       "effects": [
         "May change NetSuite only during an explicit commit phase."
@@ -28666,6 +29596,80 @@
       ],
       "risk": "low",
       "title": "validate Integration Contract"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "dimensions": [
+            "location"
+          ],
+          "limit": 100,
+          "metricId": "inventory.onhand",
+          "metricVersion": "1.0",
+          "query": "Show the defined stock metric by location"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "dimensions": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_$#]*$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "limit": {
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "metricId": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "metricVersion": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          },
+          "query": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "metricId",
+          "metricVersion",
+          "query",
+          "dimensions",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_validateMetricPlan",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "validate Metric Plan"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",

@@ -413,17 +413,17 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Store business terms and metrics as versioned declarative definitions, never hardcoded account assumptions.
-- [ ] Compile supported definitions into validated SuiteQL/search plans.
-- [ ] Return the planned tables, fields, filters, formula, and exclusions before execution.
-- [ ] Attach lineage nodes and evidence references to every metric result.
-- [ ] Require explicit user-provided definitions for ambiguous terms such as sales, stock, margin, return, and active item.
+- [x] Store business terms and metrics as versioned declarative definitions, never hardcoded account assumptions.
+- [x] Compile supported definitions into validated SuiteQL/search plans.
+- [x] Return the planned tables, fields, filters, formula, and exclusions before execution.
+- [x] Attach lineage nodes and evidence references to every metric result.
+- [x] Require explicit user-provided definitions for ambiguous terms such as sales, stock, margin, return, and active item.
 
 ### Acceptance Gate
 
-- [ ] The same metric version produces the same query plan for the same schema.
-- [ ] Ambiguous business terms never silently choose a definition.
-- [ ] Every reported number links to its formula and source evidence.
+- [x] The same metric version produces the same query plan for the same schema.
+- [x] Ambiguous business terms never silently choose a definition.
+- [x] Every reported number links to its formula and source evidence.
 
 ---
 

@@ -11,6 +11,7 @@ import { OAuthNetSuiteClient } from "./netsuite/client"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
 import { OperationStore } from "./operations/operation-store"
 import { CursorCodec } from "./query/suiteql"
+import { SemanticStore } from "./semantics/semantic-store"
 import { registerTools } from "./tools/registry"
 
 const parsedConfig = parseConfig(process.env)
@@ -30,6 +31,7 @@ const exportStore = new ExportStore(config.exportDirectory)
 const cursorCodec = new CursorCodec(Buffer.from(config.cursorSecret))
 const integrationStore = new IntegrationStore(config.integrationStorePath)
 const customizationStore = new CustomizationStore(config.customizationStorePath)
+const semanticStore = new SemanticStore(config.semanticStorePath)
 const server = new McpServer(
   { name: config.serverName, version: config.serverVersion },
   {
@@ -48,6 +50,7 @@ registerTools(server, {
   cursorCodec,
   integrationStore,
   customizationStore,
+  semanticStore,
   requester: process.env["MCP_REQUESTER"] ?? "local-agent",
   client: process.env["MCP_CLIENT"] ?? "stdio",
 })

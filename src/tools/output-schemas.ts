@@ -13,6 +13,7 @@ import {
 } from "../contracts/identity-schemas"
 import { QueryOutputSchema } from "../contracts/query-schemas"
 import { RecordExplorerOutputSchema } from "../contracts/record-explorer-schemas"
+import { SemanticOutputSchema } from "../contracts/semantic-schemas"
 import { OperationPlanSchema } from "../operations/operation-plan"
 import { JsonValueSchema } from "../shared/json"
 import { ToolName } from "./catalog"
@@ -367,6 +368,17 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.PlanCustomizationCleanup:
     case ToolName.GenerateSystemDocumentation:
       return CustomizationOutputSchema
+    case ToolName.DefineBusinessTerm:
+    case ToolName.DefineMetric:
+    case ToolName.GetMetricDefinition:
+    case ToolName.PlanBusinessQuery:
+    case ToolName.ValidateMetricPlan:
+    case ToolName.RunMetric:
+    case ToolName.CompareMetricDefinitions:
+    case ToolName.TraceMetricLineage:
+    case ToolName.GenerateMetricReport:
+    case ToolName.ExportMetricResult:
+      return SemanticOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:

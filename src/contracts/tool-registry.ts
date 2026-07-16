@@ -107,6 +107,18 @@ import {
   ScriptObservabilityInputSchema,
   ScriptSelectorSchema,
 } from "./script-schemas"
+import {
+  CompareMetricDefinitionsInputSchema,
+  DefineBusinessTermInputSchema,
+  DefineMetricInputSchema,
+  ExportMetricResultInputSchema,
+  GenerateMetricReportInputSchema,
+  MetricRefInputSchema,
+  PlanBusinessQueryInputSchema,
+  RunMetricInputSchema,
+  TraceMetricLineageInputSchema,
+  ValidateMetricPlanInputSchema,
+} from "./semantic-schemas"
 
 export type ToolContract = {
   readonly name: ToolName
@@ -394,6 +406,26 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return CleanupPlanInputSchema
     case ToolName.GenerateSystemDocumentation:
       return GenerateCustomizationDocsInputSchema
+    case ToolName.DefineBusinessTerm:
+      return DefineBusinessTermInputSchema
+    case ToolName.DefineMetric:
+      return DefineMetricInputSchema
+    case ToolName.GetMetricDefinition:
+      return MetricRefInputSchema
+    case ToolName.PlanBusinessQuery:
+      return PlanBusinessQueryInputSchema
+    case ToolName.ValidateMetricPlan:
+      return ValidateMetricPlanInputSchema
+    case ToolName.RunMetric:
+      return RunMetricInputSchema
+    case ToolName.CompareMetricDefinitions:
+      return CompareMetricDefinitionsInputSchema
+    case ToolName.TraceMetricLineage:
+      return TraceMetricLineageInputSchema
+    case ToolName.GenerateMetricReport:
+      return GenerateMetricReportInputSchema
+    case ToolName.ExportMetricResult:
+      return ExportMetricResultInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -759,8 +791,83 @@ function validExampleFor(name: ToolName): JsonValue {
       }
     case ToolName.GenerateSystemDocumentation:
       return { title: "NetSuite Customizations", customizations: [customizationExample()] }
+    case ToolName.DefineBusinessTerm:
+      return {
+        id: "inventory.location",
+        version: "1.0",
+        label: "Inventory location",
+        description: "Location field used by this account's approved inventory metric.",
+        table: "inventorybalance",
+        field: "location",
+        valueType: "identifier",
+        sourceRefs: ["record:location"],
+      }
+    case ToolName.DefineMetric:
+      return metricExample()
+    case ToolName.GetMetricDefinition:
+    case ToolName.TraceMetricLineage:
+      return { metricId: "inventory.onhand", metricVersion: "1.0" }
+    case ToolName.PlanBusinessQuery:
+    case ToolName.ValidateMetricPlan:
+    case ToolName.RunMetric:
+      return {
+        metricId: "inventory.onhand",
+        metricVersion: "1.0",
+        query: "Show the defined stock metric by location",
+        dimensions: ["location"],
+        limit: 100,
+      }
+    case ToolName.CompareMetricDefinitions:
+      return {
+        before: { metricId: "inventory.onhand", metricVersion: "1.0" },
+        after: { metricId: "inventory.onhand", metricVersion: "2.0" },
+      }
+    case ToolName.GenerateMetricReport:
+      return {
+        title: "On-hand inventory by location",
+        metricId: "inventory.onhand",
+        metricVersion: "1.0",
+        query: "Show the defined stock metric by location",
+        dimensions: ["location"],
+        limit: 100,
+      }
+    case ToolName.ExportMetricResult:
+      return {
+        metricId: "inventory.onhand",
+        metricVersion: "1.0",
+        query: "Export the defined stock metric by location",
+        dimensions: ["location"],
+        limit: 100,
+        format: "jsonl",
+        compression: "gzip",
+      }
     default:
       return actionExampleFor(name)
+  }
+}
+
+function metricExample(): JsonValue {
+  return {
+    id: "inventory.onhand",
+    version: "1.0",
+    label: "On-hand inventory",
+    description:
+      "Physical on-hand units using this account's approved inventory balance definition.",
+    table: "inventorybalance",
+    aggregation: "sum",
+    measureField: "onhand",
+    businessTerms: ["stock", "inventory"],
+    dimensions: [
+      {
+        field: "location",
+        alias: "location",
+        termId: "inventory.location",
+        termVersion: "1.0",
+      },
+    ],
+    filters: [],
+    exclusions: [],
+    sourceRefs: ["savedsearch:customsearch_inventory_source"],
   }
 }
 

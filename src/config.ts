@@ -53,6 +53,7 @@ const ConfigSchema = z
     integrationStorePath: z.string().min(1),
     customizationStorePath: z.string().min(1),
     customizationProjectDirectory: z.string().min(1),
+    semanticStorePath: z.string().min(1),
     cursorSecret: z.string().min(16),
   })
   .superRefine((value, context) => {
@@ -106,6 +107,7 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
       env["CUSTOMIZATION_STORE_PATH"] ?? "./data/customization-deployments.json",
     customizationProjectDirectory:
       env["CUSTOMIZATION_PROJECT_DIRECTORY"] ?? "./data/customization-projects",
+    semanticStorePath: env["SEMANTIC_STORE_PATH"] ?? "./data/semantic-definitions.json",
     cursorSecret:
       env["MCP_CURSOR_SECRET"] ??
       env["MCP_BEARER_TOKEN"] ??
