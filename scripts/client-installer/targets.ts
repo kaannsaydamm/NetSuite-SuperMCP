@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs"
 import { join, resolve } from "node:path"
 
+import { SERVER_ENV_KEYS } from "./config"
 import { readEnvFile } from "./io"
 
 export type JsonTarget = {
@@ -23,16 +24,39 @@ export function createInstallerPaths(scriptDir: string): InstallerPaths {
   const packageRoot = resolve(scriptDir, "..")
   const workspaceRoot = resolve(process.cwd())
   const home = process.env["USERPROFILE"] ?? process.env["HOME"] ?? "."
+  const fileEnv =
+    readEnvFile(join(workspaceRoot, ".env")) ??
+    readEnvFile(join(packageRoot, ".env")) ??
+    readEnvFile(join(packageRoot, ".env.example")) ??
+    {}
   return {
     packageRoot,
     workspaceRoot,
     stdioEntry: join(packageRoot, "src", "stdio.ts"),
     codexConfig: join(home, ".codex", "config.toml"),
-    env:
-      readEnvFile(join(workspaceRoot, ".env")) ??
-      readEnvFile(join(packageRoot, ".env")) ??
-      readEnvFile(join(packageRoot, ".env.example")) ??
-      {},
+    env: mergeInstallerEnv(fileEnv, process.env),
+  }
+}
+
+export function mergeInstallerEnv(
+  fileEnv: Readonly<Record<string, string>>,
+  processEnv: NodeJS.ProcessEnv,
+): Record<string, string> {
+  const explicitEnv: Record<string, string> = {}
+  for (const [key, value] of Object.entries(processEnv)) {
+    if (
+      !SERVER_ENV_KEYS.has(key) ||
+      value === undefined ||
+      value.includes("\n") ||
+      value.includes("\r")
+    ) {
+      continue
+    }
+    explicitEnv[key] = value
+  }
+  return {
+    ...fileEnv,
+    ...explicitEnv,
   }
 }
 

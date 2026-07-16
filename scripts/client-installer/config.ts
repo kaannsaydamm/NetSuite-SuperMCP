@@ -1,6 +1,6 @@
 import type { InstallerPaths } from "./targets"
 
-const SERVER_ENV_KEYS = new Set([
+export const SERVER_ENV_KEYS = new Set([
   "MCP_SERVER_NAME",
   "MCP_SERVER_VERSION_OVERRIDE",
   "MCP_HOST",
@@ -62,7 +62,7 @@ export function createCodexBlock(paths: InstallerPaths): string {
 
 export function replaceTomlServer(current: string, block: string): string {
   const pattern =
-    /\n?\[mcp_servers\.netsuite-supermcp\][\s\S]*?(?=\n\[mcp_servers\.|\n\[[^\]]+\]|\s*$)/g
+    /^\[mcp_servers\.netsuite-supermcp(?:\.[^\]]+)?\][\s\S]*?(?=^\[(?!mcp_servers\.netsuite-supermcp(?:\.|\]))|(?![\s\S]))/gm
   const cleaned = current.replace(pattern, "").trimEnd()
   return `${cleaned}${block}`
 }

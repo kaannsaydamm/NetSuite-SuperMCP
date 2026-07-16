@@ -28,7 +28,7 @@ if (args.has("--list")) {
   process.exit(0)
 }
 
-const requested = process.argv.find((arg) => arg.startsWith("--target="))?.split("=")[1]
+const requested = readTargetArgument(process.argv.slice(2))
 const selected = await selectTargets(requested)
 await ensureEnvFile()
 await installTargets(selected)
@@ -153,4 +153,20 @@ function printSnippet(): void {
       2,
     ),
   )
+}
+
+function readTargetArgument(args: readonly string[]): string | undefined {
+  const equalsArgument = args.find((arg) => arg.startsWith("--target="))
+  if (equalsArgument !== undefined) {
+    return equalsArgument.slice("--target=".length)
+  }
+  const targetIndex = args.indexOf("--target")
+  if (targetIndex === -1) {
+    return undefined
+  }
+  const target = args[targetIndex + 1]
+  if (target === undefined || target.startsWith("--")) {
+    throw new Error("--target requires a target id")
+  }
+  return target
 }
