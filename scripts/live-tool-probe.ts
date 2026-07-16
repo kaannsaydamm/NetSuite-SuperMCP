@@ -22,6 +22,20 @@ type MpcToolCall = {
   readonly arguments: JsonObject
 }
 
+const STATEFUL_OR_PREREQUISITE_TOOLS = new Set<ToolName>([
+  ToolName.CreateReadJob,
+  ToolName.GetJobStatus,
+  ToolName.RunJobStep,
+  ToolName.CancelJob,
+  ToolName.ResumeJob,
+  ToolName.IncrementalExport,
+  ToolName.ExportSuiteQl,
+  ToolName.ExportSavedSearch,
+  ToolName.ExportSavedSearchDefinition,
+  ToolName.DiffSavedSearchDefinitions,
+  ToolName.PreviewCloneSavedSearch,
+])
+
 const envPath = join(resolve(process.cwd()), ".env")
 
 await main().catch((error) => {
@@ -64,11 +78,15 @@ async function main(): Promise<void> {
       detail: "no inventory balance row with item UPC found",
     })
   }
-  for (const toolName of liveUnsafeTools()) {
+  const reported = new Set(results.map((result) => result.name))
+  for (const toolName of Object.keys(toolPolicies) as ToolName[]) {
+    if (reported.has(toolName)) {
+      continue
+    }
     results.push({
       name: toolName,
       status: "skip",
-      detail: "mutating direct tool; covered by unit tests, not committed against live NetSuite",
+      detail: liveSkipReason(toolName),
     })
   }
   const toolCount = Object.keys(toolPolicies).length
@@ -113,6 +131,34 @@ function buildProbes(discovered: {
       arguments: { type: "customer", mediaType: "application/schema+json" },
     },
     { name: ToolName.RunSuiteQl, arguments: { query: "SELECT id FROM customer", limit: 1 } },
+    {
+      name: ToolName.BuildSuiteQl,
+      arguments: {
+        table: "customer",
+        fields: ["id", "entityid"],
+        filters: [{ field: "isinactive", operator: "=", value: "F" }],
+        joins: [],
+      },
+    },
+    {
+      name: ToolName.ValidateSuiteQl,
+      arguments: { query: "SELECT id FROM customer WHERE isinactive = ?", params: ["F"] },
+    },
+    {
+      name: ToolName.ExplainSuiteQl,
+      arguments: { query: "SELECT id FROM customer WHERE isinactive = ?", params: ["F"] },
+    },
+    {
+      name: ToolName.RunSuiteQlPaged,
+      arguments: {
+        query: "SELECT id, entityid FROM customer",
+        params: [],
+        keyField: "id",
+        keyIsUnique: true,
+        pageSize: 1,
+        rowBudget: 1,
+      },
+    },
   ]
 
   if (discovered.customerId !== undefined) {
@@ -146,10 +192,14 @@ function buildProbes(discovered: {
   return probes
 }
 
-function liveUnsafeTools(): readonly ToolName[] {
-  return (Object.keys(toolPolicies) as ToolName[]).filter(
-    (toolName) => toolPolicies[toolName].mutatesNetSuite || toolPolicies[toolName].risk !== "low",
-  )
+function liveSkipReason(toolName: ToolName): string {
+  if (STATEFUL_OR_PREREQUISITE_TOOLS.has(toolName)) {
+    return "stateful or prerequisite-dependent tool; covered by isolated integration tests"
+  }
+  if (toolPolicies[toolName].mutatesNetSuite || toolPolicies[toolName].risk !== "low") {
+    return "mutation-capable tool; never committed by the live production probe"
+  }
+  return "read-only tool requires fixture-specific identifiers; covered by contract tests"
 }
 
 async function discoverSafeIds(netsuite: OAuthNetSuiteClient): Promise<{

@@ -5,11 +5,14 @@ import pino from "pino"
 import { AuditLog } from "./audit"
 import { identityFromHeaders, isAuthorized } from "./auth"
 import type { AppConfig } from "./config"
+import { ExportStore } from "./jobs/export-store"
+import { JobStore } from "./jobs/job-store"
 import type { NetSuiteClient } from "./netsuite/client"
 import { OAuthNetSuiteClient } from "./netsuite/client"
 import type { OAuthControl } from "./netsuite/oauth"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
 import { OperationStore } from "./operations/operation-store"
+import { CursorCodec } from "./query/suiteql"
 import { registerTools } from "./tools/registry"
 
 export type AppDependencies = {
@@ -19,6 +22,9 @@ export type AppDependencies = {
   readonly managementNetsuite?: NetSuiteClient
   readonly oauthControl?: OAuthControl
   readonly managementOauthControl?: OAuthControl
+  readonly jobStore?: JobStore
+  readonly exportStore?: ExportStore
+  readonly cursorCodec?: CursorCodec
 }
 
 export function createApp(config: AppConfig, dependencies: AppDependencies = {}): Hono {
@@ -30,6 +36,9 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
     dependencies.netsuite ??
     new OAuthNetSuiteClient(config.netsuite, () => tokenProvider.getAccessToken())
   const operationStore = dependencies.operationStore ?? new OperationStore()
+  const jobStore = dependencies.jobStore ?? new JobStore(config.jobStorePath)
+  const exportStore = dependencies.exportStore ?? new ExportStore(config.exportDirectory)
+  const cursorCodec = dependencies.cursorCodec ?? new CursorCodec(Buffer.from(config.cursorSecret))
   const managementTokenProvider =
     config.managementNetsuite === undefined
       ? undefined
@@ -77,6 +86,9 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       oauthControl: dependencies.oauthControl ?? tokenProvider,
       ...(managementOauthControl === undefined ? {} : { managementOauthControl }),
       operationStore,
+      jobStore,
+      exportStore,
+      cursorCodec,
       requester: identity.requester,
       client: identity.client,
     })

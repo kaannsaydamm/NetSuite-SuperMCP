@@ -1,8 +1,11 @@
 import type { AuditLog } from "../audit"
 import type { AppConfig } from "../config"
+import type { ExportStore } from "../jobs/export-store"
+import type { JobStore } from "../jobs/job-store"
 import type { NetSuiteClient } from "../netsuite/client"
 import type { OAuthControl } from "../netsuite/oauth"
 import type { OperationStore } from "../operations/operation-store"
+import type { CursorCodec } from "../query/suiteql"
 
 export type ToolDependencies = {
   readonly config: AppConfig
@@ -12,6 +15,9 @@ export type ToolDependencies = {
   readonly oauthControl?: OAuthControl
   readonly managementOauthControl?: OAuthControl
   readonly operationStore: OperationStore
+  readonly jobStore: JobStore
+  readonly exportStore: ExportStore
+  readonly cursorCodec: CursorCodec
   readonly requester: string
   readonly client: string
 }

@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { InventoryStockImportPrepareRequest } from "../netsuite/types"
 import { prepareRecordOperation } from "../operations/record-operation"
 import { snapshotFingerprint } from "../operations/snapshot"
+import { analyzeSuiteQl } from "../query/suiteql"
 import type { JsonObject, JsonValue } from "../shared/json"
 import {
   InventoryAdjustmentAccountSearchInputSchema,
@@ -65,7 +66,11 @@ function registerSuiteQlTool(server: McpServer, dependencies: ToolDependencies):
         toolName: ToolName.RunSuiteQl,
         dependencies,
         input: suiteQlAuditInput(input),
-        execute: () => dependencies.netsuite.runSuiteQl(input),
+        execute: () => {
+          const analysis = analyzeSuiteQl(input.query)
+          if (!analysis.valid) throw new Error(analysis.errors.join("; "))
+          return dependencies.netsuite.runSuiteQl(input)
+        },
       }),
   )
 }

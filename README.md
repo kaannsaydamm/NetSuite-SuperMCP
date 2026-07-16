@@ -211,6 +211,21 @@ values.
 business-field differences and deterministic, secret-redacted evidence manifests with SHA-256
 hashes. Evidence remains read-only and cites its source record, query, log, file, or audit reference.
 
+## Safe SuiteQL And Exports
+
+`ns_buildSuiteQL`, `ns_validateSuiteQL`, and `ns_explainSuiteQL` provide parameterized construction,
+tokenized read-only validation, row-cap requirements, cost warnings, and sensitive-field
+classification. `ns_runSuiteQLPaged` uses an explicitly selected unique key and a signed opaque
+cursor; it does not use offset pagination for large reads. `ns_incrementalExport` exposes the same
+cursor as an opaque checkpoint and does not infer or compare date/time fields.
+
+`ns_exportSuiteQL` and `ns_exportSavedSearch` create persistent jobs. Continue them with
+`ns_runJobStep`; inspect, cancel, or recover them with `ns_getJobStatus`, `ns_cancelJob`, and
+`ns_resumeJob`. Completed CSV/JSONL exports are exposed as `netsuite-supermcp://exports/{resourceId}`
+MCP resources and can be gzip-compressed. Deterministic chunk files prevent completed chunks from
+being duplicated after resume. Saved Search definition export, diff, and clone preview are also
+read-only; a clone is created only through the normal prepare/commit operation-plan flow.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

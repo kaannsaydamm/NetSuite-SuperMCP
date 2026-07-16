@@ -35,6 +35,9 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       tokenUrl: "https://1234567-sb1.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token",
     },
     auditLogPath: "./data/test-audit.ndjson",
+    jobStorePath: "./data/test-read-jobs.json",
+    exportDirectory: "./data/test-exports",
+    cursorSecret: "test-cursor-secret-value",
   } satisfies AppConfig
 
   return { ...base, ...overrides }

@@ -58,6 +58,7 @@ const mcpReportActions = [
   ToolName.CreateSavedSearch,
   ToolName.UpdateSavedSearch,
   ToolName.DeleteSavedSearch,
+  "ns_getSavedSearchDefinition",
 ]
 const mcpIntegrationActions = [ToolName.RetryIntegrationJob]
 const mcpMappingActions = [ToolName.GetMapping, ToolName.UpdateMapping]

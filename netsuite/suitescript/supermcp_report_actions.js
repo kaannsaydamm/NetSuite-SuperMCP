@@ -6,6 +6,7 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
   const REPORT_ACTIONS = {
     ns_createSavedSearch: createSavedSearch,
     ns_deleteSavedSearch: deleteSavedSearch,
+    ns_getSavedSearchDefinition: getSavedSearchDefinition,
     ns_listReports: listReports,
     ns_listReportTypes: listReportTypes,
     ns_runSearch: runSearch,
@@ -30,6 +31,26 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
 
   function listReportTypes(actionRequest) {
     return { action: actionRequest.action, phase: actionRequest.phase, reportTypes: REPORT_TYPES }
+  }
+
+  function getSavedSearchDefinition(actionRequest) {
+    if (actionRequest.phase !== "preview") {
+      throw createRequestError("INVALID_PHASE", "ns_getSavedSearchDefinition only supports preview")
+    }
+    const savedSearchId = requireText(actionRequest.payload, "savedSearchId")
+    const loaded = search.load({ id: savedSearchId })
+    return {
+      action: actionRequest.action,
+      phase: "preview",
+      definition: {
+        id: String(loaded.id || savedSearchId),
+        searchType: String(loaded.searchType),
+        title: String(loaded.title || ""),
+        isPublic: typeof loaded.isPublic === "boolean" ? loaded.isPublic : null,
+        filters: loaded.filters.map(serializeFilter),
+        columns: loaded.columns.map(serializeColumn),
+      },
+    }
   }
 
   function listReports(actionRequest) {
@@ -188,6 +209,33 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
       values[columnKey(column)] = { value: result.getValue(column), text: result.getText(column) }
     }
     return { id: result.id, recordType: result.recordType, values }
+  }
+
+  function serializeFilter(filter) {
+    return {
+      name: filter.name,
+      operator: filter.operator,
+      values: filter.values,
+      join: filter.join || null,
+      summary: filter.summary || null,
+      formula: filter.formula || null,
+      leftParens: filter.leftParens || 0,
+      rightParens: filter.rightParens || 0,
+      isOr: filter.isOr === true,
+      isNot: filter.isNot === true,
+    }
+  }
+
+  function serializeColumn(column) {
+    return {
+      name: column.name,
+      join: column.join || null,
+      summary: column.summary || null,
+      formula: column.formula || null,
+      function: column.function || null,
+      label: column.label || null,
+      sort: column.sort || null,
+    }
   }
 
   function columnKey(column) {

@@ -48,6 +48,9 @@ const ConfigSchema = z
     netsuite: NetSuiteConfigSchema,
     managementNetsuite: NetSuiteConfigSchema.optional(),
     auditLogPath: z.string().min(1),
+    jobStorePath: z.string().min(1),
+    exportDirectory: z.string().min(1),
+    cursorSecret: z.string().min(16),
   })
   .superRefine((value, context) => {
     if (value.authMode === "bearer") {
@@ -93,6 +96,14 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
     },
     managementNetsuite: managementConfigFromEnv(env),
     auditLogPath: env["AUDIT_LOG_PATH"] ?? "./data/audit.ndjson",
+    jobStorePath: env["JOB_STORE_PATH"] ?? "./data/read-jobs.json",
+    exportDirectory: env["EXPORT_DIRECTORY"] ?? "./data/exports",
+    cursorSecret:
+      env["MCP_CURSOR_SECRET"] ??
+      env["MCP_BEARER_TOKEN"] ??
+      env["NETSUITE_CLIENT_SECRET"] ??
+      env["NETSUITE_PRIVATE_KEY_PEM_BASE64"] ??
+      env["NETSUITE_REFRESH_TOKEN"],
   })
 
   if (!parsed.success) {

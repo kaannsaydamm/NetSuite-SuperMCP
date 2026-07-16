@@ -294,18 +294,18 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Parse and validate supported SuiteQL statements; reject mutation statements and unbounded requests.
-- [ ] Implement signed opaque cursors containing query fingerprint and keyset position, not raw secrets.
-- [ ] Create `src/jobs/job-store.ts` with explicit states: queued, running, partial, completed, failed, cancelled.
-- [ ] Chunk calls by NetSuite governance limits and persist resumable checkpoints.
-- [ ] Stream large exports instead of embedding them in MCP text responses.
-- [ ] Record row counts, truncation, partial failures, and checkpoint metadata in the standard output schema.
+- [x] Parse and validate supported SuiteQL statements; reject mutation statements and unbounded requests.
+- [x] Implement signed opaque cursors containing query fingerprint and keyset position, not raw secrets.
+- [x] Create `src/jobs/job-store.ts` with explicit states: queued, running, partial, completed, failed, cancelled.
+- [x] Chunk calls by NetSuite governance limits and persist resumable checkpoints.
+- [x] Stream large exports instead of embedding them in MCP text responses.
+- [x] Record row counts, truncation, partial failures, and checkpoint metadata in the standard output schema.
 
 ### Acceptance Gate
 
-- [ ] Large reads never depend on offset-only pagination.
-- [ ] Jobs resume without repeating completed chunks.
-- [ ] Cancellation stops future chunks and preserves completed-result evidence.
+- [x] Large reads never depend on offset-only pagination.
+- [x] Jobs resume without repeating completed chunks.
+- [x] Cancellation stops future chunks and preserves completed-result evidence.
 
 ---
 

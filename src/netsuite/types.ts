@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { JsonValueSchema } from "../shared/json"
+import { type JsonValue, JsonValueSchema } from "../shared/json"
 
 export const RecordRefSchema = z.object({
   type: z.string().min(1),
@@ -52,11 +52,16 @@ export type TransactionLinesRequest = z.infer<typeof TransactionLinesRequestSche
 export const SuiteQlRequestSchema = z.object({
   query: z.string().min(1),
   params: z.array(JsonValueSchema).default([]),
-  limit: z.number().int().min(1).max(1000).optional(),
+  limit: z.number().int().min(1).max(1000).default(100),
   offset: z.number().int().min(0).optional(),
 })
 
-export type SuiteQlRequest = z.infer<typeof SuiteQlRequestSchema>
+export type SuiteQlRequest = {
+  readonly query: string
+  readonly params: JsonValue[]
+  readonly limit?: number | undefined
+  readonly offset?: number | undefined
+}
 
 export const RestletActionSchema = z.object({
   action: z.string().min(1),

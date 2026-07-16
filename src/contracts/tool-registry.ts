@@ -39,6 +39,21 @@ import {
   SegregationOfDutiesInputSchema,
 } from "./identity-schemas"
 import {
+  AnalyzeSuiteQlInputSchema,
+  BuildSuiteQlInputSchema,
+  CreateReadJobInputSchema,
+  DiffSavedSearchDefinitionsInputSchema,
+  ExportSavedSearchInputSchema,
+  ExportSuiteQlInputSchema,
+  IncrementalExportInputSchema,
+  JobInputSchema,
+  PreviewCloneSavedSearchInputSchema,
+  ResumeJobInputSchema,
+  RunJobStepInputSchema,
+  RunSuiteQlPagedInputSchema,
+  SavedSearchDefinitionInputSchema,
+} from "./query-schemas"
+import {
   BatchGetRecordsInputSchema,
   BatchResolveInternalIdsInputSchema,
   CreateEvidenceBundleInputSchema,
@@ -241,6 +256,34 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return DiffRecordSnapshotsInputSchema
     case ToolName.CreateEvidenceBundle:
       return CreateEvidenceBundleInputSchema
+    case ToolName.BuildSuiteQl:
+      return BuildSuiteQlInputSchema
+    case ToolName.ValidateSuiteQl:
+    case ToolName.ExplainSuiteQl:
+      return AnalyzeSuiteQlInputSchema
+    case ToolName.RunSuiteQlPaged:
+      return RunSuiteQlPagedInputSchema
+    case ToolName.CreateReadJob:
+      return CreateReadJobInputSchema
+    case ToolName.GetJobStatus:
+    case ToolName.CancelJob:
+      return JobInputSchema
+    case ToolName.ResumeJob:
+      return ResumeJobInputSchema
+    case ToolName.RunJobStep:
+      return RunJobStepInputSchema
+    case ToolName.IncrementalExport:
+      return IncrementalExportInputSchema
+    case ToolName.ExportSuiteQl:
+      return ExportSuiteQlInputSchema
+    case ToolName.ExportSavedSearch:
+      return ExportSavedSearchInputSchema
+    case ToolName.ExportSavedSearchDefinition:
+      return SavedSearchDefinitionInputSchema
+    case ToolName.DiffSavedSearchDefinitions:
+      return DiffSavedSearchDefinitionsInputSchema
+    case ToolName.PreviewCloneSavedSearch:
+      return PreviewCloneSavedSearchInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -385,6 +428,82 @@ function validExampleFor(name: ToolName): JsonValue {
       return {
         name: "case-123",
         items: [{ kind: "record", source: "customer:123", payload: { id: "123" } }],
+      }
+    case ToolName.BuildSuiteQl:
+      return {
+        table: "customer",
+        fields: ["id", "entityid"],
+        filters: [{ field: "isinactive", operator: "=", value: "F" }],
+        joins: [],
+      }
+    case ToolName.ValidateSuiteQl:
+    case ToolName.ExplainSuiteQl:
+      return { query: "SELECT id FROM customer WHERE isinactive = ?", params: ["F"] }
+    case ToolName.RunSuiteQlPaged:
+    case ToolName.IncrementalExport:
+      return {
+        query: "SELECT id, entityid FROM customer",
+        params: [],
+        keyField: "id",
+        keyIsUnique: true,
+        pageSize: 100,
+        rowBudget: 1000,
+      }
+    case ToolName.CreateReadJob:
+    case ToolName.ExportSuiteQl:
+      return {
+        kind: "suiteql",
+        query: "SELECT id, entityid FROM customer",
+        params: [],
+        keyField: "id",
+        keyIsUnique: true,
+        pageSize: 500,
+        rowBudget: 10000,
+        format: "jsonl",
+        compression: "gzip",
+      }
+    case ToolName.ExportSavedSearch:
+      return {
+        kind: "savedSearch",
+        savedSearchId: "customsearch_example",
+        pageSize: 500,
+        rowBudget: 10000,
+        format: "csv",
+        compression: "gzip",
+      }
+    case ToolName.GetJobStatus:
+    case ToolName.CancelJob:
+      return { jobId: "123e4567-e89b-42d3-a456-426614174000" }
+    case ToolName.ResumeJob:
+      return { jobId: "123e4567-e89b-42d3-a456-426614174000", recoverRunning: false }
+    case ToolName.RunJobStep:
+      return { jobId: "123e4567-e89b-42d3-a456-426614174000", maxChunks: 1 }
+    case ToolName.ExportSavedSearchDefinition:
+      return { savedSearchId: "customsearch_example" }
+    case ToolName.DiffSavedSearchDefinitions:
+      return {
+        before: {
+          id: "customsearch_before",
+          searchType: "customer",
+          title: "Before",
+          isPublic: false,
+          filters: [],
+          columns: [{ name: "internalid" }],
+        },
+        after: {
+          id: "customsearch_after",
+          searchType: "customer",
+          title: "After",
+          isPublic: false,
+          filters: [],
+          columns: [{ name: "internalid" }],
+        },
+      }
+    case ToolName.PreviewCloneSavedSearch:
+      return {
+        sourceSearchId: "customsearch_example",
+        targetTitle: "Example clone",
+        targetSearchId: "customsearch_example_clone",
       }
     default:
       return actionExampleFor(name)

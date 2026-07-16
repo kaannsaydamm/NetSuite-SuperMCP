@@ -70,7 +70,7 @@ netsuite-supermcp doctor
 
 From any connected MCP client, also run `ns_getSuperMcpVersion`. It should show the same installed
 package version and RESTlet version, `restlet.reachable: true`, the expected NetSuite account ID,
-and `toolCount: 86`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
+and `toolCount: 101`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
 the MCP process first and redeploy the RESTlet if `restlet.version` is old.
 
 If you use SuiteCloud CLI instead of the NetSuite UI, Oracle's current CLI package is
@@ -131,6 +131,10 @@ Operational values:
 - `MCP_HOST`
 - `MCP_PORT`
 - `AUDIT_LOG_PATH`
+- `JOB_STORE_PATH`
+- `EXPORT_DIRECTORY`
+- `MCP_CURSOR_SECRET` only when cursor signing must be independent from the existing MCP/OAuth
+  secret. Otherwise it is derived automatically.
 
 ## Production Defaults
 
@@ -139,6 +143,8 @@ Operational values:
   deployments.
 - Store `AUDIT_LOG_PATH` on persistent storage or send audit output through your platform log
   collector.
+- Store `JOB_STORE_PATH` and `EXPORT_DIRECTORY` on the same persistent volume so resumable exports
+  survive process restarts.
 - Terminate TLS at a reverse proxy or managed ingress. Do not expose the MCP endpoint over plain
   HTTP outside a private network.
 - Use separate deployments and secret sets for sandbox and production.

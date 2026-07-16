@@ -11,6 +11,7 @@ import {
   TokenEligibilityOutputSchema,
   TokenMetadataOutputSchema,
 } from "../contracts/identity-schemas"
+import { QueryOutputSchema } from "../contracts/query-schemas"
 import { RecordExplorerOutputSchema } from "../contracts/record-explorer-schemas"
 import { OperationPlanSchema } from "../operations/operation-plan"
 import { JsonValueSchema } from "../shared/json"
@@ -249,6 +250,22 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.DiffRecordSnapshots:
     case ToolName.CreateEvidenceBundle:
       return RecordExplorerOutputSchema
+    case ToolName.BuildSuiteQl:
+    case ToolName.ValidateSuiteQl:
+    case ToolName.ExplainSuiteQl:
+    case ToolName.RunSuiteQlPaged:
+    case ToolName.CreateReadJob:
+    case ToolName.GetJobStatus:
+    case ToolName.RunJobStep:
+    case ToolName.CancelJob:
+    case ToolName.ResumeJob:
+    case ToolName.IncrementalExport:
+    case ToolName.ExportSuiteQl:
+    case ToolName.ExportSavedSearch:
+    case ToolName.ExportSavedSearchDefinition:
+    case ToolName.DiffSavedSearchDefinitions:
+    case ToolName.PreviewCloneSavedSearch:
+      return QueryOutputSchema
     case ToolName.RunSuiteQl:
       return SuiteQlOutputSchema
     case ToolName.GetRecord:

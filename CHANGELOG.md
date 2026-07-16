@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.32
+
+- Added tokenized read-only SuiteQL validation, parameterized query building, cost warnings, and
+  sensitive-field classification.
+- Added HMAC-signed keyset cursors, bounded paging, and opaque incremental checkpoints.
+- Added persistent read jobs with progress, budgets, cancellation, recovery, partial failures, and
+  deterministic resumable chunks.
+- Added streamed MCP export resources for JSONL/CSV with optional gzip compression.
+- Added Saved Search definition export, definition diff, and non-mutating clone preview.
+- Existing `ns_runSuiteQL` now uses the same read-only validator and a default 100-row cap.
+- Incremental reads use explicit unique key fields; no date/time normalization or account-specific
+  date logic was added.
+
 ## 0.1.31
 
 - Added typed record-type and field discovery with REST metadata and permanent SuiteScript fallback.

@@ -57,6 +57,9 @@ describe("parseConfig", () => {
       expect(result.value.netsuite.environment).toBe("sandbox")
       expect(result.value.netsuite.accountId).toBe("1234567_SB1")
       expect(result.value.netsuite.oauthFlow).toBe("client_credentials")
+      expect(result.value.cursorSecret).toBe("test-token-12345")
+      expect(result.value.jobStorePath).toBe("./data/read-jobs.json")
+      expect(result.value.exportDirectory).toBe("./data/exports")
     }
   })
 
