@@ -73,7 +73,7 @@ permission toggles. Approval remains owned by the client application, harness, o
 
 After any npm update or RESTlet deploy, restart the client-side MCP server process and call
 `ns_getSuperMcpVersion` from that client. A healthy current connector reports matching
-`configuredVersion`, `packageVersion`, and `restlet.version`, plus `toolCount: 58`.
+`configuredVersion`, `packageVersion`, and `restlet.version`, plus `toolCount: 69`.
 
 ## NetSuite OAuth
 
@@ -148,3 +148,13 @@ client approval flow remains controlled by the provider/harness.
 Use `ns_describeTool`, `ns_getToolExample`, and `ns_validateToolRequest` when a client needs exact
 arguments or effects. After a contract fingerprint changes, refresh or recreate cached ChatGPT app
 connectors as described in `docs/generated/chatgpt-compatibility.md`.
+
+Run `netsuite-supermcp auth-diagnose` when OAuth fails. It reports missing settings before trying
+authentication, then classifies revoked/expired authorization, integration/client failure, account
+or endpoint mismatch, role restriction, and connectivity failure without printing credentials.
+`netsuite-supermcp logout` revokes authorization-code OAuth and removes the local refresh token;
+restart connected clients afterward. `netsuite-supermcp switch-account` starts a new browser login.
+
+An optional `NETSUITE_MANAGEMENT_*` identity can be configured for Login Audit Trail and role
+comparison diagnostics. It is selected explicitly with `profile: "management"` and is never used
+for ordinary record, transaction, file, report, or integration operations.

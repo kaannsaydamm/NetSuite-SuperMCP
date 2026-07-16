@@ -21,6 +21,29 @@ const validEnv = {
 } satisfies NodeJS.ProcessEnv
 
 describe("parseConfig", () => {
+  it("parses an explicit management identity without replacing the business identity", () => {
+    const parsed = parseConfig({
+      ...validEnv,
+      NETSUITE_MANAGEMENT_ACCOUNT_ID: "7654321_SB1",
+      NETSUITE_MANAGEMENT_ENVIRONMENT: "sandbox",
+      NETSUITE_MANAGEMENT_BASE_URL: "https://7654321-sb1.suitetalk.api.netsuite.com",
+      NETSUITE_MANAGEMENT_RESTLET_URL:
+        "https://7654321-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl",
+      NETSUITE_MANAGEMENT_TOKEN_URL:
+        "https://7654321-sb1.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token",
+      NETSUITE_MANAGEMENT_OAUTH_FLOW: "authorization_code",
+      NETSUITE_MANAGEMENT_CLIENT_ID: "management-client",
+      NETSUITE_MANAGEMENT_CLIENT_SECRET: "management-secret",
+      NETSUITE_MANAGEMENT_REFRESH_TOKEN: "management-refresh",
+    })
+
+    expect(parsed.ok).toBe(true)
+    if (parsed.ok) {
+      expect(parsed.value.netsuite.accountId).not.toBe(parsed.value.managementNetsuite?.accountId)
+      expect(parsed.value.managementNetsuite?.accountId).toBe("7654321_SB1")
+    }
+  })
+
   it("parses a complete environment when all required values are present", () => {
     // Given
     const env = validEnv

@@ -1,7 +1,376 @@
 {
   "schemaVersion": 1,
-  "toolCount": 58,
+  "toolCount": 69,
   "tools": [
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "permissions": [],
+          "profile": "current",
+          "recordFamilies": [
+            "customer"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "permissions": {
+            "default": [],
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "type": "array"
+          },
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "recordFamilies": {
+            "items": {
+              "enum": [
+                "customer",
+                "vendor",
+                "employee",
+                "item",
+                "transaction"
+              ],
+              "type": "string"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "profile",
+          "recordFamilies",
+          "permissions"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_analyzeRoleAccess",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "identity": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "permissions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "allowed": {
+                  "type": "boolean"
+                },
+                "level": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "level",
+                "allowed"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "visibility": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "allowed": {
+                  "type": "boolean"
+                },
+                "recordFamily": {
+                  "enum": [
+                    "customer",
+                    "vendor",
+                    "employee",
+                    "item",
+                    "transaction"
+                  ],
+                  "type": "string"
+                },
+                "restrictionReason": {
+                  "type": "string"
+                },
+                "visibleCount": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "recordFamily",
+                "allowed"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "profile",
+          "identity",
+          "visibility",
+          "permissions"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "analyze Role Access"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "permissionGroups": [
+            {
+              "name": "Example conflict",
+              "permissions": [
+                "TRAN_SALESORD",
+                "TRAN_CUSTPYMT"
+              ]
+            }
+          ],
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "permissionGroups": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "permissions": {
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 20,
+                  "minItems": 2,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "name",
+                "permissions"
+              ],
+              "type": "object"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "type": "array"
+          },
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "permissionGroups"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_analyzeSegregationOfDuties",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "conflicts": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "level": {
+                        "maximum": 9007199254740991,
+                        "minimum": -9007199254740991,
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "level"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "name",
+                "permissions"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "evaluatedGroups": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "identity": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "identity",
+          "evaluatedGroups",
+          "conflicts"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "analyze Segregation Of Duties"
+    },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
       "effects": [
@@ -916,6 +1285,231 @@
       ],
       "risk": "high",
       "title": "commit Inventory Stock Import"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "permissions": [],
+          "recordFamilies": [
+            "customer"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "permissions": {
+            "default": [],
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "type": "array"
+          },
+          "recordFamilies": {
+            "items": {
+              "enum": [
+                "customer",
+                "vendor",
+                "employee",
+                "item",
+                "transaction"
+              ],
+              "type": "string"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "recordFamilies",
+          "permissions"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_compareRoleVisibility",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "currentIdentity": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "managementIdentity": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "matrix": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "currentRestriction": {
+                  "type": "string"
+                },
+                "currentVisibleCount": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "difference": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "managementRestriction": {
+                  "type": "string"
+                },
+                "managementVisibleCount": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "recordFamily": {
+                  "enum": [
+                    "customer",
+                    "vendor",
+                    "employee",
+                    "item",
+                    "transaction"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "recordFamily"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "permissions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "currentLevel": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "managementLevel": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "currentLevel",
+                "managementLevel"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "currentIdentity",
+          "managementIdentity",
+          "matrix",
+          "permissions"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "compare Role Visibility"
     },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
@@ -3368,6 +3962,167 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "includeAuthenticatedChecks": true,
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "includeAuthenticatedChecks": {
+            "default": true,
+            "type": "boolean"
+          },
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "includeAuthenticatedChecks"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_diagnoseAuthentication",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "authenticated": {
+            "type": "boolean"
+          },
+          "checks": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "detail": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "passed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "passed"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "classification": {
+            "type": "string"
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "environment": {
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "type": "string"
+          },
+          "identity": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "likelyCause": {
+            "type": "string"
+          },
+          "oauthFlow": {
+            "enum": [
+              "client_credentials",
+              "authorization_code"
+            ],
+            "type": "string"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "accountId",
+          "environment",
+          "oauthFlow",
+          "configured",
+          "authenticated",
+          "classification",
+          "checks"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "diagnose Authentication"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "recordId": "123",
           "recordType": "customrecord_job"
         }
@@ -3664,6 +4419,127 @@
       ],
       "risk": "low",
       "title": "explain Integration Error"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_explainTokenEligibility",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "identity": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "oauthFlow": {
+            "enum": [
+              "client_credentials",
+              "authorization_code"
+            ],
+            "type": "string"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "requirements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "profile",
+          "eligible",
+          "oauthFlow",
+          "accountId",
+          "identity",
+          "requirements"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "explain Token Eligibility"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -5030,6 +5906,120 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getIdentityRelationship",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "integrationConfigured": {
+            "type": "boolean"
+          },
+          "oauthFlow": {
+            "enum": [
+              "client_credentials",
+              "authorization_code"
+            ],
+            "type": "string"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "profile",
+          "accountId",
+          "oauthFlow",
+          "integrationConfigured",
+          "user"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Identity Relationship"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "limit": 10,
           "recordType": "salesOrder"
         }
@@ -5189,6 +6179,291 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "features": [
+            "RESTWEBSERVICES"
+          ],
+          "fields": [
+            "name",
+            "state"
+          ],
+          "integrationId": "123",
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "features": {
+            "default": [],
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "type": "array"
+          },
+          "integrationId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "integrationId",
+          "fields",
+          "features"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getIntegrationState",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "features": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "enabled"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "integrationId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "state": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "profile",
+          "integrationId",
+          "state",
+          "features"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Integration State"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "limit": 25,
+          "profile": "current",
+          "status": "either"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "default": "either",
+            "enum": [
+              "success",
+              "failure",
+              "either"
+            ],
+            "type": "string"
+          },
+          "userId": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "status",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getLoginAuditTrail",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "entries": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "profile",
+          "entries",
+          "count",
+          "truncated"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "View Login Audit Trail"
+      ],
+      "risk": "low",
+      "title": "get Login Audit Trail"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "recordId": "123",
           "recordType": "customrecord_mapping"
         }
@@ -5329,6 +6604,97 @@
       ],
       "risk": "low",
       "title": "get Mapping"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getOAuthTokenMetadata",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "cachedAccessToken": {
+            "type": "boolean"
+          },
+          "environment": {
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "type": "string"
+          },
+          "hasCertificateCredentials": {
+            "type": "boolean"
+          },
+          "hasClientCredentials": {
+            "type": "boolean"
+          },
+          "hasRefreshToken": {
+            "type": "boolean"
+          },
+          "oauthFlow": {
+            "enum": [
+              "client_credentials",
+              "authorization_code"
+            ],
+            "type": "string"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "accountId",
+          "environment",
+          "oauthFlow",
+          "hasRefreshToken",
+          "hasClientCredentials",
+          "hasCertificateCredentials",
+          "cachedAccessToken"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get OAuth Token Metadata"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -10697,6 +12063,81 @@
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [
+        "Revokes the selected OAuth authorization and clears its local access-token cache."
+      ],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "confirmation": "revoke:current:1234567",
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "confirmation"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_revokeOAuthAuthorization",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "localCacheCleared": {
+            "type": "boolean"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          },
+          "requiresProcessRestart": {
+            "type": "boolean"
+          },
+          "revoked": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "profile",
+          "revoked",
+          "localCacheCleared",
+          "requiresProcessRestart"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "commit"
+      ],
+      "requiredPermissions": [
+        "OAuth authorization owner"
+      ],
+      "risk": "high",
+      "title": "revoke OAuth Authorization"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
         "invalid": null,
@@ -12224,6 +13665,161 @@
       ],
       "risk": "medium",
       "title": "submit Fields"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "profile": "current"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "profile": {
+            "default": "current",
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_testOAuthCredentials",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "authenticated": {
+            "type": "boolean"
+          },
+          "checks": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "detail": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "passed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "passed"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "classification": {
+            "type": "string"
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "environment": {
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "type": "string"
+          },
+          "identity": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "roleCenter": {
+                "type": "string"
+              },
+              "roleId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "likelyCause": {
+            "type": "string"
+          },
+          "oauthFlow": {
+            "enum": [
+              "client_credentials",
+              "authorization_code"
+            ],
+            "type": "string"
+          },
+          "profile": {
+            "enum": [
+              "current",
+              "management"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile",
+          "accountId",
+          "environment",
+          "oauthFlow",
+          "configured",
+          "authenticated",
+          "classification",
+          "checks"
+        ],
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "test OAuth Credentials"
     },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",

@@ -7,7 +7,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const command = process.argv[2] ?? "stdio"
 const args = process.argv.slice(3)
 const usage =
-  "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|doctor|suitecloud|stdio|http|tunnel|public-url|install|oauth-login] [...args]"
+  "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|auth-diagnose|doctor|suitecloud|stdio|http|tunnel|public-url|install|oauth-login] [...args]"
 
 if (command === "--help" || command === "-h" || args.includes("--help") || args.includes("-h")) {
   console.log(usage)
@@ -40,10 +40,11 @@ const commands = {
   tunnel: ["run", join(root, "src", "index.ts")],
   "public-url": ["run", join(root, "scripts", "public-url.ts")],
   doctor: ["run", join(root, "scripts", "doctor.ts")],
+  "auth-diagnose": ["run", join(root, "scripts", "auth-diagnose.ts")],
   oauth2: ["run", join(root, "scripts", "oauth2.ts")],
   "oauth-login": ["run", join(root, "scripts", "oauth-login.ts")],
   "switch-account": ["run", join(root, "scripts", "switch-account.ts")],
-  logout: ["run", join(root, "scripts", "switch-account.ts")],
+  logout: ["run", join(root, "scripts", "oauth-logout.ts")],
   setup: ["run", join(root, "scripts", "setup-wizard.ts")],
   suitecloud: ["run", join(root, "scripts", "suitecloud-project.ts")],
   stdio: ["run", join(root, "src", "stdio.ts")],

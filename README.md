@@ -239,10 +239,18 @@ authorization callback, exchanges the code for a refresh token, and saves it to 
 machine-to-machine access, set `NETSUITE_OAUTH_FLOW=client_credentials` and provide the certificate
 values.
 
-To leave the current OAuth browser account and connect another NetSuite account or role, run
-`netsuite-supermcp switch-account` or `netsuite-supermcp logout`. This clears only the local refresh
-token and restarts browser OAuth with NetSuite `prompt=login consent`; it does not revoke the
-Integration record or change NetSuite data.
+Run `netsuite-supermcp auth-diagnose` for offline configuration checks followed by authenticated
+metadata/RESTlet probes. Run `netsuite-supermcp logout` to revoke the current authorization-code
+refresh token at NetSuite and remove it from `.env`; use `--local-only` when only local removal is
+required. Run `netsuite-supermcp switch-account` to clear the local token and immediately start
+browser OAuth with NetSuite `prompt=login consent` for another account or role.
+
+Identity diagnostics include `ns_getLoginAuditTrail`, `ns_diagnoseAuthentication`,
+`ns_testOAuthCredentials`, `ns_getOAuthTokenMetadata`, `ns_analyzeRoleAccess`,
+`ns_compareRoleVisibility`, `ns_explainTokenEligibility`, `ns_getIdentityRelationship`,
+`ns_getIntegrationState`, and `ns_analyzeSegregationOfDuties`. The optional
+`NETSUITE_MANAGEMENT_*` profile is used only when a diagnostic explicitly selects `management`;
+normal NetSuite tools always use the primary OAuth identity.
 
 ## SuiteCloud Deploy
 

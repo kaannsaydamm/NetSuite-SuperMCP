@@ -148,7 +148,7 @@ function buildProbes(discovered: {
 
 function liveUnsafeTools(): readonly ToolName[] {
   return (Object.keys(toolPolicies) as ToolName[]).filter(
-    (toolName) => toolPolicies[toolName].mutatesNetSuite,
+    (toolName) => toolPolicies[toolName].mutatesNetSuite || toolPolicies[toolName].risk !== "low",
   )
 }
 

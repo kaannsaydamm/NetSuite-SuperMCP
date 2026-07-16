@@ -80,6 +80,7 @@ async function main(): Promise<void> {
       "Deploy these files in NetSuite and set NETSUITE_RESTLET_URL to the deployment URL:",
     )
     console.log("  netsuite/suitescript/supermcp_action_restlet.js")
+    console.log("  netsuite/suitescript/supermcp_diagnostic_actions.js")
     console.log("  netsuite/suitescript/supermcp_read_actions.js")
     console.log("  netsuite/suitescript/supermcp_transform_actions.js")
     console.log("  netsuite/suitescript/supermcp_integration_actions.js")

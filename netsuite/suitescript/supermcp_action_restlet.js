@@ -5,6 +5,7 @@
 define([
   "N/error",
   "N/runtime",
+  "./supermcp_diagnostic_actions",
   "./supermcp_file_actions",
   "./supermcp_inventory_actions",
   "./supermcp_integration_actions",
@@ -16,6 +17,7 @@ define([
 ], (
   nsError,
   runtime,
+  diagnosticActions,
   fileActions,
   inventoryActions,
   integrationActions,
@@ -26,9 +28,9 @@ define([
   transformActions,
 ) => {
   const PHASES = ["prepare", "preview", "commit"]
-  const RESTLET_VERSION = "0.1.29"
-  const ACTION_MAP_VERSION = "2026-07-10.1"
-  const TOOL_COUNT = 58
+  const RESTLET_VERSION = "0.1.30"
+  const ACTION_MAP_VERSION = "2026-07-16.1"
+  const TOOL_COUNT = 69
   const SYSTEM_ACTIONS = {
     ns_getSuperMcpVersion: getSuperMcpVersion,
     ns_checkAccountPermissions: checkAccountPermissions,
@@ -38,6 +40,7 @@ define([
     const actionRequest = parseRequest(request)
     const result =
       runSystemAction(actionRequest) ||
+      diagnosticActions.run(actionRequest) ||
       transformActions.run(actionRequest) ||
       inventoryActions.run(actionRequest) ||
       platformActions.run(actionRequest) ||
@@ -114,6 +117,7 @@ define([
       systemActions: Object.keys(SYSTEM_ACTIONS),
       actionModules: [
         "transform",
+        "diagnostic",
         "inventory",
         "platform",
         "report",

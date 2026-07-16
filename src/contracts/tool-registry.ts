@@ -28,6 +28,16 @@ import {
 } from "../tools/catalog"
 import { outputSchemaFor } from "../tools/output-schemas"
 import { actionInputSchemaFor } from "./action-schemas"
+import {
+  DiagnoseAuthenticationInputSchema,
+  IdentityProfileInputSchema,
+  IntegrationStateInputSchema,
+  LoginAuditTrailInputSchema,
+  RevokeOAuthInputSchema,
+  RoleAccessInputSchema,
+  RoleComparisonInputSchema,
+  SegregationOfDutiesInputSchema,
+} from "./identity-schemas"
 
 export type ToolContract = {
   readonly name: ToolName
@@ -58,9 +68,12 @@ export function getToolContract(name: string): ToolContract {
     outputSchema: outputSchemaFor(name),
     risk: policy.risk,
     mutatesNetSuite: policy.mutatesNetSuite,
-    effects: policy.mutatesNetSuite
-      ? ["May change NetSuite only during an explicit commit phase."]
-      : [],
+    effects:
+      name === ToolName.RevokeOAuthAuthorization
+        ? ["Revokes the selected OAuth authorization and clears its local access-token cache."]
+        : policy.mutatesNetSuite
+          ? ["May change NetSuite only during an explicit commit phase."]
+          : [],
     requiredPermissions: permissionHints(name),
     phaseSupport: phaseSupport(name),
     examples: examplesFor(name),
@@ -160,6 +173,25 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return ToolContractLookupInputSchema
     case ToolName.ValidateToolRequest:
       return ToolRequestValidationInputSchema
+    case ToolName.GetLoginAuditTrail:
+      return LoginAuditTrailInputSchema
+    case ToolName.DiagnoseAuthentication:
+      return DiagnoseAuthenticationInputSchema
+    case ToolName.TestOAuthCredentials:
+    case ToolName.GetOAuthTokenMetadata:
+    case ToolName.ExplainTokenEligibility:
+    case ToolName.GetIdentityRelationship:
+      return IdentityProfileInputSchema
+    case ToolName.RevokeOAuthAuthorization:
+      return RevokeOAuthInputSchema
+    case ToolName.AnalyzeRoleAccess:
+      return RoleAccessInputSchema
+    case ToolName.CompareRoleVisibility:
+      return RoleComparisonInputSchema
+    case ToolName.GetIntegrationState:
+      return IntegrationStateInputSchema
+    case ToolName.AnalyzeSegregationOfDuties:
+      return SegregationOfDutiesInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -228,6 +260,35 @@ function validExampleFor(name: ToolName): JsonValue {
       return { name: ToolName.FulfillSalesOrder }
     case ToolName.ValidateToolRequest:
       return { name: ToolName.GetRecord, payload: { type: "customer", id: "123" } }
+    case ToolName.GetLoginAuditTrail:
+      return { profile: "current", status: "either", limit: 25 }
+    case ToolName.DiagnoseAuthentication:
+      return { profile: "current", includeAuthenticatedChecks: true }
+    case ToolName.TestOAuthCredentials:
+    case ToolName.GetOAuthTokenMetadata:
+    case ToolName.ExplainTokenEligibility:
+    case ToolName.GetIdentityRelationship:
+      return { profile: "current" }
+    case ToolName.RevokeOAuthAuthorization:
+      return { profile: "current", confirmation: "revoke:current:1234567" }
+    case ToolName.AnalyzeRoleAccess:
+      return { profile: "current", recordFamilies: ["customer"], permissions: [] }
+    case ToolName.CompareRoleVisibility:
+      return { recordFamilies: ["customer"], permissions: [] }
+    case ToolName.GetIntegrationState:
+      return {
+        profile: "current",
+        integrationId: "123",
+        fields: ["name", "state"],
+        features: ["RESTWEBSERVICES"],
+      }
+    case ToolName.AnalyzeSegregationOfDuties:
+      return {
+        profile: "current",
+        permissionGroups: [
+          { name: "Example conflict", permissions: ["TRAN_SALESORD", "TRAN_CUSTPYMT"] },
+        ],
+      }
     default:
       return actionExampleFor(name)
   }
@@ -293,6 +354,7 @@ function actionExampleFor(name: ToolName): JsonValue {
 }
 
 function phaseSupport(name: ToolName): readonly ("prepare" | "preview" | "commit")[] {
+  if (name === ToolName.RevokeOAuthAuthorization) return ["commit"]
   if (name === ToolName.CommitAction) return ["commit"]
   if (name === ToolName.PreviewAction) return ["preview"]
   if (toolPolicies[name].mutatesNetSuite) return ["prepare", "preview", "commit"]
@@ -300,6 +362,8 @@ function phaseSupport(name: ToolName): readonly ("prepare" | "preview" | "commit
 }
 
 function permissionHints(name: ToolName): readonly string[] {
+  if (name === ToolName.GetLoginAuditTrail) return ["View Login Audit Trail"]
+  if (name === ToolName.RevokeOAuthAuthorization) return ["OAuth authorization owner"]
   if (name.includes("File") || name.includes("Folder")) return ["Documents and Files"]
   if (name.includes("Script")) return ["SuiteScript"]
   if (name.includes("Inventory")) return ["Inventory", "Inventory Adjustment"]

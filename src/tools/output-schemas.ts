@@ -1,4 +1,16 @@
 import { z } from "zod"
+import {
+  AuthenticationDiagnosisOutputSchema,
+  IdentityRelationshipOutputSchema,
+  IntegrationStateOutputSchema,
+  LoginAuditTrailOutputSchema,
+  OAuthRevocationOutputSchema,
+  RoleAccessOutputSchema,
+  RoleComparisonOutputSchema,
+  SegregationOfDutiesOutputSchema,
+  TokenEligibilityOutputSchema,
+  TokenMetadataOutputSchema,
+} from "../contracts/identity-schemas"
 import { OperationPlanSchema } from "../operations/operation-plan"
 import { JsonValueSchema } from "../shared/json"
 import { ToolName } from "./catalog"
@@ -197,6 +209,27 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
       return ToolExampleOutputSchema
     case ToolName.ValidateToolRequest:
       return ToolValidationOutputSchema
+    case ToolName.GetLoginAuditTrail:
+      return LoginAuditTrailOutputSchema
+    case ToolName.DiagnoseAuthentication:
+    case ToolName.TestOAuthCredentials:
+      return AuthenticationDiagnosisOutputSchema
+    case ToolName.GetOAuthTokenMetadata:
+      return TokenMetadataOutputSchema
+    case ToolName.RevokeOAuthAuthorization:
+      return OAuthRevocationOutputSchema
+    case ToolName.AnalyzeRoleAccess:
+      return RoleAccessOutputSchema
+    case ToolName.CompareRoleVisibility:
+      return RoleComparisonOutputSchema
+    case ToolName.ExplainTokenEligibility:
+      return TokenEligibilityOutputSchema
+    case ToolName.GetIdentityRelationship:
+      return IdentityRelationshipOutputSchema
+    case ToolName.GetIntegrationState:
+      return IntegrationStateOutputSchema
+    case ToolName.AnalyzeSegregationOfDuties:
+      return SegregationOfDutiesOutputSchema
     case ToolName.RunSuiteQl:
       return SuiteQlOutputSchema
     case ToolName.GetRecord:

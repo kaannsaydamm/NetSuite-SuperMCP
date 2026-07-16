@@ -14,11 +14,53 @@ type CachedToken = {
   readonly expiresAtMs: number
 }
 
+export interface OAuthControl {
+  hasCachedAccessToken(): boolean
+  revokeRefreshToken(): Promise<void>
+  clearCache(): void
+}
+
 export class NetSuiteTokenProvider {
   #cachedToken: CachedToken | null = null
   #refreshingToken: Promise<string> | null = null
 
   constructor(readonly config: AppConfig["netsuite"]) {}
+
+  hasCachedAccessToken(): boolean {
+    return this.#cachedToken !== null
+  }
+
+  clearCache(): void {
+    this.#cachedToken = null
+  }
+
+  async revokeRefreshToken(): Promise<void> {
+    if (this.config.oauthFlow !== "authorization_code") {
+      throw new NetSuiteNotConfiguredError([
+        "Remote refresh-token revocation is available only for authorization_code OAuth profiles",
+      ])
+    }
+    const clientId = required(this.config.clientId, "NETSUITE_CLIENT_ID")
+    const clientSecret = required(this.config.clientSecret, "NETSUITE_CLIENT_SECRET")
+    const refreshToken = required(this.config.refreshToken, "NETSUITE_REFRESH_TOKEN")
+    const revokeUrl = this.config.tokenUrl.replace(/\/token(?:\?.*)?$/, "/revoke")
+    try {
+      await ky.post(revokeUrl, {
+        timeout: 30_000,
+        retry: 0,
+        headers: {
+          authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+        },
+        body: new URLSearchParams({ token: refreshToken }),
+      })
+      this.clearCache()
+    } catch (error) {
+      if (error instanceof HTTPError) {
+        throw new NetSuiteRequestError(error.response.status, await error.response.text())
+      }
+      throw error
+    }
+  }
 
   async getAccessToken(): Promise<string> {
     const now = Date.now()

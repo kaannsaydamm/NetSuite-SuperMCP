@@ -7,6 +7,7 @@ import { identityFromHeaders, isAuthorized } from "./auth"
 import type { AppConfig } from "./config"
 import type { NetSuiteClient } from "./netsuite/client"
 import { OAuthNetSuiteClient } from "./netsuite/client"
+import type { OAuthControl } from "./netsuite/oauth"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
 import { OperationStore } from "./operations/operation-store"
 import { registerTools } from "./tools/registry"
@@ -15,6 +16,9 @@ export type AppDependencies = {
   readonly netsuite?: NetSuiteClient
   readonly auditLog?: AuditLog
   readonly operationStore?: OperationStore
+  readonly managementNetsuite?: NetSuiteClient
+  readonly oauthControl?: OAuthControl
+  readonly managementOauthControl?: OAuthControl
 }
 
 export function createApp(config: AppConfig, dependencies: AppDependencies = {}): Hono {
@@ -26,6 +30,18 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
     dependencies.netsuite ??
     new OAuthNetSuiteClient(config.netsuite, () => tokenProvider.getAccessToken())
   const operationStore = dependencies.operationStore ?? new OperationStore()
+  const managementTokenProvider =
+    config.managementNetsuite === undefined
+      ? undefined
+      : new NetSuiteTokenProvider(config.managementNetsuite)
+  const managementNetsuite =
+    dependencies.managementNetsuite ??
+    (config.managementNetsuite === undefined || managementTokenProvider === undefined
+      ? undefined
+      : new OAuthNetSuiteClient(config.managementNetsuite, () =>
+          managementTokenProvider.getAccessToken(),
+        ))
+  const managementOauthControl = dependencies.managementOauthControl ?? managementTokenProvider
 
   app.get("/health", (context) =>
     context.json({
@@ -57,6 +73,9 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       config,
       auditLog,
       netsuite,
+      ...(managementNetsuite === undefined ? {} : { managementNetsuite }),
+      oauthControl: dependencies.oauthControl ?? tokenProvider,
+      ...(managementOauthControl === undefined ? {} : { managementOauthControl }),
       operationStore,
       requester: identity.requester,
       client: identity.client,

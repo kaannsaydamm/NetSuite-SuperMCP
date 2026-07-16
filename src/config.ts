@@ -46,6 +46,7 @@ const ConfigSchema = z
     authMode: McpAuthModeSchema,
     bearerToken: z.string().min(12).optional(),
     netsuite: NetSuiteConfigSchema,
+    managementNetsuite: NetSuiteConfigSchema.optional(),
     auditLogPath: z.string().min(1),
   })
   .superRefine((value, context) => {
@@ -90,6 +91,7 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
       authorizationUrl: env["NETSUITE_AUTHORIZATION_URL"],
       redirectUri: env["NETSUITE_REDIRECT_URI"],
     },
+    managementNetsuite: managementConfigFromEnv(env),
     auditLogPath: env["AUDIT_LOG_PATH"] ?? "./data/audit.ndjson",
   })
 
@@ -98,6 +100,28 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
   }
 
   return ok(parsed.data)
+}
+
+function managementConfigFromEnv(
+  env: NodeJS.ProcessEnv,
+): Record<string, string | undefined> | undefined {
+  if (nonEmptyEnv(env["NETSUITE_MANAGEMENT_ACCOUNT_ID"]) === undefined) return undefined
+  return {
+    accountId: env["NETSUITE_MANAGEMENT_ACCOUNT_ID"],
+    environment: env["NETSUITE_MANAGEMENT_ENVIRONMENT"],
+    baseUrl: env["NETSUITE_MANAGEMENT_BASE_URL"],
+    restletUrl: env["NETSUITE_MANAGEMENT_RESTLET_URL"],
+    tokenUrl: env["NETSUITE_MANAGEMENT_TOKEN_URL"],
+    oauthFlow: env["NETSUITE_MANAGEMENT_OAUTH_FLOW"] ?? "authorization_code",
+    consumerKey: env["NETSUITE_MANAGEMENT_CONSUMER_KEY"],
+    certificateId: env["NETSUITE_MANAGEMENT_CERTIFICATE_ID"],
+    privateKeyPemBase64: env["NETSUITE_MANAGEMENT_PRIVATE_KEY_PEM_BASE64"],
+    clientId: env["NETSUITE_MANAGEMENT_CLIENT_ID"],
+    clientSecret: env["NETSUITE_MANAGEMENT_CLIENT_SECRET"],
+    refreshToken: env["NETSUITE_MANAGEMENT_REFRESH_TOKEN"],
+    authorizationUrl: env["NETSUITE_MANAGEMENT_AUTHORIZATION_URL"],
+    redirectUri: env["NETSUITE_MANAGEMENT_REDIRECT_URI"],
+  }
 }
 
 function requireField(value: string | undefined, path: string, context: z.RefinementCtx): void {

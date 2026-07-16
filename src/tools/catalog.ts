@@ -81,6 +81,17 @@ export const ToolName = {
   DescribeTool: "ns_describeTool",
   GetToolExample: "ns_getToolExample",
   ValidateToolRequest: "ns_validateToolRequest",
+  GetLoginAuditTrail: "ns_getLoginAuditTrail",
+  DiagnoseAuthentication: "ns_diagnoseAuthentication",
+  TestOAuthCredentials: "ns_testOAuthCredentials",
+  GetOAuthTokenMetadata: "ns_getOAuthTokenMetadata",
+  RevokeOAuthAuthorization: "ns_revokeOAuthAuthorization",
+  AnalyzeRoleAccess: "ns_analyzeRoleAccess",
+  CompareRoleVisibility: "ns_compareRoleVisibility",
+  ExplainTokenEligibility: "ns_explainTokenEligibility",
+  GetIdentityRelationship: "ns_getIdentityRelationship",
+  GetIntegrationState: "ns_getIntegrationState",
+  AnalyzeSegregationOfDuties: "ns_analyzeSegregationOfDuties",
 } as const
 
 export type ToolName = (typeof ToolName)[keyof typeof ToolName]
@@ -126,6 +137,17 @@ export const toolPolicies = {
   [ToolName.DescribeTool]: low(ToolName.DescribeTool),
   [ToolName.GetToolExample]: low(ToolName.GetToolExample),
   [ToolName.ValidateToolRequest]: low(ToolName.ValidateToolRequest),
+  [ToolName.GetLoginAuditTrail]: low(ToolName.GetLoginAuditTrail),
+  [ToolName.DiagnoseAuthentication]: low(ToolName.DiagnoseAuthentication),
+  [ToolName.TestOAuthCredentials]: low(ToolName.TestOAuthCredentials),
+  [ToolName.GetOAuthTokenMetadata]: low(ToolName.GetOAuthTokenMetadata),
+  [ToolName.RevokeOAuthAuthorization]: diagnosticHigh(ToolName.RevokeOAuthAuthorization),
+  [ToolName.AnalyzeRoleAccess]: low(ToolName.AnalyzeRoleAccess),
+  [ToolName.CompareRoleVisibility]: low(ToolName.CompareRoleVisibility),
+  [ToolName.ExplainTokenEligibility]: low(ToolName.ExplainTokenEligibility),
+  [ToolName.GetIdentityRelationship]: low(ToolName.GetIdentityRelationship),
+  [ToolName.GetIntegrationState]: low(ToolName.GetIntegrationState),
+  [ToolName.AnalyzeSegregationOfDuties]: low(ToolName.AnalyzeSegregationOfDuties),
   [ToolName.CreateRecord]: medium(ToolName.CreateRecord),
   [ToolName.UpdateRecord]: medium(ToolName.UpdateRecord),
   [ToolName.SubmitFields]: medium(ToolName.SubmitFields),
@@ -194,4 +216,8 @@ function medium(toolName: ToolName): ToolPolicy {
 
 function high(toolName: ToolName): ToolPolicy {
   return { toolName, risk: ToolRisk.High, mutatesNetSuite: true }
+}
+
+function diagnosticHigh(toolName: ToolName): ToolPolicy {
+  return { toolName, risk: ToolRisk.High, mutatesNetSuite: false }
 }
