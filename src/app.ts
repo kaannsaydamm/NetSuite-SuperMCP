@@ -4,8 +4,12 @@ import { Hono } from "hono"
 import pino from "pino"
 import { AuditLog } from "./audit"
 import { identityFromHeaders, isAuthorized } from "./auth"
+import { CompositeStore } from "./composites/composite-store"
 import type { AppConfig } from "./config"
+import type { HarnessContext } from "./contracts/harness-schemas"
 import { CustomizationStore } from "./customizations/customization-store"
+import { HarnessBudgetStore } from "./harness/budget-store"
+import { decodeHarnessContext, isToolAllowed } from "./harness/context"
 import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
@@ -17,6 +21,7 @@ import { OperationStore } from "./operations/operation-store"
 import { CursorCodec } from "./query/suiteql"
 import { RunbookStore } from "./runbooks/runbook-store"
 import { SemanticStore } from "./semantics/semantic-store"
+import { type ToolName, toolPolicies } from "./tools/catalog"
 import { registerTools } from "./tools/registry"
 
 export type AppDependencies = {
@@ -33,6 +38,8 @@ export type AppDependencies = {
   readonly customizationStore?: CustomizationStore
   readonly semanticStore?: SemanticStore
   readonly runbookStore?: RunbookStore
+  readonly compositeStore?: CompositeStore
+  readonly harnessBudgetStore?: HarnessBudgetStore
 }
 
 export function createApp(config: AppConfig, dependencies: AppDependencies = {}): Hono {
@@ -53,6 +60,10 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
     dependencies.customizationStore ?? new CustomizationStore(config.customizationStorePath)
   const semanticStore = dependencies.semanticStore ?? new SemanticStore(config.semanticStorePath)
   const runbookStore = dependencies.runbookStore ?? new RunbookStore(config.runbookStorePath)
+  const compositeStore =
+    dependencies.compositeStore ?? new CompositeStore(config.compositeStorePath)
+  const harnessBudgetStore =
+    dependencies.harnessBudgetStore ?? new HarnessBudgetStore(config.harnessBudgetStorePath)
   const managementTokenProvider =
     config.managementNetsuite === undefined
       ? undefined
@@ -84,6 +95,24 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
     }
 
     const identity = identityFromHeaders(context.req.raw.headers)
+    let harnessContext: HarnessContext | undefined
+    try {
+      harnessContext = decodeHarnessContext(
+        context.req.header("x-supermcp-context"),
+        context.req.header("x-supermcp-signature"),
+        config.harnessContextSecret,
+      )
+    } catch (error) {
+      return context.json(
+        { error: error instanceof Error ? error.message : "invalid harness context" },
+        401,
+      )
+    }
+    const allowedToolNames = new Set(
+      (Object.keys(toolPolicies) as ToolName[]).filter((name) =>
+        isToolAllowed(harnessContext, name),
+      ),
+    )
     const server = new McpServer(
       { name: config.serverName, version: config.serverVersion },
       {
@@ -107,6 +136,10 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       customizationStore,
       semanticStore,
       runbookStore,
+      compositeStore,
+      harnessBudgetStore,
+      ...(harnessContext === undefined ? {} : { harnessContext }),
+      allowedToolNames,
       requester: identity.requester,
       client: identity.client,
     })

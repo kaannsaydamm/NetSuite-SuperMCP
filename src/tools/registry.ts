@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { registerAssuranceTools } from "./assurance-tools"
 import { registerCustomizationTools } from "./customization-tools"
+import { registerHarnessTools } from "./harness-tools"
 import { registerIdentityTools } from "./identity-tools"
 import { registerIntegrationTools } from "./integration-tools"
 import { registerNetSuiteTools } from "./netsuite-tools"
@@ -13,15 +14,32 @@ import { registerSystemTools } from "./system-tools"
 import type { ToolDependencies } from "./types"
 
 export function registerTools(server: McpServer, dependencies: ToolDependencies): void {
-  registerSystemTools(server, dependencies)
-  registerIdentityTools(server, dependencies)
-  registerRecordExplorerTools(server, dependencies)
-  registerQueryTools(server, dependencies)
-  registerScriptTools(server, dependencies)
-  registerIntegrationTools(server, dependencies)
-  registerCustomizationTools(server, dependencies)
-  registerSemanticTools(server, dependencies)
-  registerAssuranceTools(server, dependencies)
-  registerRunbookTools(server, dependencies)
-  registerNetSuiteTools(server, dependencies)
+  const scopedServer = filterToolRegistration(server, dependencies.allowedToolNames)
+  registerSystemTools(scopedServer, dependencies)
+  registerHarnessTools(scopedServer, dependencies)
+  registerIdentityTools(scopedServer, dependencies)
+  registerRecordExplorerTools(scopedServer, dependencies)
+  registerQueryTools(scopedServer, dependencies)
+  registerScriptTools(scopedServer, dependencies)
+  registerIntegrationTools(scopedServer, dependencies)
+  registerCustomizationTools(scopedServer, dependencies)
+  registerSemanticTools(scopedServer, dependencies)
+  registerAssuranceTools(scopedServer, dependencies)
+  registerRunbookTools(scopedServer, dependencies)
+  registerNetSuiteTools(scopedServer, dependencies)
+}
+
+function filterToolRegistration(server: McpServer, allowed: ReadonlySet<string>): McpServer {
+  return new Proxy(server, {
+    get(target, property) {
+      if (property === "registerTool")
+        return (name: string, ...args: unknown[]) => {
+          if (!allowed.has(name)) return undefined
+          const register = target.registerTool as (...parameters: unknown[]) => unknown
+          return register.call(target, name, ...args)
+        }
+      const value = Reflect.get(target, property, target)
+      return typeof value === "function" ? value.bind(target) : value
+    },
+  })
 }

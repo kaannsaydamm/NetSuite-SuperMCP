@@ -504,18 +504,18 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Define a signed harness context contract and reject unsigned scope claims when verification is configured.
-- [ ] Filter the exposed tool catalog according to the harness-selected profile; do not infer profiles from the model prompt.
-- [ ] Enforce resource budgets independently of consent and report remaining budget in structured metadata.
-- [ ] Annotate sensitive fields and redact secrets unconditionally; let approved harness policies decide whether non-secret PII is shown.
-- [ ] Expose approval requirements and callbacks while leaving the user interaction to ChatGPT, Claude, Codex, or another harness.
-- [ ] Implement `ns_createCompositeTool` as a versioned runbook definition with schema validation, cycle detection, and no arbitrary code execution.
+- [x] Define a signed harness context contract and reject unsigned scope claims when verification is configured.
+- [x] Filter the exposed tool catalog according to the harness-selected profile; do not infer profiles from the model prompt.
+- [x] Enforce resource budgets independently of consent and report remaining budget in structured metadata.
+- [x] Annotate sensitive fields and redact secrets unconditionally; let approved harness policies decide whether non-secret PII is shown.
+- [x] Expose approval requirements and callbacks while leaving the user interaction to ChatGPT, Claude, Codex, or another harness.
+- [x] Implement `ns_createCompositeTool` as a versioned runbook definition with schema validation, cycle detection, and no arbitrary code execution.
 
 ### Acceptance Gate
 
-- [ ] Different harnesses can expose different profiles without changing NetSuite credentials.
-- [ ] Budget exhaustion is deterministic and resumable.
-- [ ] Composite tools cannot introduce undeclared inputs, tools, or mutation paths.
+- [x] Different harnesses can expose different profiles without changing NetSuite credentials.
+- [x] Budget exhaustion is deterministic and resumable.
+- [x] Composite tools cannot introduce undeclared inputs, tools, or mutation paths.
 
 ---
 

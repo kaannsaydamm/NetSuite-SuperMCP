@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.39
+
+- Added HMAC-verified harness contexts for provider-selected read, preview, and operations profiles.
+- Added actual MCP catalog filtering, explicit tool and record-type scope, and persistent resumable
+  call/row/record/governance/runtime budgets.
+- Added unconditional secret redaction, harness-selected PII handling, and structured sensitivity
+  and remaining-budget metadata on tool responses.
+- Added approval requirement, decision, approver, and callback facts without invoking callbacks or
+  moving consent into the MCP server.
+- Added immutable typed composite definitions with declared-input validation, referenced tool and
+  runbook validation, version protection, and cycle rejection. Composite definitions never execute
+  arbitrary code or hidden nested tools.
+
 ## 0.1.38
 
 - Added immutable versioned runbooks with persistent, resumable, ordered execution state.

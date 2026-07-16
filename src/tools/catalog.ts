@@ -201,6 +201,11 @@ export const ToolName = {
   GenerateLiveDocumentation: "ns_generateLiveDocumentation",
   RecordEvidenceClaim: "ns_recordEvidenceClaim",
   GetEvidenceMemory: "ns_getEvidenceMemory",
+  GetHarnessContext: "ns_getHarnessContext",
+  GetHarnessBudget: "ns_getHarnessBudget",
+  GetCatalogProfile: "ns_getCatalogProfile",
+  CreateCompositeTool: "ns_createCompositeTool",
+  GetCompositeTool: "ns_getCompositeTool",
 } as const
 
 export type ToolName = (typeof ToolName)[keyof typeof ToolName]
@@ -366,6 +371,11 @@ export const toolPolicies = {
   [ToolName.GenerateLiveDocumentation]: low(ToolName.GenerateLiveDocumentation),
   [ToolName.RecordEvidenceClaim]: low(ToolName.RecordEvidenceClaim),
   [ToolName.GetEvidenceMemory]: low(ToolName.GetEvidenceMemory),
+  [ToolName.GetHarnessContext]: low(ToolName.GetHarnessContext),
+  [ToolName.GetHarnessBudget]: low(ToolName.GetHarnessBudget),
+  [ToolName.GetCatalogProfile]: low(ToolName.GetCatalogProfile),
+  [ToolName.CreateCompositeTool]: low(ToolName.CreateCompositeTool),
+  [ToolName.GetCompositeTool]: low(ToolName.GetCompositeTool),
   [ToolName.CreateRecord]: medium(ToolName.CreateRecord),
   [ToolName.UpdateRecord]: medium(ToolName.UpdateRecord),
   [ToolName.SubmitFields]: medium(ToolName.SubmitFields),

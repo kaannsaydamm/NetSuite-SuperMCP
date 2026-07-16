@@ -343,6 +343,26 @@ search, mapping, transaction-flow, and runbook metadata.
 current claim requires its exact `supersedesVersion`; `ns_getEvidenceMemory` returns the full claim
 history so a later conversation cannot silently contradict prior evidence.
 
+## Harness Profiles and Composite Tools
+
+Providers can sign a versioned harness context with `MCP_HARNESS_CONTEXT_SECRET` and send it in
+`x-supermcp-context` plus `x-supermcp-signature` headers. Stdio providers use the matching
+`MCP_HARNESS_CONTEXT` and `MCP_HARNESS_CONTEXT_SIGNATURE` environment values. When verification is
+configured, unsigned or invalid scope claims are rejected.
+
+The signed context selects the `read`, `preview`, or `operations` catalog, optional tool and record
+type allowlists, persistent call/row/record/governance/runtime budgets, PII fields, and approval
+facts. `ns_getHarnessContext`, `ns_getHarnessBudget`, and `ns_getCatalogProfile` expose the active
+facts. Secrets are always redacted. The harness may permit non-secret PII, but SuperMCP never calls
+an approval callback or treats model text as consent.
+
+`ns_createCompositeTool` stores an immutable versioned composite assembled from existing typed
+tools, runbooks, and prior composites. Inputs must be declared and include validation examples;
+tool templates are checked against the public tool schema, unavailable tools and undeclared inputs
+are rejected, and composite cycles are blocked. `ns_getCompositeTool` reads the definition. The
+provider executes the declared sequence; SuperMCP does not run hidden nested tools or arbitrary
+code.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

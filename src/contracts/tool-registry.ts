@@ -54,6 +54,7 @@ import {
   ProjectInputSchema,
   RecordDeploymentResultInputSchema,
 } from "./customization-schemas"
+import { CompositeDefinitionSchema, GetCompositeToolInputSchema } from "./harness-schemas"
 import {
   DiagnoseAuthenticationInputSchema,
   IdentityProfileInputSchema,
@@ -236,7 +237,14 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
     case ToolName.GetSuperMcpVersion:
     case ToolName.ListCapabilities:
     case ToolName.ListReportTypes:
+    case ToolName.GetHarnessContext:
+    case ToolName.GetHarnessBudget:
+    case ToolName.GetCatalogProfile:
       return EmptyInputSchema
+    case ToolName.CreateCompositeTool:
+      return CompositeDefinitionSchema
+    case ToolName.GetCompositeTool:
+      return GetCompositeToolInputSchema
     case ToolName.CheckAccountPermissions:
       return AccountPermissionCheckInputSchema
     case ToolName.GetAuditLog:
@@ -520,7 +528,36 @@ function validExampleFor(name: ToolName): JsonValue {
     case ToolName.GetSuperMcpVersion:
     case ToolName.ListCapabilities:
     case ToolName.ListReportTypes:
+    case ToolName.GetHarnessContext:
+    case ToolName.GetHarnessBudget:
+    case ToolName.GetCatalogProfile:
       return {}
+    case ToolName.CreateCompositeTool:
+      return {
+        id: "customer.review",
+        version: "1.0",
+        title: "Customer review",
+        description: "Reads one explicitly selected customer.",
+        inputs: [
+          {
+            name: "customerId",
+            type: "string",
+            required: true,
+            example: "123",
+            sensitivity: "internal",
+          },
+        ],
+        steps: [
+          {
+            id: "read.customer",
+            kind: "tool",
+            toolName: ToolName.GetRecord,
+            inputTemplate: { type: "customer", id: { $input: "customerId" } },
+          },
+        ],
+      }
+    case ToolName.GetCompositeTool:
+      return { compositeId: "customer.review", compositeVersion: "1.0" }
     case ToolName.CheckAccountPermissions:
       return { recordTypes: ["salesOrder"], includeRestlet: true }
     case ToolName.GetAuditLog:

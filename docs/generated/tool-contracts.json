@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolCount": 178,
+  "toolCount": 183,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -3635,6 +3635,263 @@
       ],
       "risk": "low",
       "title": "correlate Incidents"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "description": "Reads one explicitly selected customer.",
+          "id": "customer.review",
+          "inputs": [
+            {
+              "example": "123",
+              "name": "customerId",
+              "required": true,
+              "sensitivity": "internal",
+              "type": "string"
+            }
+          ],
+          "steps": [
+            {
+              "id": "read.customer",
+              "inputTemplate": {
+                "id": {
+                  "$input": "customerId"
+                },
+                "type": "customer"
+              },
+              "kind": "tool",
+              "toolName": "ns_getRecord"
+            }
+          ],
+          "title": "Customer review",
+          "version": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "inputs": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "example": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "name": {
+                  "pattern": "^[a-z][a-zA-Z0-9_]{0,63}$",
+                  "type": "string"
+                },
+                "required": {
+                  "default": true,
+                  "type": "boolean"
+                },
+                "sensitivity": {
+                  "default": "internal",
+                  "enum": [
+                    "public",
+                    "internal",
+                    "pii",
+                    "secret"
+                  ],
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "object",
+                    "array"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "type",
+                "required",
+                "example",
+                "sensitivity"
+              ],
+              "type": "object"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "steps": {
+            "items": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+                      "type": "string"
+                    },
+                    "inputTemplate": {
+                      "$ref": "#/$defs/__schema0"
+                    },
+                    "kind": {
+                      "const": "tool",
+                      "type": "string"
+                    },
+                    "toolName": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "toolName",
+                    "inputTemplate"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "runbook",
+                      "type": "string"
+                    },
+                    "runbookId": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "runbookVersion": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "runbookId",
+                    "runbookVersion"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "compositeId": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "compositeVersion": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "id": {
+                      "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "composite",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "compositeId",
+                    "compositeVersion"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "title",
+          "description",
+          "inputs",
+          "steps"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_createCompositeTool",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "create Composite Tool"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -14427,6 +14684,82 @@
       "effects": [],
       "examples": {
         "invalid": null,
+        "valid": {}
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getCatalogProfile",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Catalog Profile"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "compositeId": "customer.review",
+          "compositeVersion": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "compositeId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "compositeVersion": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "compositeId",
+          "compositeVersion"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getCompositeTool",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Composite Tool"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
         "valid": {
           "deploymentId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -15042,6 +15375,66 @@
       ],
       "risk": "low",
       "title": "get File"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {}
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getHarnessBudget",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Harness Budget"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {}
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getHarnessContext",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Harness Context"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",

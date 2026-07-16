@@ -80,17 +80,19 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
         dependencies,
         {},
         {
-          tools: Object.keys(toolPolicies).map((name) => {
-            const contract = getToolContract(name)
-            return {
-              name: contract.name,
-              risk: contract.risk,
-              mutatesNetSuite: contract.mutatesNetSuite,
-              effects: contract.effects,
-              requiredPermissions: contract.requiredPermissions,
-              phaseSupport: contract.phaseSupport,
-            }
-          }),
+          tools: Object.keys(toolPolicies)
+            .filter((name) => dependencies.allowedToolNames.has(name as ToolName))
+            .map((name) => {
+              const contract = getToolContract(name)
+              return {
+                name: contract.name,
+                risk: contract.risk,
+                mutatesNetSuite: contract.mutatesNetSuite,
+                effects: contract.effects,
+                requiredPermissions: contract.requiredPermissions,
+                phaseSupport: contract.phaseSupport,
+              }
+            }),
         },
       ),
   )
@@ -172,6 +174,7 @@ async function superMcpVersionPayload(dependencies: ToolDependencies): Promise<J
       configuredVersion: dependencies.config.serverVersion,
       packageVersion: PACKAGE_VERSION,
       toolCount: Object.keys(toolPolicies).length,
+      exposedToolCount: dependencies.allowedToolNames.size,
     },
     netsuite: {
       accountId: dependencies.config.netsuite.accountId,

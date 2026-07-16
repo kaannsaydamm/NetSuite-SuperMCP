@@ -1,9 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { AuditLog } from "./audit"
+import { CompositeStore } from "./composites/composite-store"
 import { parseConfig } from "./config"
 import { formatConfigError } from "./config-help"
 import { CustomizationStore } from "./customizations/customization-store"
+import { HarnessBudgetStore } from "./harness/budget-store"
+import { decodeHarnessContext, isToolAllowed } from "./harness/context"
 import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
@@ -13,6 +16,7 @@ import { OperationStore } from "./operations/operation-store"
 import { CursorCodec } from "./query/suiteql"
 import { RunbookStore } from "./runbooks/runbook-store"
 import { SemanticStore } from "./semantics/semantic-store"
+import { type ToolName, toolPolicies } from "./tools/catalog"
 import { registerTools } from "./tools/registry"
 
 const parsedConfig = parseConfig(process.env)
@@ -34,6 +38,16 @@ const integrationStore = new IntegrationStore(config.integrationStorePath)
 const customizationStore = new CustomizationStore(config.customizationStorePath)
 const semanticStore = new SemanticStore(config.semanticStorePath)
 const runbookStore = new RunbookStore(config.runbookStorePath)
+const compositeStore = new CompositeStore(config.compositeStorePath)
+const harnessBudgetStore = new HarnessBudgetStore(config.harnessBudgetStorePath)
+const harnessContext = decodeHarnessContext(
+  process.env["MCP_HARNESS_CONTEXT"],
+  process.env["MCP_HARNESS_CONTEXT_SIGNATURE"],
+  config.harnessContextSecret,
+)
+const allowedToolNames = new Set(
+  (Object.keys(toolPolicies) as ToolName[]).filter((name) => isToolAllowed(harnessContext, name)),
+)
 const server = new McpServer(
   { name: config.serverName, version: config.serverVersion },
   {
@@ -54,6 +68,10 @@ registerTools(server, {
   customizationStore,
   semanticStore,
   runbookStore,
+  compositeStore,
+  harnessBudgetStore,
+  ...(harnessContext === undefined ? {} : { harnessContext }),
+  allowedToolNames,
   requester: process.env["MCP_REQUESTER"] ?? "local-agent",
   client: process.env["MCP_CLIENT"] ?? "stdio",
 })

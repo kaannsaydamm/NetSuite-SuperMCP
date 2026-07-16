@@ -64,6 +64,9 @@ describe("parseConfig", () => {
       expect(result.value.customizationStorePath).toBe("./data/customization-deployments.json")
       expect(result.value.semanticStorePath).toBe("./data/semantic-definitions.json")
       expect(result.value.runbookStorePath).toBe("./data/runbooks.json")
+      expect(result.value.compositeStorePath).toBe("./data/composites.json")
+      expect(result.value.harnessBudgetStorePath).toBe("./data/harness-budgets.json")
+      expect(result.value.harnessContextSecret).toBeUndefined()
       expect(result.value.lowRiskRepairClasses).toEqual([])
       expect(result.value.customizationProjectDirectory).toBe("./data/customization-projects")
     }

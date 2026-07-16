@@ -1,3 +1,4 @@
+import { assertRequestScope, redactForHarness } from "../harness/context"
 import { authorizeTool } from "../policy"
 import { createRequestId, type ErrorEnvelope, toErrorEnvelope } from "../shared/error-envelope"
 import type { JsonObject } from "../shared/json"
@@ -17,10 +18,14 @@ export async function runNetSuiteTool(request: NetSuiteToolRequest): Promise<Too
   const requestId = createRequestId()
   const policy = toolPolicies[toolName]
   authorizeTool(policy)
+  if (!dependencies.allowedToolNames.has(toolName)) throw new Error("HARNESS_TOOL_NOT_ALLOWED")
+  assertRequestScope(dependencies.harnessContext, input)
+  const started = performance.now()
 
   try {
+    await dependencies.harnessBudgetStore.reserve(dependencies.harnessContext, input)
     const result = await execute()
-    const responseResult = { ...result, requestId }
+    const responseResult = await withHarnessMetadata(dependencies, { ...result, requestId }, policy)
     await writeAudit({
       dependencies,
       toolName,
@@ -42,6 +47,11 @@ export async function runNetSuiteTool(request: NetSuiteToolRequest): Promise<Too
       requestId,
     })
     return toolError(envelope)
+  } finally {
+    await dependencies.harnessBudgetStore.recordRuntime(
+      dependencies.harnessContext,
+      performance.now() - started,
+    )
   }
 }
 
@@ -52,7 +62,15 @@ export async function respond(
   result: JsonObject,
 ): Promise<ToolResponse> {
   const requestId = createRequestId()
-  const responseResult = { ...result, requestId }
+  if (!dependencies.allowedToolNames.has(toolName)) throw new Error("HARNESS_TOOL_NOT_ALLOWED")
+  assertRequestScope(dependencies.harnessContext, input)
+  const started = performance.now()
+  await dependencies.harnessBudgetStore.reserve(dependencies.harnessContext, input)
+  const responseResult = await withHarnessMetadata(
+    dependencies,
+    { ...result, requestId },
+    toolPolicies[toolName],
+  )
   await writeAudit({
     dependencies,
     toolName,
@@ -61,7 +79,42 @@ export async function respond(
     status: "succeeded",
     requestId,
   })
+  await dependencies.harnessBudgetStore.recordRuntime(
+    dependencies.harnessContext,
+    performance.now() - started,
+  )
   return toolText(responseResult)
+}
+
+async function withHarnessMetadata(
+  dependencies: ToolDependencies,
+  result: JsonObject,
+  policy: { readonly risk: string; readonly mutatesNetSuite: boolean },
+): Promise<JsonObject> {
+  const context = dependencies.harnessContext
+  const operationId = typeof result["operationId"] === "string" ? result["operationId"] : undefined
+  const decision = context?.approvals.decisions.find((entry) => entry.operationId === operationId)
+  const serializable = JSON.parse(
+    JSON.stringify({
+      ...result,
+      harness: {
+        profile: context?.profile ?? "operations",
+        budget: await dependencies.harnessBudgetStore.status(context),
+        sensitivity: context?.sensitivity ?? { piiFields: [], piiMode: "redact" },
+        approval: {
+          required:
+            context?.approvals.requiredForRisks.includes(
+              policy.risk as "low" | "medium" | "high" | "critical",
+            ) ?? false,
+          decision: decision?.decision ?? "not-supplied",
+          approverRef: decision?.approverRef ?? null,
+          callbackUrl: context?.approvals.callbackUrl ?? null,
+          interactionOwner: "provider-or-harness",
+        },
+      },
+    }),
+  ) as JsonObject
+  return redactForHarness(context, serializable) as JsonObject
 }
 
 type AuditWriteRequest = {

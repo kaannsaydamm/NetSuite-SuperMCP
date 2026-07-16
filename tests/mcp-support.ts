@@ -19,19 +19,21 @@ export const ToolTextResponseSchema = z.object({
   }),
 })
 
-export const CapabilitiesPayloadSchema = z.object({
-  requestId: z.string().uuid(),
-  tools: z.array(
-    z.object({
-      name: z.string(),
-      risk: z.string(),
-      mutatesNetSuite: z.boolean(),
-      effects: z.array(z.string()),
-      requiredPermissions: z.array(z.string()),
-      phaseSupport: z.array(z.enum(["prepare", "preview", "commit"])),
-    }),
-  ),
-})
+export const CapabilitiesPayloadSchema = z
+  .object({
+    requestId: z.string().uuid(),
+    tools: z.array(
+      z.object({
+        name: z.string(),
+        risk: z.string(),
+        mutatesNetSuite: z.boolean(),
+        effects: z.array(z.string()),
+        requiredPermissions: z.array(z.string()),
+        phaseSupport: z.array(z.enum(["prepare", "preview", "commit"])),
+      }),
+    ),
+  })
+  .loose()
 
 export async function mcpCall(
   app: ReturnType<typeof createApp>,

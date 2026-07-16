@@ -72,7 +72,7 @@ netsuite-supermcp doctor
 
 From any connected MCP client, also run `ns_getSuperMcpVersion`. It should show the same installed
 package version and RESTlet version, `restlet.reachable: true`, the expected NetSuite account ID,
-and `toolCount: 178`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
+and `toolCount: 183`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
 the MCP process first and redeploy the RESTlet if `restlet.version` is old.
 
 If you use SuiteCloud CLI instead of the NetSuite UI, Oracle's current CLI package is
@@ -139,6 +139,9 @@ Operational values:
 - `CUSTOMIZATION_STORE_PATH`
 - `SEMANTIC_STORE_PATH`
 - `RUNBOOK_STORE_PATH`
+- `COMPOSITE_STORE_PATH`
+- `HARNESS_BUDGET_STORE_PATH`
+- `MCP_HARNESS_CONTEXT_SECRET` (optional; enables signed harness scopes)
 - `RUNBOOK_LOW_RISK_REPAIR_CLASSES` only for explicitly provider-approved local repair classes.
 - `CUSTOMIZATION_PROJECT_DIRECTORY`
 - `MCP_CURSOR_SECRET` only when cursor signing must be independent from the existing MCP/OAuth
@@ -152,7 +155,8 @@ Operational values:
 - Store `AUDIT_LOG_PATH` on persistent storage or send audit output through your platform log
   collector.
 - Store `JOB_STORE_PATH`, `EXPORT_DIRECTORY`, `INTEGRATION_STORE_PATH`,
-  `CUSTOMIZATION_STORE_PATH`, `SEMANTIC_STORE_PATH`, and `RUNBOOK_STORE_PATH` on persistent storage
+  `CUSTOMIZATION_STORE_PATH`, `SEMANTIC_STORE_PATH`, `RUNBOOK_STORE_PATH`,
+  `COMPOSITE_STORE_PATH`, and `HARNESS_BUDGET_STORE_PATH` on persistent storage
   so resumable exports, versioned contracts and metrics, canaries, runbooks, evidence claims, and
   outbox delivery state survive restarts.
   Keep customization deployment state and generated checksum-pinned projects on the same class of
