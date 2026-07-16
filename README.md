@@ -318,6 +318,31 @@ caller estimates, or a prepared operation plan. Non-NetSuite sources are always 
 `ns_rankRootCauses` ranks explicit hypotheses while retaining supporting evidence, contradicting
 evidence, and uncertainty.
 
+## Runbooks, Repairs, And Evidence Memory
+
+`ns_defineRunbook` stores immutable typed steps that reference existing MCP tools and operation
+plans. `ns_previewRunbook`, `ns_startRunbook`, `ns_getRunbookExecution`, and
+`ns_recordRunbookStep` maintain persistent, resumable, ordered execution state. The provider or
+harness executes each referenced tool and records the result. SuperMCP never hides nested tool
+execution. Mutating steps require a connection-bound operation plan, preview output, and expected
+preview fingerprint; changed evidence stops the runbook before any commit.
+
+`ns_proposeRepair` and `ns_prepareBoundedRepair` never execute a repair. By default no repair class
+is low risk. A provider may explicitly list local-only classes in
+`RUNBOOK_LOW_RISK_REPAIR_CLASSES`; financial, destructive, and unlisted repairs remain
+proposal-only. Existing operation plans are required where the operation protocol applies, and the
+harness owns final approval and execution.
+
+`ns_correlateIncidents` groups deterministic identifiers before bounded message similarity.
+`ns_measureSla` evaluates caller-supplied durations without deriving or normalizing timestamps.
+`ns_buildSupportEvidenceBundle` creates redacted manifests, hashes, and reproducible-query evidence.
+`ns_generateLiveDocumentation` fingerprints caller-supplied live architecture, script, field, role,
+search, mapping, transaction-flow, and runbook metadata.
+
+`ns_recordEvidenceClaim` stores claim, evidence, confidence, and a content fingerprint. Replacing a
+current claim requires its exact `supersedesVersion`; `ns_getEvidenceMemory` returns the full claim
+history so a later conversation cannot silently contradict prior evidence.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

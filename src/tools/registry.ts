@@ -6,6 +6,7 @@ import { registerIntegrationTools } from "./integration-tools"
 import { registerNetSuiteTools } from "./netsuite-tools"
 import { registerQueryTools } from "./query-tools"
 import { registerRecordExplorerTools } from "./record-explorer-tools"
+import { registerRunbookTools } from "./runbook-tools"
 import { registerScriptTools } from "./script-tools"
 import { registerSemanticTools } from "./semantic-tools"
 import { registerSystemTools } from "./system-tools"
@@ -21,5 +22,6 @@ export function registerTools(server: McpServer, dependencies: ToolDependencies)
   registerCustomizationTools(server, dependencies)
   registerSemanticTools(server, dependencies)
   registerAssuranceTools(server, dependencies)
+  registerRunbookTools(server, dependencies)
   registerNetSuiteTools(server, dependencies)
 }

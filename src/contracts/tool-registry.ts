@@ -115,6 +115,21 @@ import {
   TransactionChainInputSchema,
 } from "./record-explorer-schemas"
 import {
+  BuildSupportEvidenceInputSchema,
+  CorrelateIncidentsInputSchema,
+  DefineRunbookInputSchema,
+  EvidenceMemoryInputSchema,
+  GenerateLiveDocumentationInputSchema,
+  MeasureSlaInputSchema,
+  PrepareBoundedRepairInputSchema,
+  RecordEvidenceClaimInputSchema,
+  RecordRunbookStepInputSchema,
+  RepairProposalInputSchema,
+  RunbookExecutionInputSchema,
+  RunbookRefInputSchema,
+  StartRunbookInputSchema,
+} from "./runbook-schemas"
+import {
   FieldUsageInputSchema,
   RecordUsageInputSchema,
   ScriptGraphInputSchema,
@@ -464,6 +479,32 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return SimulateChannelAllocationInputSchema
     case ToolName.RankRootCauses:
       return RankRootCausesInputSchema
+    case ToolName.DefineRunbook:
+      return DefineRunbookInputSchema
+    case ToolName.PreviewRunbook:
+      return RunbookRefInputSchema
+    case ToolName.StartRunbook:
+      return StartRunbookInputSchema
+    case ToolName.GetRunbookExecution:
+      return RunbookExecutionInputSchema
+    case ToolName.RecordRunbookStep:
+      return RecordRunbookStepInputSchema
+    case ToolName.ProposeRepair:
+      return RepairProposalInputSchema
+    case ToolName.PrepareBoundedRepair:
+      return PrepareBoundedRepairInputSchema
+    case ToolName.CorrelateIncidents:
+      return CorrelateIncidentsInputSchema
+    case ToolName.MeasureSla:
+      return MeasureSlaInputSchema
+    case ToolName.BuildSupportEvidenceBundle:
+      return BuildSupportEvidenceInputSchema
+    case ToolName.GenerateLiveDocumentation:
+      return GenerateLiveDocumentationInputSchema
+    case ToolName.RecordEvidenceClaim:
+      return RecordEvidenceClaimInputSchema
+    case ToolName.GetEvidenceMemory:
+      return EvidenceMemoryInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -1010,6 +1051,88 @@ function validExampleFor(name: ToolName): JsonValue {
           },
         ],
       }
+    case ToolName.DefineRunbook:
+      return runbookExample()
+    case ToolName.PreviewRunbook:
+      return { runbookId: "diagnose.order", runbookVersion: "1.0" }
+    case ToolName.StartRunbook:
+      return {
+        runbookId: "diagnose.order",
+        runbookVersion: "1.0",
+        evidence: [{ source: "record", reference: "salesOrder:123" }],
+      }
+    case ToolName.GetRunbookExecution:
+      return { executionId: "123e4567-e89b-42d3-a456-426614174000" }
+    case ToolName.RecordRunbookStep:
+      return {
+        executionId: "123e4567-e89b-42d3-a456-426614174000",
+        stepId: "read.order",
+        observedEvidence: [{ source: "record", reference: "salesOrder:123" }],
+        result: { found: true },
+        succeeded: true,
+      }
+    case ToolName.ProposeRepair:
+    case ToolName.PrepareBoundedRepair:
+      return {
+        repairClass: "localMetadataRefresh",
+        target: { cache: "record-metadata" },
+        toolName: "provider.refreshMetadata",
+        payload: {},
+        financial: false,
+        destructive: false,
+        evidence: [],
+      }
+    case ToolName.CorrelateIncidents:
+      return {
+        events: [
+          {
+            id: "event-1",
+            scriptId: "customscript_example",
+            message: "Example failure",
+            evidence: [],
+          },
+        ],
+        similarityThreshold: 0.8,
+      }
+    case ToolName.MeasureSla:
+      return {
+        measurements: [
+          { id: "job-1", targetDurationMs: 1000, actualDurationMs: 1200, evidence: [] },
+        ],
+      }
+    case ToolName.BuildSupportEvidenceBundle:
+      return {
+        name: "support.case",
+        claims: [
+          {
+            claim: "Record is not visible.",
+            confidence: 1,
+            evidence: [{ source: "record", reference: "salesOrder:123" }],
+          },
+        ],
+        reproducibleQueries: [],
+      }
+    case ToolName.GenerateLiveDocumentation:
+      return {
+        title: "NetSuite system",
+        sources: [
+          {
+            kind: "script",
+            id: "customscript_example",
+            definition: { scriptType: "RESTlet" },
+            evidence: [],
+          },
+        ],
+      }
+    case ToolName.RecordEvidenceClaim:
+      return {
+        claimId: "order.state",
+        statement: "Order is pending.",
+        confidence: 1,
+        evidence: [{ source: "record", reference: "salesOrder:123" }],
+      }
+    case ToolName.GetEvidenceMemory:
+      return { claimId: "order.state" }
     default:
       return actionExampleFor(name)
   }
@@ -1037,6 +1160,25 @@ function metricExample(): JsonValue {
     filters: [],
     exclusions: [],
     sourceRefs: ["savedsearch:customsearch_inventory_source"],
+  }
+}
+
+function runbookExample(): JsonValue {
+  return {
+    id: "diagnose.order",
+    version: "1.0",
+    title: "Diagnose order",
+    description: "Read-only order diagnosis with explicit evidence.",
+    steps: [
+      {
+        id: "read.order",
+        title: "Read order",
+        toolName: ToolName.GetRecord,
+        input: { type: "salesOrder", id: "123" },
+        mutatesNetSuite: false,
+        repairClass: "none",
+      },
+    ],
   }
 }
 

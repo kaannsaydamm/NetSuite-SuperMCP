@@ -41,6 +41,8 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     customizationStorePath: "./data/test-customization-deployments.json",
     customizationProjectDirectory: "./data/test-customization-projects",
     semanticStorePath: "./data/test-semantic-definitions.json",
+    runbookStorePath: "./data/test-runbooks.json",
+    lowRiskRepairClasses: [],
     cursorSecret: "test-cursor-secret-value",
   } satisfies AppConfig
 

@@ -63,6 +63,8 @@ describe("parseConfig", () => {
       expect(result.value.integrationStorePath).toBe("./data/integrations.json")
       expect(result.value.customizationStorePath).toBe("./data/customization-deployments.json")
       expect(result.value.semanticStorePath).toBe("./data/semantic-definitions.json")
+      expect(result.value.runbookStorePath).toBe("./data/runbooks.json")
+      expect(result.value.lowRiskRepairClasses).toEqual([])
       expect(result.value.customizationProjectDirectory).toBe("./data/customization-projects")
     }
   })

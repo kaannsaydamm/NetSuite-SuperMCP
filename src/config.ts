@@ -54,6 +54,10 @@ const ConfigSchema = z
     customizationStorePath: z.string().min(1),
     customizationProjectDirectory: z.string().min(1),
     semanticStorePath: z.string().min(1),
+    runbookStorePath: z.string().min(1),
+    lowRiskRepairClasses: z.array(
+      z.enum(["localMetadataRefresh", "readJobRecovery", "exportRebuild"]),
+    ),
     cursorSecret: z.string().min(16),
   })
   .superRefine((value, context) => {
@@ -108,6 +112,8 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
     customizationProjectDirectory:
       env["CUSTOMIZATION_PROJECT_DIRECTORY"] ?? "./data/customization-projects",
     semanticStorePath: env["SEMANTIC_STORE_PATH"] ?? "./data/semantic-definitions.json",
+    runbookStorePath: env["RUNBOOK_STORE_PATH"] ?? "./data/runbooks.json",
+    lowRiskRepairClasses: commaList(env["RUNBOOK_LOW_RISK_REPAIR_CLASSES"]),
     cursorSecret:
       env["MCP_CURSOR_SECRET"] ??
       env["MCP_BEARER_TOKEN"] ??
@@ -160,4 +166,13 @@ function nonEmptyEnv(value: string | undefined): string | undefined {
     return undefined
   }
   return value
+}
+
+function commaList(value: string | undefined): string[] {
+  return value === undefined
+    ? []
+    : value
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0)
 }

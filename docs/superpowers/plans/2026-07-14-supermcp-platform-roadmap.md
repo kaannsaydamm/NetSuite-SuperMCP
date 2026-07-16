@@ -476,18 +476,18 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Represent runbooks as typed steps referencing existing tools and operation plans.
-- [ ] Require preview output for every mutating runbook step and stop on changed evidence.
-- [ ] Limit self-healing to configured low-risk repair classes; financial and destructive operations always return proposals.
-- [ ] Correlate events using deterministic identifiers before probabilistic similarity.
-- [ ] Build evidence bundles with manifests, hashes, redaction reports, and reproducible queries.
-- [ ] Regenerate documentation from live metadata and version it with source fingerprints.
+- [x] Represent runbooks as typed steps referencing existing tools and operation plans.
+- [x] Require preview output for every mutating runbook step and stop on changed evidence.
+- [x] Limit self-healing to configured low-risk repair classes; financial and destructive operations always return proposals.
+- [x] Correlate events using deterministic identifiers before probabilistic similarity.
+- [x] Build evidence bundles with manifests, hashes, redaction reports, and reproducible queries.
+- [x] Regenerate documentation from live metadata and version it with source fingerprints.
 
 ### Acceptance Gate
 
-- [ ] Runbooks are resumable and auditable.
-- [ ] Repairs cannot bypass the Phase 0 operation protocol.
-- [ ] Evidence memory updates prior claims instead of silently contradicting them.
+- [x] Runbooks are resumable and auditable.
+- [x] Repairs cannot bypass the Phase 0 operation protocol.
+- [x] Evidence memory updates prior claims instead of silently contradicting them.
 
 ---
 

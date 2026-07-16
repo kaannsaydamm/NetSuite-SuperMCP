@@ -14,6 +14,7 @@ import {
 } from "../contracts/identity-schemas"
 import { QueryOutputSchema } from "../contracts/query-schemas"
 import { RecordExplorerOutputSchema } from "../contracts/record-explorer-schemas"
+import { RunbookOutputSchema } from "../contracts/runbook-schemas"
 import { SemanticOutputSchema } from "../contracts/semantic-schemas"
 import { OperationPlanSchema } from "../operations/operation-plan"
 import { JsonValueSchema } from "../shared/json"
@@ -393,6 +394,20 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.SimulateChannelAllocation:
     case ToolName.RankRootCauses:
       return AssuranceOutputSchema
+    case ToolName.DefineRunbook:
+    case ToolName.PreviewRunbook:
+    case ToolName.StartRunbook:
+    case ToolName.GetRunbookExecution:
+    case ToolName.RecordRunbookStep:
+    case ToolName.ProposeRepair:
+    case ToolName.PrepareBoundedRepair:
+    case ToolName.CorrelateIncidents:
+    case ToolName.MeasureSla:
+    case ToolName.BuildSupportEvidenceBundle:
+    case ToolName.GenerateLiveDocumentation:
+    case ToolName.RecordEvidenceClaim:
+    case ToolName.GetEvidenceMemory:
+      return RunbookOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:

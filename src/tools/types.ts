@@ -8,6 +8,7 @@ import type { NetSuiteClient } from "../netsuite/client"
 import type { OAuthControl } from "../netsuite/oauth"
 import type { OperationStore } from "../operations/operation-store"
 import type { CursorCodec } from "../query/suiteql"
+import type { RunbookStore } from "../runbooks/runbook-store"
 import type { SemanticStore } from "../semantics/semantic-store"
 
 export type ToolDependencies = {
@@ -24,6 +25,7 @@ export type ToolDependencies = {
   readonly integrationStore: IntegrationStore
   readonly customizationStore: CustomizationStore
   readonly semanticStore: SemanticStore
+  readonly runbookStore: RunbookStore
   readonly requester: string
   readonly client: string
 }

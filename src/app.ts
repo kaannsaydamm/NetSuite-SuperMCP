@@ -15,6 +15,7 @@ import type { OAuthControl } from "./netsuite/oauth"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
 import { OperationStore } from "./operations/operation-store"
 import { CursorCodec } from "./query/suiteql"
+import { RunbookStore } from "./runbooks/runbook-store"
 import { SemanticStore } from "./semantics/semantic-store"
 import { registerTools } from "./tools/registry"
 
@@ -31,6 +32,7 @@ export type AppDependencies = {
   readonly integrationStore?: IntegrationStore
   readonly customizationStore?: CustomizationStore
   readonly semanticStore?: SemanticStore
+  readonly runbookStore?: RunbookStore
 }
 
 export function createApp(config: AppConfig, dependencies: AppDependencies = {}): Hono {
@@ -50,6 +52,7 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
   const customizationStore =
     dependencies.customizationStore ?? new CustomizationStore(config.customizationStorePath)
   const semanticStore = dependencies.semanticStore ?? new SemanticStore(config.semanticStorePath)
+  const runbookStore = dependencies.runbookStore ?? new RunbookStore(config.runbookStorePath)
   const managementTokenProvider =
     config.managementNetsuite === undefined
       ? undefined
@@ -103,6 +106,7 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       integrationStore,
       customizationStore,
       semanticStore,
+      runbookStore,
       requester: identity.requester,
       client: identity.client,
     })

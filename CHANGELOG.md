@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.38
+
+- Added immutable versioned runbooks with persistent, resumable, ordered execution state.
+- Added mandatory operation-plan and preview evidence validation for mutating runbook steps.
+- Added provider-configured bounded repair proposals; financial and destructive repairs remain
+  proposal-only and all repairs require harness approval.
+- Added deterministic-first incident correlation, SLA facts and alerts, hashed redacted support
+  evidence, and fingerprint-versioned documentation from supplied live metadata.
+- Added evidence memory that requires explicit supersession before a prior claim can be replaced.
+
 ## 0.1.37
 
 - Added evidence-preserving process variants, edges, bottleneck facts, and explicit unknown gaps.
