@@ -8,6 +8,7 @@ const suiteScriptSourceDir = join(packageRoot, "netsuite", "suitescript")
 const suiteScriptFiles = [
   "supermcp_action_restlet.js",
   "supermcp_file_actions.js",
+  "supermcp_inventory_actions.js",
   "supermcp_read_actions.js",
   "supermcp_platform_actions.js",
   "supermcp_report_actions.js",

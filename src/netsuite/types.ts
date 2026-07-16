@@ -82,6 +82,7 @@ const InventoryStockImportBaseSchema = z.object({
   rows: z.array(InventoryStockImportRowSchema).min(1).max(1000),
   locationId: z.string().min(1),
   adjustmentAccountId: z.string().min(1),
+  inventoryStatusId: z.string().min(1).optional(),
   subsidiaryId: z.string().min(1).optional(),
   tranDate: z
     .string()

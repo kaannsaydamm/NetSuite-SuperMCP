@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises"
 import { ToolName } from "../src/tools/catalog"
 
 const transformPath = "netsuite/suitescript/supermcp_transform_actions.js"
+const inventoryPath = "netsuite/suitescript/supermcp_inventory_actions.js"
 const readPath = "netsuite/suitescript/supermcp_read_actions.js"
 const filePath = "netsuite/suitescript/supermcp_file_actions.js"
 const platformPath = "netsuite/suitescript/supermcp_platform_actions.js"
@@ -17,6 +18,8 @@ const mcpTransformActions = [
   ToolName.ReceivePurchaseOrder,
   ToolName.BillPurchaseOrder,
 ]
+
+const mcpInventoryActions = ["ns_applyInventoryStockImport"]
 
 const mcpReadActions = [
   ToolName.RunSavedSearch,
@@ -59,6 +62,7 @@ const mcpMappingActions = [ToolName.GetMapping, ToolName.UpdateMapping]
 const mcpSystemRestletActions = [ToolName.GetSuperMcpVersion, ToolName.CheckAccountPermissions]
 
 const transformSource = await readFile(transformPath, "utf8")
+const inventorySource = await readFile(inventoryPath, "utf8")
 const readSource = await readFile(readPath, "utf8")
 const fileSource = await readFile(filePath, "utf8")
 const platformSource = await readFile(platformPath, "utf8")
@@ -67,6 +71,7 @@ const integrationSource = await readFile(integrationPath, "utf8")
 const mappingSource = await readFile(mappingPath, "utf8")
 const actionRestletSource = await readFile(actionRestletPath, "utf8")
 const restletTransformActions = extractRestletActions(transformSource, "TRANSFORM_ACTIONS")
+const restletInventoryActions = extractRestletActions(inventorySource, "INVENTORY_ACTIONS")
 const restletReadActions = extractRestletActions(readSource, "READ_ACTIONS")
 const restletFileActions = extractRestletActions(fileSource, "FILE_ACTIONS")
 const restletPlatformActions = extractRestletActions(platformSource, "PLATFORM_ACTIONS")
@@ -76,6 +81,7 @@ const restletMappingActions = extractRestletActions(mappingSource, "MAPPING_ACTI
 const restletSystemActions = extractRestletActions(actionRestletSource, "SYSTEM_ACTIONS")
 
 const transformResult = compareActions(mcpTransformActions, restletTransformActions)
+const inventoryResult = compareActions(mcpInventoryActions, restletInventoryActions)
 const readResult = compareActions(mcpReadActions, restletReadActions)
 const fileResult = compareActions(mcpFileActions, restletFileActions)
 const platformResult = compareActions(mcpPlatformActions, restletPlatformActions)
@@ -86,6 +92,7 @@ const systemResult = compareActions(mcpSystemRestletActions, restletSystemAction
 
 if (
   !transformResult.ok ||
+  !inventoryResult.ok ||
   !readResult.ok ||
   !fileResult.ok ||
   !platformResult.ok ||
@@ -99,6 +106,7 @@ if (
       {
         actionRestletPath,
         transformPath,
+        inventoryPath,
         readPath,
         filePath,
         platformPath,
@@ -107,6 +115,7 @@ if (
         mappingPath,
         system: systemResult,
         transform: transformResult,
+        inventory: inventoryResult,
         read: readResult,
         file: fileResult,
         platform: platformResult,
@@ -122,7 +131,7 @@ if (
 }
 
 console.log(
-  `restlet contract ok: ${restletSystemActions.length} system actions, ${restletTransformActions.length} transform actions, ${restletReadActions.length} read actions, ${restletFileActions.length} file actions, ${restletPlatformActions.length} platform actions, ${restletReportActions.length} report actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
+  `restlet contract ok: ${restletSystemActions.length} system actions, ${restletTransformActions.length} transform actions, ${restletInventoryActions.length} inventory actions, ${restletReadActions.length} read actions, ${restletFileActions.length} file actions, ${restletPlatformActions.length} platform actions, ${restletReportActions.length} report actions, ${restletIntegrationActions.length} integration actions, ${restletMappingActions.length} mapping actions`,
 )
 
 function compareActions(expected: readonly string[], actual: readonly string[]) {

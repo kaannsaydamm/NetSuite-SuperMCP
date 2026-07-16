@@ -203,8 +203,13 @@ not change NetSuite.
 
 The commit tool recomputes the same plan, requires the exact confirmation string, rejects commits
 while missing/duplicate/ambiguous rows exist, and creates one `inventoryAdjustment` with
-`adjustQtyBy` lines. Required NetSuite IDs are `locationId` and `adjustmentAccountId`; provide
-`subsidiaryId` when the account requires it.
+`adjustQtyBy` lines through the permanent SuperMCP RESTlet inventory module. It never uploads a
+temporary SuiteScript file or modifies the RESTlet at runtime. Required NetSuite IDs are
+`locationId` and `adjustmentAccountId`; provide `subsidiaryId` when the account requires it.
+
+When an inventory adjustment needs an Inventory Status assignment, pass its explicitly discovered
+`inventoryStatusId`. SuperMCP does not select a default status or adjustment account: use
+`ns_findInventoryAdjustmentAccounts` and the relevant NetSuite lookup before committing.
 
 Use `ns_findInventoryAdjustmentAccounts` to find likely `adjustmentAccountId` values from NetSuite
 accounts without leaving the agent. Pass `search` or `preferredAccountNumberPrefix` when the user

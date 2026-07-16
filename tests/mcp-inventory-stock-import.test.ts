@@ -156,7 +156,7 @@ describe("MCP inventory stock import", () => {
     expect(fakeNetSuite.createdRecords).toHaveLength(0)
   })
 
-  it("commits one inventoryAdjustment record with calculated adjustQtyBy values", async () => {
+  it("commits calculated stock deltas through the permanent inventory RESTlet action", async () => {
     // Given
     const fakeNetSuite = new InventoryImportNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -172,6 +172,7 @@ describe("MCP inventory stock import", () => {
           locationId: "2",
           adjustmentAccountId: "123",
           subsidiaryId: "1",
+          inventoryStatusId: "1",
           tranDate: "2026-07-09",
           memo: "Paris stock import",
           externalId: "paris-stock-2026-07-08",
@@ -186,26 +187,28 @@ describe("MCP inventory stock import", () => {
 
     // Then
     expect(response.status).toBe(200)
-    expect(fakeNetSuite.createdRecords).toEqual([
+    expect(fakeNetSuite.createdRecords).toHaveLength(0)
+    expect(fakeNetSuite.actions).toEqual([
       {
-        type: "inventoryAdjustment",
-        values: {
-          account: { id: "123" },
-          adjLocation: { id: "2" },
-          subsidiary: { id: "1" },
+        action: "ns_applyInventoryStockImport",
+        phase: "commit",
+        payload: {
+          adjustmentAccountId: "123",
+          locationId: "2",
+          inventoryStatusId: "1",
+          subsidiaryId: "1",
           tranDate: "2026-07-09",
-          externalId: "paris-stock-2026-07-08",
           memo: "Paris stock import",
-          inventory: {
-            items: [
-              {
-                item: { id: "7779" },
-                location: { id: "2" },
-                adjustQtyBy: 2,
-                memo: "Stock import 8680503521824: 1 -> 3",
-              },
-            ],
-          },
+          externalId: "paris-stock-2026-07-08",
+          lines: [
+            {
+              itemId: "7779",
+              itemKey: "8680503521824",
+              currentQuantity: 1,
+              targetQuantity: 3,
+              delta: 2,
+            },
+          ],
         },
       },
     ])

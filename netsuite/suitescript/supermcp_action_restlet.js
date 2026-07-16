@@ -6,6 +6,7 @@ define([
   "N/error",
   "N/runtime",
   "./supermcp_file_actions",
+  "./supermcp_inventory_actions",
   "./supermcp_integration_actions",
   "./supermcp_mapping_actions",
   "./supermcp_platform_actions",
@@ -16,6 +17,7 @@ define([
   nsError,
   runtime,
   fileActions,
+  inventoryActions,
   integrationActions,
   mappingActions,
   platformActions,
@@ -24,8 +26,8 @@ define([
   transformActions,
 ) => {
   const PHASES = ["prepare", "preview", "commit"]
-  const RESTLET_VERSION = "0.1.27"
-  const ACTION_MAP_VERSION = "2026-07-09.4"
+  const RESTLET_VERSION = "0.1.28"
+  const ACTION_MAP_VERSION = "2026-07-10.1"
   const TOOL_COUNT = 54
   const SYSTEM_ACTIONS = {
     ns_getSuperMcpVersion: getSuperMcpVersion,
@@ -37,6 +39,7 @@ define([
     const result =
       runSystemAction(actionRequest) ||
       transformActions.run(actionRequest) ||
+      inventoryActions.run(actionRequest) ||
       platformActions.run(actionRequest) ||
       reportActions.run(actionRequest) ||
       fileActions.run(actionRequest) ||
@@ -109,7 +112,16 @@ define([
         roleCenter: currentUser.roleCenter,
       },
       systemActions: Object.keys(SYSTEM_ACTIONS),
-      actionModules: ["transform", "platform", "report", "file", "read", "integration", "mapping"],
+      actionModules: [
+        "transform",
+        "inventory",
+        "platform",
+        "report",
+        "file",
+        "read",
+        "integration",
+        "mapping",
+      ],
     }
   }
 

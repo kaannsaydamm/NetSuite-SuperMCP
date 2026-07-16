@@ -196,7 +196,7 @@ function registerInventoryStockImportTools(
     {
       title: "Commit inventory stock import",
       description:
-        "Creates one NetSuite inventoryAdjustment for target stock rows after recomputing deltas and validating the prepare confirmation string.",
+        "Creates one NetSuite inventoryAdjustment through the permanent SuperMCP RESTlet module after recomputing deltas and validating the prepare confirmation string. No temporary SuiteScript files are created or uploaded.",
       inputSchema: InventoryStockImportCommitInputSchema,
       outputSchema: outputSchemaFor(ToolName.CommitInventoryStockImport),
     },

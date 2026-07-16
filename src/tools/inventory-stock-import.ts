@@ -3,7 +3,6 @@ import type {
   InventoryStockImportCommitRequest,
   InventoryStockImportPrepareRequest,
   InventoryStockImportRow,
-  RecordCreateRequest,
 } from "../netsuite/types"
 import type { JsonObject, JsonValue } from "../shared/json"
 
@@ -31,7 +30,6 @@ type RejectedLine = {
 }
 
 type PreparedImport = {
-  readonly adjustmentRecord?: RecordCreateRequest
   readonly confirmation: string
   readonly counts: {
     readonly adjustmentLines: number
@@ -56,21 +54,21 @@ export async function prepareInventoryStockImport(
   client: NetSuiteClient,
   request: InventoryStockImportPrepareRequest,
 ): Promise<JsonObject> {
-  return prepareInventoryStockImportInternal(client, request, false)
+  return prepareInventoryStockImportInternal(client, request)
 }
 
 export async function commitInventoryStockImport(
   client: NetSuiteClient,
   request: InventoryStockImportCommitRequest,
 ): Promise<JsonObject> {
-  const prepared = await prepareInventoryStockImportInternal(client, request, true)
+  const prepared = await prepareInventoryStockImportInternal(client, request)
   if (request.confirmation !== prepared.confirmation) {
     throw new Error(`confirmation must match ${prepared.confirmation}`)
   }
   if (prepared.rejectedLines.length > 0) {
     throw new Error("cannot commit inventory import while rejected lines exist")
   }
-  if (prepared.adjustmentRecord === undefined) {
+  if (prepared.lines.length === 0) {
     return {
       committed: false,
       reason: "no inventory deltas to commit",
@@ -80,7 +78,28 @@ export async function commitInventoryStockImport(
     }
   }
 
-  const result = await client.createRecord(prepared.adjustmentRecord)
+  const result = await client.runRestletAction({
+    action: "ns_applyInventoryStockImport",
+    phase: "commit",
+    payload: {
+      adjustmentAccountId: request.adjustmentAccountId,
+      locationId: request.locationId,
+      ...(request.inventoryStatusId === undefined
+        ? {}
+        : { inventoryStatusId: request.inventoryStatusId }),
+      ...(request.subsidiaryId === undefined ? {} : { subsidiaryId: request.subsidiaryId }),
+      ...(request.tranDate === undefined ? {} : { tranDate: request.tranDate }),
+      ...(request.externalId === undefined ? {} : { externalId: request.externalId }),
+      memo: request.memo ?? "NetSuite SuperMCP inventory stock import",
+      lines: prepared.lines.map((line) => ({
+        itemId: line.itemId,
+        itemKey: line.itemKey,
+        currentQuantity: line.currentQuantity,
+        targetQuantity: line.targetQuantity,
+        delta: line.delta,
+      })),
+    },
+  })
   return {
     committed: true,
     record: result,
@@ -93,7 +112,6 @@ export async function commitInventoryStockImport(
 async function prepareInventoryStockImportInternal(
   client: NetSuiteClient,
   request: InventoryStockImportPrepareRequest,
-  includeRecord: boolean,
 ): Promise<PreparedImport> {
   const normalizedRows = request.rows.map(normalizeRow)
   const duplicates = duplicateKeys(normalizedRows)
@@ -178,36 +196,8 @@ async function prepareInventoryStockImportInternal(
       ambiguousItems: rejectedLines.filter((line) => line.reason === "ambiguous-item").length,
     },
     totals,
-    ...(includeRecord && lines.length > 0
-      ? { adjustmentRecord: inventoryAdjustmentRecord(request, lines) }
-      : {}),
   }
   return prepared
-}
-
-function inventoryAdjustmentRecord(
-  request: InventoryStockImportPrepareRequest,
-  lines: readonly PreparedLine[],
-): RecordCreateRequest {
-  return {
-    type: "inventoryAdjustment",
-    values: {
-      account: { id: request.adjustmentAccountId },
-      adjLocation: { id: request.locationId },
-      ...(request.subsidiaryId === undefined ? {} : { subsidiary: { id: request.subsidiaryId } }),
-      ...(request.tranDate === undefined ? {} : { tranDate: request.tranDate }),
-      ...(request.externalId === undefined ? {} : { externalId: request.externalId }),
-      memo: request.memo ?? "NetSuite SuperMCP inventory stock import",
-      inventory: {
-        items: lines.map((line) => ({
-          item: { id: line.itemId },
-          location: { id: request.locationId },
-          adjustQtyBy: line.delta,
-          memo: `Stock import ${line.itemKey}: ${line.currentQuantity} -> ${line.targetQuantity}`,
-        })),
-      },
-    },
-  }
 }
 
 function normalizeRow(row: InventoryStockImportRow): InventoryStockImportRow {
