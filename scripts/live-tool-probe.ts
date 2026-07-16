@@ -34,6 +34,15 @@ const STATEFUL_OR_PREREQUISITE_TOOLS = new Set<ToolName>([
   ToolName.ExportSavedSearchDefinition,
   ToolName.DiffSavedSearchDefinitions,
   ToolName.PreviewCloneSavedSearch,
+  ToolName.DefineIntegrationContract,
+  ToolName.PrepareCanary,
+  ToolName.MonitorCanary,
+  ToolName.PromoteCanary,
+  ToolName.AbortCanary,
+  ToolName.SubscribeIntegrationEvents,
+  ToolName.EmitIntegrationEvent,
+  ToolName.PollIntegrationOutbox,
+  ToolName.AckIntegrationEvent,
 ])
 
 const envPath = join(resolve(process.cwd()), ".env")

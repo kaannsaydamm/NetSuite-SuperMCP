@@ -60,6 +60,7 @@ describe("parseConfig", () => {
       expect(result.value.cursorSecret).toBe("test-token-12345")
       expect(result.value.jobStorePath).toBe("./data/read-jobs.json")
       expect(result.value.exportDirectory).toBe("./data/exports")
+      expect(result.value.integrationStorePath).toBe("./data/integrations.json")
     }
   })
 

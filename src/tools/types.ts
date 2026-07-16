@@ -1,5 +1,6 @@
 import type { AuditLog } from "../audit"
 import type { AppConfig } from "../config"
+import type { IntegrationStore } from "../integrations/integration-store"
 import type { ExportStore } from "../jobs/export-store"
 import type { JobStore } from "../jobs/job-store"
 import type { NetSuiteClient } from "../netsuite/client"
@@ -18,6 +19,7 @@ export type ToolDependencies = {
   readonly jobStore: JobStore
   readonly exportStore: ExportStore
   readonly cursorCodec: CursorCodec
+  readonly integrationStore: IntegrationStore
   readonly requester: string
   readonly client: string
 }

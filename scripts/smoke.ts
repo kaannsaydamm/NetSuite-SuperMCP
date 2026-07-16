@@ -175,7 +175,7 @@ async function assertVersionTool(baseUrl: string, token: string): Promise<void> 
     params: { name: "ns_getSuperMcpVersion", arguments: {} },
   })
   const text = JSON.stringify(body)
-  if (!text.includes("0.1.33") || !text.includes("toolCount")) {
+  if (!text.includes("0.1.34") || !text.includes("toolCount")) {
     throw new Error("version tool response did not include package version and tool count")
   }
 }

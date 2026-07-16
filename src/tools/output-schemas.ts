@@ -149,6 +149,8 @@ const ScriptAnalysisOutputSchema = z
   })
   .loose()
 
+const IntegrationOutputSchema = z.object({}).loose()
+
 const ToolExampleOutputSchema = z.object({
   name: z.string(),
   valid: JsonValueSchema,
@@ -327,6 +329,29 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.FindFieldUsage:
     case ToolName.FindDuplicateScriptLogic:
       return ScriptAnalysisOutputSchema
+    case ToolName.GetIntegrationHealth:
+    case ToolName.DefineIntegrationContract:
+    case ToolName.ValidateIntegrationContract:
+    case ToolName.ReconcileRecords:
+    case ToolName.ReconcileOrders:
+    case ToolName.ReconcileInventory:
+    case ToolName.ReconcileReturns:
+    case ToolName.ReconcilePayments:
+    case ToolName.ShadowPayload:
+    case ToolName.ReplayPayload:
+    case ToolName.PrepareCanary:
+    case ToolName.MonitorCanary:
+    case ToolName.PromoteCanary:
+    case ToolName.AbortCanary:
+    case ToolName.GenerateSyntheticTransactions:
+    case ToolName.AnonymizePayload:
+    case ToolName.GenerateRegressionTests:
+    case ToolName.RunRegressionTests:
+    case ToolName.SubscribeIntegrationEvents:
+    case ToolName.EmitIntegrationEvent:
+    case ToolName.PollIntegrationOutbox:
+    case ToolName.AckIntegrationEvent:
+      return IntegrationOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:

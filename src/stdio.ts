@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { AuditLog } from "./audit"
 import { parseConfig } from "./config"
 import { formatConfigError } from "./config-help"
+import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
 import { OAuthNetSuiteClient } from "./netsuite/client"
@@ -26,6 +27,7 @@ const operationStore = new OperationStore()
 const jobStore = new JobStore(config.jobStorePath)
 const exportStore = new ExportStore(config.exportDirectory)
 const cursorCodec = new CursorCodec(Buffer.from(config.cursorSecret))
+const integrationStore = new IntegrationStore(config.integrationStorePath)
 const server = new McpServer(
   { name: config.serverName, version: config.serverVersion },
   {
@@ -42,6 +44,7 @@ registerTools(server, {
   jobStore,
   exportStore,
   cursorCodec,
+  integrationStore,
   requester: process.env["MCP_REQUESTER"] ?? "local-agent",
   client: process.env["MCP_CLIENT"] ?? "stdio",
 })

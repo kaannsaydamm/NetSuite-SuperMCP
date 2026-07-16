@@ -5,6 +5,7 @@ import pino from "pino"
 import { AuditLog } from "./audit"
 import { identityFromHeaders, isAuthorized } from "./auth"
 import type { AppConfig } from "./config"
+import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
 import type { NetSuiteClient } from "./netsuite/client"
@@ -25,6 +26,7 @@ export type AppDependencies = {
   readonly jobStore?: JobStore
   readonly exportStore?: ExportStore
   readonly cursorCodec?: CursorCodec
+  readonly integrationStore?: IntegrationStore
 }
 
 export function createApp(config: AppConfig, dependencies: AppDependencies = {}): Hono {
@@ -39,6 +41,8 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
   const jobStore = dependencies.jobStore ?? new JobStore(config.jobStorePath)
   const exportStore = dependencies.exportStore ?? new ExportStore(config.exportDirectory)
   const cursorCodec = dependencies.cursorCodec ?? new CursorCodec(Buffer.from(config.cursorSecret))
+  const integrationStore =
+    dependencies.integrationStore ?? new IntegrationStore(config.integrationStorePath)
   const managementTokenProvider =
     config.managementNetsuite === undefined
       ? undefined
@@ -89,6 +93,7 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       jobStore,
       exportStore,
       cursorCodec,
+      integrationStore,
       requester: identity.requester,
       client: identity.client,
     })

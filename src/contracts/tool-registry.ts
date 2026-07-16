@@ -39,6 +39,24 @@ import {
   SegregationOfDutiesInputSchema,
 } from "./identity-schemas"
 import {
+  AckOutboxInputSchema,
+  AnonymizePayloadInputSchema,
+  CanaryInputSchema,
+  CanaryMonitorInputSchema,
+  CanaryPrepareInputSchema,
+  DefineIntegrationContractInputSchema,
+  EmitIntegrationEventInputSchema,
+  IntegrationHealthInputSchema,
+  PollOutboxInputSchema,
+  ReconcileRecordsInputSchema,
+  RegressionSuiteInputSchema,
+  ReplayPayloadInputSchema,
+  ShadowPayloadInputSchema,
+  SubscribeIntegrationEventsInputSchema,
+  SyntheticTransactionsInputSchema,
+  ValidateIntegrationContractInputSchema,
+} from "./integration-schemas"
+import {
   AnalyzeSuiteQlInputSchema,
   BuildSuiteQlInputSchema,
   CreateReadJobInputSchema,
@@ -303,6 +321,44 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return RecordUsageInputSchema
     case ToolName.FindFieldUsage:
       return FieldUsageInputSchema
+    case ToolName.GetIntegrationHealth:
+      return IntegrationHealthInputSchema
+    case ToolName.DefineIntegrationContract:
+      return DefineIntegrationContractInputSchema
+    case ToolName.ValidateIntegrationContract:
+      return ValidateIntegrationContractInputSchema
+    case ToolName.ReconcileRecords:
+    case ToolName.ReconcileOrders:
+    case ToolName.ReconcileInventory:
+    case ToolName.ReconcileReturns:
+    case ToolName.ReconcilePayments:
+      return ReconcileRecordsInputSchema
+    case ToolName.ShadowPayload:
+      return ShadowPayloadInputSchema
+    case ToolName.ReplayPayload:
+      return ReplayPayloadInputSchema
+    case ToolName.PrepareCanary:
+      return CanaryPrepareInputSchema
+    case ToolName.MonitorCanary:
+      return CanaryMonitorInputSchema
+    case ToolName.PromoteCanary:
+    case ToolName.AbortCanary:
+      return CanaryInputSchema
+    case ToolName.GenerateSyntheticTransactions:
+      return SyntheticTransactionsInputSchema
+    case ToolName.AnonymizePayload:
+      return AnonymizePayloadInputSchema
+    case ToolName.GenerateRegressionTests:
+    case ToolName.RunRegressionTests:
+      return RegressionSuiteInputSchema
+    case ToolName.SubscribeIntegrationEvents:
+      return SubscribeIntegrationEventsInputSchema
+    case ToolName.EmitIntegrationEvent:
+      return EmitIntegrationEventInputSchema
+    case ToolName.PollIntegrationOutbox:
+      return PollOutboxInputSchema
+    case ToolName.AckIntegrationEvent:
+      return AckOutboxInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -536,6 +592,86 @@ function validExampleFor(name: ToolName): JsonValue {
       return { recordType: "salesorder", scriptIds: ["customscript_example"] }
     case ToolName.FindFieldUsage:
       return { fieldId: "custbody_external_id", scriptIds: ["customscript_example"] }
+    case ToolName.GetIntegrationHealth:
+      return {
+        integrationId: "orders",
+        processed: 10,
+        pending: 1,
+        failed: 0,
+        outputState: "unknown",
+        errors: [],
+      }
+    case ToolName.DefineIntegrationContract:
+      return integrationContractExample()
+    case ToolName.ValidateIntegrationContract:
+      return { contract: integrationContractExample(), records: [] }
+    case ToolName.ReconcileRecords:
+    case ToolName.ReconcileOrders:
+    case ToolName.ReconcileInventory:
+    case ToolName.ReconcileReturns:
+    case ToolName.ReconcilePayments:
+      return {
+        domain: "generic",
+        contract: integrationContractExample(),
+        sourceName: "external",
+        targetName: "NetSuite",
+        sourceRecords: [],
+        targetRecords: [],
+      }
+    case ToolName.ShadowPayload:
+      return { action: ToolName.CreateSavedSearch, payload: { title: "Preview" } }
+    case ToolName.ReplayPayload:
+      return {
+        mode: "simulation",
+        action: ToolName.CreateSavedSearch,
+        payload: { title: "Preview" },
+      }
+    case ToolName.PrepareCanary:
+      return {
+        name: "order canary",
+        predicate: { field: "externalid", operator: "equals", value: "TEST-1" },
+        maxRecords: 1,
+        operationIds: ["123e4567-e89b-42d3-a456-426614174000"],
+      }
+    case ToolName.MonitorCanary:
+      return { canaryId: "123e4567-e89b-42d3-a456-426614174000", observations: [] }
+    case ToolName.PromoteCanary:
+    case ToolName.AbortCanary:
+      return { canaryId: "123e4567-e89b-42d3-a456-426614174000" }
+    case ToolName.GenerateSyntheticTransactions:
+      return {
+        count: 2,
+        seed: "test",
+        template: { status: "pending" },
+        sequenceFields: ["externalId"],
+      }
+    case ToolName.AnonymizePayload:
+      return { records: [{ email: "person@example.com" }], fields: ["email"], salt: "example-salt" }
+    case ToolName.GenerateRegressionTests:
+    case ToolName.RunRegressionTests:
+      return {
+        name: "preview suite",
+        cases: [
+          { id: "case-1", action: ToolName.CreateSavedSearch, payload: {}, expectedFields: {} },
+        ],
+      }
+    case ToolName.SubscribeIntegrationEvents:
+      return {
+        subscriptionId: "orders",
+        eventTypes: ["failed"],
+        endpoint: "https://example.com/events",
+      }
+    case ToolName.EmitIntegrationEvent:
+      return {
+        subscriptionId: "orders",
+        eventType: "failed",
+        idempotencyKey: "event-1",
+        payload: {},
+      }
+    case ToolName.PollIntegrationOutbox:
+      return { limit: 20 }
+    case ToolName.AckIntegrationEvent:
+      return { eventId: "123e4567-e89b-42d3-a456-426614174000", delivered: true }
     default:
       return actionExampleFor(name)
   }
@@ -547,6 +683,21 @@ function inventoryImportExample(commit: boolean): JsonValue {
     locationId: "2",
     adjustmentAccountId: "454",
     ...(commit ? { confirmation: "confirm:inventory-import" } : {}),
+  }
+}
+
+function integrationContractExample(): JsonValue {
+  return {
+    id: "orders-v1",
+    version: 1,
+    domain: "orders",
+    keyFields: ["externalId"],
+    fields: {
+      externalId: { type: "string", required: true, semantic: "identity" },
+      amount: { type: "number", required: true, semantic: "amount" },
+    },
+    mappings: {},
+    invariants: [{ rule: "nonnegative", field: "amount" }],
   }
 }
 

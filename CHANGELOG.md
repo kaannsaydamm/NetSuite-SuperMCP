@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.34
+
+- Added versioned integration contracts, typed validation, deterministic reconciliation, and
+  evidence-linked difference totals for orders, inventory, returns, payments, and generic records.
+- Added integration health and deterministic incident grouping from caller-supplied execution facts.
+- Added write-disabled shadow, replay, and regression previews; sandbox replay is account-gated.
+- Added bounded canary prepare/monitor/promotion/abort state. Promotion validates prepared operation
+  plans but never commits them and explicitly requires harness approval.
+- Added explicit synthetic-data generation and selected-field anonymization.
+- Added provider-delivered event subscriptions with a persistent idempotent outbox and retry state.
+- No external-system credentials, date/time normalization, or account-specific rules were added.
+
 ## 0.1.33
 
 - Added native script/deployment discovery and execution evidence without caller-supplied Saved

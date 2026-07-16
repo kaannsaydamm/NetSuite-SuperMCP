@@ -37,6 +37,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     auditLogPath: "./data/test-audit.ndjson",
     jobStorePath: "./data/test-read-jobs.json",
     exportDirectory: "./data/test-exports",
+    integrationStorePath: "./data/test-integrations.json",
     cursorSecret: "test-cursor-secret-value",
   } satisfies AppConfig
 

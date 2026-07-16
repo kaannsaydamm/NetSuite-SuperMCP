@@ -239,6 +239,24 @@ Static analysis is deliberately conservative. Dynamic AMD dependencies and unsup
 types are returned as `unknown`; they are never invented. Execution values remain as NetSuite
 returns them. SuperMCP does not compare or normalize date/time values to infer stuck executions.
 
+## Integration Reconciliation And Safe Replay
+
+Versioned integration contracts define canonical keys, mappings, field semantics, and invariants.
+`ns_reconcileRecords` plus the order, inventory, return, and payment variants classify missing,
+extra, duplicate, amount, status, quantity, value, and delayed-processing differences and link
+summary totals to record evidence. External-system credentials remain in provider-owned storage;
+the harness supplies canonical external records to SuperMCP.
+
+`ns_shadowPayload`, `ns_replayPayload`, and regression execution call only RESTlet `preview` phases
+and cannot save NetSuite records. Sandbox replay is rejected unless the configured NetSuite account
+is a sandbox. Canary prepare/monitor/promote/abort is bounded by an explicit predicate and record
+count. Promotion only validates existing operation plans and returns `requiresHarnessApproval`; it
+never commits them.
+
+Synthetic test data and anonymization require explicit templates and field lists. Integration event
+subscriptions use a persistent idempotent outbox; SuperMCP does not contact endpoints itself. The
+provider polls and delivers events, then acknowledges success or failure for deterministic retry.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

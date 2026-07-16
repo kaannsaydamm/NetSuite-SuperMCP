@@ -354,19 +354,19 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Define adapter interfaces for NetSuite and external sources; keep credentials in provider-owned secret storage.
-- [ ] Build reconciliation around canonical records with source evidence and deterministic match keys.
-- [ ] Store integration contracts as versioned schemas with required fields, mappings, and invariants.
-- [ ] Run replay and shadow modes with writes disabled and return record diffs.
-- [ ] Restrict canaries by explicit record predicate and maximum count; promotion remains a provider-approved operation.
-- [ ] Group related failures into incidents using shared execution, script, record, and integration evidence.
-- [ ] Emit webhook events through an outbox with retries and idempotency.
+- [x] Define adapter interfaces for NetSuite and external sources; keep credentials in provider-owned secret storage.
+- [x] Build reconciliation around canonical records with source evidence and deterministic match keys.
+- [x] Store integration contracts as versioned schemas with required fields, mappings, and invariants.
+- [x] Run replay and shadow modes with writes disabled and return record diffs.
+- [x] Restrict canaries by explicit record predicate and maximum count; promotion remains a provider-approved operation.
+- [x] Group related failures into incidents using shared execution, script, record, and integration evidence.
+- [x] Emit webhook events through an outbox with retries and idempotency.
 
 ### Acceptance Gate
 
-- [ ] Reconciliation totals link to record-level differences.
-- [ ] Replay and shadow modes cannot save NetSuite records.
-- [ ] Canary promotion requires a prepared operation and explicit harness approval.
+- [x] Reconciliation totals link to record-level differences.
+- [x] Replay and shadow modes cannot save NetSuite records.
+- [x] Canary promotion requires a prepared operation and explicit harness approval.
 
 ---
 
