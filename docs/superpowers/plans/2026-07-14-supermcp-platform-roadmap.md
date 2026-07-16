@@ -128,62 +128,62 @@ Cross-cutting modules:
 
 ### Task 0.1: Stop direct commits from named transform tools
 
-- [ ] Add a failing test proving `ns_fulfillSalesOrder`, `ns_invoiceSalesOrder`, `ns_receivePurchaseOrder`, and `ns_billPurchaseOrder` route to `phase: "prepare"` and never `phase: "commit"`.
-- [ ] Run `bun test tests/mcp-actions.test.ts` and verify the existing direct-commit behavior fails the new assertion.
-- [ ] Replace the `readOnlyActionTools` binary decision with explicit per-tool phases and assign all named transaction mutations to `prepare`.
-- [ ] Update tool descriptions to state that the result is a plan and no NetSuite record is created.
-- [ ] Run the test and verify all named transform tools are prepare-only.
-- [ ] Commit as `fix: prevent direct transaction transform commits`.
+- [x] Add a failing test proving `ns_fulfillSalesOrder`, `ns_invoiceSalesOrder`, `ns_receivePurchaseOrder`, and `ns_billPurchaseOrder` route to `phase: "prepare"` and never `phase: "commit"`.
+- [x] Run `bun test tests/mcp-actions.test.ts` and verify the existing direct-commit behavior fails the new assertion.
+- [x] Replace the `readOnlyActionTools` binary decision with explicit per-tool phases and assign all named transaction mutations to `prepare`.
+- [x] Update tool descriptions to state that the result is a plan and no NetSuite record is created.
+- [x] Run the test and verify all named transform tools are prepare-only.
+- [x] Commit as `fix: prevent direct transaction transform commits`.
 
 ### Task 0.2: Add typed operation plans
 
-- [ ] Define a Zod discriminated union for `fulfillSalesOrder`, `invoiceSalesOrder`, `receivePurchaseOrder`, `billPurchaseOrder`, `transformRecord`, `createRecord`, `updateRecord`, `submitFields`, `deleteRecord`, `inventoryAdjustment`, `fileMutation`, `savedSearchMutation`, `mappingUpdate`, and `integrationRetry`.
-- [ ] Require explicit source IDs and explicit line selection. “All open lines” must be represented by an explicit `selection.mode: "allOpen"`; omission is invalid.
-- [ ] Define `OperationPlanSchema` with `operationId`, `kind`, `environment`, `accountId`, `requester`, `client`, `source`, `selection`, `snapshotFingerprint`, `impact`, `warnings`, `confirmation`, and `used`.
-- [ ] Implement an in-memory `OperationStore` using cryptographically random opaque IDs. Plans are single-use and disappear on process restart; no clock or expiry logic is used.
-- [ ] Bind plans to account, requester, and client so another connection cannot commit them.
-- [ ] Add unit tests for missing line selection, wrong requester, wrong account, reused operation ID, and altered confirmation.
-- [ ] Commit as `feat: add typed single-use operation plans`.
+- [x] Define a Zod discriminated union for `fulfillSalesOrder`, `invoiceSalesOrder`, `receivePurchaseOrder`, `billPurchaseOrder`, `transformRecord`, `createRecord`, `updateRecord`, `submitFields`, `deleteRecord`, `inventoryAdjustment`, `fileMutation`, `savedSearchMutation`, `mappingUpdate`, and `integrationRetry`.
+- [x] Require explicit source IDs and explicit line selection. “All open lines” must be represented by an explicit `selection.mode: "allOpen"`; omission is invalid.
+- [x] Define `OperationPlanSchema` with `operationId`, `kind`, `environment`, `accountId`, `requester`, `client`, `source`, `selection`, `snapshotFingerprint`, `impact`, `warnings`, `confirmation`, and `used`.
+- [x] Implement an in-memory `OperationStore` using cryptographically random opaque IDs. Plans are single-use and disappear on process restart; no clock or expiry logic is used.
+- [x] Bind plans to account, requester, and client so another connection cannot commit them.
+- [x] Add unit tests for missing line selection, wrong requester, wrong account, reused operation ID, and altered confirmation.
+- [x] Commit as `feat: add typed single-use operation plans`.
 
 ### Task 0.3: Add deterministic snapshots and stale-plan detection
 
-- [ ] Read the source record body, relevant transaction lines, status, related target transactions, inventory-impacting fields, and selected custom fields before preparing a mutation.
-- [ ] Canonically serialize the snapshot with sorted object keys and stable line ordering.
-- [ ] Hash the canonical snapshot with SHA-256 and store only the fingerprint plus the redacted snapshot required for preview.
-- [ ] Re-read and re-hash the source immediately before commit.
-- [ ] Reject commit with `OPERATION_SOURCE_CHANGED` when the fingerprint differs.
-- [ ] Add tests showing a status, quantity, line, location, or related-transaction change invalidates the plan.
-- [ ] Do not read, normalize, compare, or modify transaction date/time fields as part of this feature.
-- [ ] Commit as `feat: detect stale NetSuite operation plans`.
+- [x] Read the source record body, relevant transaction lines, status, related target transactions, inventory-impacting fields, and selected custom fields before preparing a mutation.
+- [x] Canonically serialize the snapshot with sorted object keys and stable line ordering.
+- [x] Hash the canonical snapshot with SHA-256 and store only the fingerprint plus the redacted snapshot required for preview.
+- [x] Re-read and re-hash the source immediately before commit.
+- [x] Reject commit with `OPERATION_SOURCE_CHANGED` when the fingerprint differs.
+- [x] Add tests showing a status, quantity, line, location, or related-transaction change invalidates the plan.
+- [x] Do not read, normalize, compare, or modify transaction date/time fields as part of this feature.
+- [x] Commit as `feat: detect stale NetSuite operation plans`.
 
 ### Task 0.4: Make fulfillment selection and idempotency explicit
 
-- [ ] Make fulfillment preparation return source order number, current status, existing fulfillments, every fulfillable line, selected quantity, location, inventory detail requirements, and expected inventory effect.
-- [ ] Require either explicit selected lines or explicit `allOpen` acknowledgement.
-- [ ] Generate an idempotency key during preparation and set it as the target transaction external ID when NetSuite supports it.
-- [ ] Before saving, search for an existing target transaction with the same idempotency key and return the original result instead of creating a duplicate.
-- [ ] Prevent quantities above the currently fulfillable quantity.
-- [ ] Add a regression test based on the accidental `FUL00010398` class of incident using synthetic IDs only; do not encode production record IDs in tests.
-- [ ] Commit as `feat: add idempotent fulfillment preparation`.
+- [x] Make fulfillment preparation return source order number, current status, existing fulfillments, every fulfillable line, selected quantity, location, inventory detail requirements, and expected inventory effect.
+- [x] Require either explicit selected lines or explicit `allOpen` acknowledgement.
+- [x] Generate an idempotency key during preparation and set it as the target transaction external ID when NetSuite supports it.
+- [x] Before saving, search for an existing target transaction with the same idempotency key and return the original result instead of creating a duplicate.
+- [x] Prevent quantities above the currently fulfillable quantity.
+- [x] Add a regression test based on the accidental `FUL00010398` class of incident using synthetic IDs only; do not encode production record IDs in tests.
+- [x] Commit as `feat: add idempotent fulfillment preparation`.
 
 ### Task 0.5: Add preview, impact, and compensation planning
 
-- [ ] Produce a human-readable dry-run describing the record to be created, selected lines, quantity changes, source status transition candidates, inventory impact, and automation contexts that may run.
-- [ ] Save no record during prepare or preview.
-- [ ] Capture a pre-commit snapshot and the committed record reference in the audit event.
-- [ ] Add `ns_prepareCompensation` that explains whether the operation can be reversed, deleted, voided, or requires a manual counter-transaction.
-- [ ] Never label compensation as atomic rollback.
-- [ ] Add tests for reversible fulfillment deletion, non-reversible operations, and already-changed source records.
-- [ ] Commit as `feat: add operation impact and compensation plans`.
+- [x] Produce a human-readable dry-run describing the record to be created, selected lines, quantity changes, source status transition candidates, inventory impact, and automation contexts that may run.
+- [x] Save no record during prepare or preview.
+- [x] Capture a pre-commit snapshot and the committed record reference in the audit event.
+- [x] Add `ns_prepareCompensation` that explains whether the operation can be reversed, deleted, voided, or requires a manual counter-transaction.
+- [x] Never label compensation as atomic rollback.
+- [x] Add tests for reversible fulfillment deletion, non-reversible operations, and already-changed source records.
+- [x] Commit as `feat: add operation impact and compensation plans`.
 
 ### Phase 0 Acceptance Gate
 
-- [ ] No public named transaction tool sends `phase: "commit"`.
-- [ ] A commit without a server-created, unused operation plan fails.
-- [ ] A commit after source-state change fails.
-- [ ] Duplicate commit returns the original result or a deterministic idempotency response.
-- [ ] The harness still controls user approval; SuperMCP does not add hidden account permissions.
-- [ ] Production read-only live probes pass and no live mutation probe is executed.
+- [x] No public named transaction tool sends `phase: "commit"`.
+- [x] A commit without a server-created, unused operation plan fails.
+- [x] A commit after source-state change fails.
+- [x] Duplicate commit returns the original result or a deterministic idempotency response.
+- [x] The harness still controls user approval; SuperMCP does not add hidden account permissions.
+- [x] Production read-only live probes pass and no live mutation probe is executed.
 
 ---
 
@@ -200,20 +200,20 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Create `src/contracts/tool-registry.ts` as the single source for name, title, description, input schema, output schema, risk, mutation effect, permissions, examples, and phase support.
-- [ ] Replace `GenericActionInputSchema` registrations one action family at a time: transform, read/search, file, report, integration, mapping, and platform.
-- [ ] Generate MCP registration metadata, `ns_describeTool`, examples, capability output, and documentation from the registry.
-- [ ] Create `src/shared/error-envelope.ts` and map REST, SuiteQL, OAuth, RESTlet, validation, governance, and conflict errors.
-- [ ] Include `requestId` in responses and audit events without exposing secrets.
-- [ ] Add schema snapshots and reject accidental contract drift in CI.
-- [ ] Add a compatibility report for cached ChatGPT app tool definitions.
+- [x] Create `src/contracts/tool-registry.ts` as the single source for name, title, description, input schema, output schema, risk, mutation effect, permissions, examples, and phase support.
+- [x] Replace `GenericActionInputSchema` registrations one action family at a time: transform, read/search, file, report, integration, mapping, and platform.
+- [x] Generate MCP registration metadata, `ns_describeTool`, examples, capability output, and documentation from the registry.
+- [x] Create `src/shared/error-envelope.ts` and map REST, SuiteQL, OAuth, RESTlet, validation, governance, and conflict errors.
+- [x] Include `requestId` in responses and audit events without exposing secrets.
+- [x] Add schema snapshots and reject accidental contract drift in CI.
+- [x] Add a compatibility report for cached ChatGPT app tool definitions.
 
 ### Acceptance Gate
 
-- [ ] No public tool uses an unbounded catch-all input schema.
-- [ ] Every tool has at least one valid and one invalid example test.
-- [ ] Every failure uses the same error envelope.
-- [ ] `ns_validateToolRequest` performs local validation without calling NetSuite.
+- [x] No public tool uses an unbounded catch-all input schema.
+- [x] Every tool has at least one valid and one invalid example test.
+- [x] Every failure uses the same error envelope.
+- [x] `ns_validateToolRequest` performs local validation without calling NetSuite.
 
 ---
 
@@ -232,18 +232,18 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Separate offline configuration checks from authenticated NetSuite checks so broken credentials still yield useful diagnostics.
-- [ ] Add an optional management identity profile for audit-trail diagnosis; never silently fall back to it for business operations.
-- [ ] Measure effective visibility with bounded sample/count probes instead of inferring access from permission names alone.
-- [ ] Return a comparison matrix by record family, operation, visible count, restriction reason, and tested identity.
-- [ ] Detect risky permission combinations without modifying roles.
-- [ ] Keep role changes, action approvals, and consent outside MCP unless explicitly initiated by a provider-approved operation plan.
+- [x] Separate offline configuration checks from authenticated NetSuite checks so broken credentials still yield useful diagnostics.
+- [x] Add an optional management identity profile for audit-trail diagnosis; never silently fall back to it for business operations.
+- [x] Measure effective visibility with bounded sample/count probes instead of inferring access from permission names alone.
+- [x] Return a comparison matrix by record family, operation, visible count, restriction reason, and tested identity.
+- [x] Detect risky permission combinations without modifying roles.
+- [x] Keep role changes, action approvals, and consent outside MCP unless explicitly initiated by a provider-approved operation plan.
 
 ### Acceptance Gate
 
-- [ ] Authentication failures distinguish expired authorization, revoked refresh token, wrong account, disabled integration, role restriction, and unreachable endpoint.
-- [ ] No credential value is emitted or logged.
-- [ ] Role comparison is read-only and bounded.
+- [x] Authentication failures distinguish expired authorization, revoked refresh token, wrong account, disabled integration, role restriction, and unreachable endpoint.
+- [x] No credential value is emitted or logged.
+- [x] Role comparison is read-only and bounded.
 
 ---
 
