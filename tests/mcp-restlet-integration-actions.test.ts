@@ -55,6 +55,15 @@ describe("MCP RESTlet-backed integration actions", () => {
           values: { custrecord_retry_requested: true },
         },
       },
+      {
+        action: ToolName.RetryIntegrationJob,
+        phase: "preview",
+        payload: {
+          recordType: "customrecord_integration_job",
+          recordId: "456",
+          values: { custrecord_retry_requested: true },
+        },
+      },
     ])
   })
 
@@ -105,6 +114,25 @@ describe("MCP RESTlet-backed integration actions", () => {
           recordType: "customrecord_integration_job",
           recordId: "456",
           values: { custrecord_retry_requested: true },
+        },
+      },
+      {
+        action: ToolName.RetryIntegrationJob,
+        phase: "preview",
+        payload: {
+          recordType: "customrecord_integration_job",
+          recordId: "456",
+          values: { custrecord_retry_requested: true },
+        },
+      },
+      {
+        action: ToolName.RetryIntegrationJob,
+        phase: "preview",
+        payload: {
+          recordType: "customrecord_integration_job",
+          recordId: "456",
+          values: { custrecord_retry_requested: true },
+          confirmation: "retry:customrecord_integration_job:456",
         },
       },
       {

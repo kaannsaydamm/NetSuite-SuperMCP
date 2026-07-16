@@ -15,6 +15,7 @@ const suiteScriptFiles = [
   "supermcp_transform_actions.js",
   "supermcp_integration_actions.js",
   "supermcp_mapping_actions.js",
+  "supermcp_operation_actions.js",
 ] as const
 
 type DeploymentStatus = "RELEASED" | "TESTING"

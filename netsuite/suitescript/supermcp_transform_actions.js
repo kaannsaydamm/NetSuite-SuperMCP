@@ -2,7 +2,11 @@
  * @NApiVersion 2.1
  * @NModuleScope SameAccount
  */
-define(["N/error", "N/record"], (nsError, record) => {
+define(["N/error", "N/record", "./supermcp_operation_actions"], (
+  nsError,
+  record,
+  operationActions,
+) => {
   const TRANSFORM_ACTIONS = {
     ns_transformRecord: {
       source: readGenericSource,
@@ -44,9 +48,30 @@ define(["N/error", "N/record"], (nsError, record) => {
 
   function runTransformAction(actionRequest, handler) {
     const source = handler.source(actionRequest.payload)
+    const snapshot = operationActions.buildSourceSnapshot(source, actionRequest.payload)
 
     if (actionRequest.phase === "prepare") {
-      return { action: actionRequest.action, phase: actionRequest.phase, willTransform: source }
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        willTransform: source,
+        snapshot,
+      }
+    }
+
+    if (actionRequest.phase === "commit") {
+      const existingId = operationActions.findExistingTarget(
+        source.toType,
+        actionRequest.payload.idempotencyKey,
+      )
+      if (existingId !== null) {
+        return {
+          action: actionRequest.action,
+          phase: actionRequest.phase,
+          record: { type: source.toType, id: existingId },
+          idempotent: true,
+        }
+      }
     }
 
     const transformedRecord = record.transform({
@@ -57,12 +82,18 @@ define(["N/error", "N/record"], (nsError, record) => {
     })
 
     applyBodyFields(transformedRecord, actionRequest.payload)
+    operationActions.applyIdempotencyKey(transformedRecord, actionRequest.payload.idempotencyKey)
+    const selectedLines = operationActions.applyLineSelection(
+      transformedRecord,
+      actionRequest.payload.selection,
+    )
 
     if (actionRequest.phase === "preview") {
       return {
         action: actionRequest.action,
         phase: actionRequest.phase,
-        preview: summarizeRecord(transformedRecord, source),
+        snapshot,
+        preview: operationActions.summarizeTarget(transformedRecord, source, selectedLines),
       }
     }
 
@@ -95,33 +126,6 @@ define(["N/error", "N/record"], (nsError, record) => {
     for (const fieldId of Object.keys(values)) {
       transformedRecord.setValue({ fieldId, value: values[fieldId] })
     }
-  }
-
-  function summarizeRecord(transformedRecord, source) {
-    return {
-      fromType: source.fromType,
-      fromId: String(source.fromId),
-      toType: source.toType,
-      lineCounts: lineCounts(transformedRecord),
-    }
-  }
-
-  function lineCounts(transformedRecord) {
-    const sublists = ["item", "expense", "apply"]
-    const counts = {}
-
-    for (const sublistId of sublists) {
-      try {
-        counts[sublistId] = transformedRecord.getLineCount({ sublistId })
-      } catch (error) {
-        if (error && error.name === "SSS_INVALID_SUBLIST_OPERATION") {
-          continue
-        }
-        throw error
-      }
-    }
-
-    return counts
   }
 
   function requireText(payload, fieldId) {

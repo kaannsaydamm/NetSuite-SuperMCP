@@ -1,8 +1,12 @@
 import { z } from "zod"
 import {
   CommitOperationRequestSchema,
+  GenericTransformOperationInputSchema,
+  PrepareCompensationRequestSchema,
   PrepareOperationRequestSchema,
   PreviewOperationRequestSchema,
+  PurchaseOrderOperationInputSchema,
+  SalesOrderOperationInputSchema,
 } from "../contracts/operation-schemas"
 import {
   InventoryAdjustmentAccountSearchRequestSchema,
@@ -72,6 +76,7 @@ export const ToolName = {
   PrepareAction: "ns_prepareAction",
   PreviewAction: "ns_previewAction",
   CommitAction: "ns_commitAction",
+  PrepareCompensation: "ns_prepareCompensation",
   GetAuditLog: "ns_getAuditLog",
   ListCapabilities: "ns_listCapabilities",
 } as const
@@ -133,6 +138,7 @@ export const toolPolicies = {
   [ToolName.PrepareAction]: low(ToolName.PrepareAction),
   [ToolName.PreviewAction]: low(ToolName.PreviewAction),
   [ToolName.CommitAction]: high(ToolName.CommitAction),
+  [ToolName.PrepareCompensation]: low(ToolName.PrepareCompensation),
 } satisfies Record<ToolName, ToolPolicy>
 
 export const EmptyInputSchema = z.object({})
@@ -162,6 +168,12 @@ export const GenericActionInputSchema = z
 export const PrepareOperationInputSchema = PrepareOperationRequestSchema
 export const PreviewOperationInputSchema = PreviewOperationRequestSchema
 export const CommitOperationInputSchema = CommitOperationRequestSchema
+export const PrepareCompensationInputSchema = PrepareCompensationRequestSchema
+export {
+  GenericTransformOperationInputSchema,
+  PurchaseOrderOperationInputSchema,
+  SalesOrderOperationInputSchema,
+}
 export const InventoryAdjustmentAccountSearchInputSchema =
   InventoryAdjustmentAccountSearchRequestSchema
 export const InventoryStockImportPrepareInputSchema = InventoryStockImportPrepareRequestSchema

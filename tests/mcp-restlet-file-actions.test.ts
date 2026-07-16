@@ -1,5 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { createApp } from "../src/app"
+import type { RestletAction } from "../src/netsuite/types"
+import type { JsonObject } from "../src/shared/json"
 import { ToolName } from "../src/tools/catalog"
 import { mcpCall, ToolTextResponseSchema } from "./mcp-support"
 import { FakeNetSuiteClient, testConfig } from "./test-support"
@@ -75,6 +77,15 @@ describe("MCP RESTlet-backed file actions", () => {
           confirmation: "writeFile:SuiteScripts/SuperMCP/example.js",
         },
       },
+      {
+        action: ToolName.WriteFile,
+        phase: "preview",
+        payload: {
+          fileId: "SuiteScripts/SuperMCP/example.js",
+          contents: "define([], () => ({}))",
+          confirmation: "writeFile:SuiteScripts/SuperMCP/example.js",
+        },
+      },
     ])
   })
 
@@ -82,7 +93,7 @@ describe("MCP RESTlet-backed file actions", () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
-    const calls = [
+    const calls: Array<{ name: ToolName; phase?: RestletAction["phase"]; payload: JsonObject }> = [
       { name: ToolName.ListFileCabinet, phase: "preview", payload: { folderId: 1, limit: 25 } },
       { name: ToolName.CreateFolder, payload: { name: "Exports", parent: 1 } },
       { name: ToolName.UpdateFolder, payload: { folderId: 2, name: "Exports 2026" } },
@@ -115,12 +126,15 @@ describe("MCP RESTlet-backed file actions", () => {
     }
 
     // Then
-    expect(fakeNetSuite.actions).toEqual(
-      calls.map((call) => ({
-        action: call.name,
-        phase: call.name === ToolName.ListFileCabinet ? "preview" : "prepare",
-        payload: call.payload,
-      })),
-    )
+    const expectedActions: RestletAction[] = []
+    for (const call of calls) {
+      if (call.name === ToolName.ListFileCabinet) {
+        expectedActions.push({ action: call.name, phase: "preview", payload: call.payload })
+      } else {
+        expectedActions.push({ action: call.name, phase: "prepare", payload: call.payload })
+        expectedActions.push({ action: call.name, phase: "preview", payload: call.payload })
+      }
+    }
+    expect(fakeNetSuite.actions).toEqual(expectedActions)
   })
 })

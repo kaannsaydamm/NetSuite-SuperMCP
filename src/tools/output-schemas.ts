@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { OperationPlanSchema } from "../operations/operation-plan"
 import { JsonValueSchema } from "../shared/json"
 import { ToolName } from "./catalog"
 
@@ -20,16 +21,14 @@ const RestletActionOutputSchema = z
   })
   .loose()
 
-const OperationPlanOutputSchema = z
+const CompensationPlanOutputSchema = z
   .object({
-    action: z.string(),
-    confirmation: z.string(),
-    environment: z.enum(["sandbox", "production"]),
     operationId: z.string().uuid(),
-    payload: z.record(z.string(), JsonValueSchema),
-    phase: z.literal("prepare"),
-    preview: z.record(z.string(), JsonValueSchema),
-    used: z.literal(false),
+    strategy: z.enum(["delete", "void", "counterTransaction", "manualReview"]),
+    atomic: z.literal(false),
+    reversible: z.boolean(),
+    explanation: z.string(),
+    target: z.record(z.string(), JsonValueSchema).optional(),
   })
   .loose()
 
@@ -209,7 +208,7 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.CreateSavedSearch:
     case ToolName.UpdateSavedSearch:
     case ToolName.DeleteSavedSearch:
-      return OperationPlanOutputSchema
+      return OperationPlanSchema
     case ToolName.ListFileCabinet:
     case ToolName.GetFile:
       return FileCabinetOutputSchema
@@ -220,7 +219,7 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.CopyFile:
     case ToolName.MoveFile:
     case ToolName.DeleteFile:
-      return OperationPlanOutputSchema
+      return OperationPlanSchema
     case ToolName.GetIntegrationLogs:
     case ToolName.GetScriptLogs:
     case ToolName.FindScriptErrors:
@@ -237,7 +236,9 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.RetryIntegrationJob:
     case ToolName.UpdateMapping:
     case ToolName.PrepareAction:
-      return OperationPlanOutputSchema
+      return OperationPlanSchema
+    case ToolName.PrepareCompensation:
+      return CompensationPlanOutputSchema
     case ToolName.GetMapping:
     case ToolName.PreviewAction:
     case ToolName.CommitAction:

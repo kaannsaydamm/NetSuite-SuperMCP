@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test"
 import { createApp } from "../src/app"
+import type { JsonObject } from "../src/shared/json"
 import { ToolName } from "../src/tools/catalog"
 import { mcpCall, ToolTextResponseSchema } from "./mcp-support"
 import { FakeNetSuiteClient, testConfig } from "./test-support"
@@ -9,7 +10,7 @@ describe("MCP RESTlet-backed report actions", () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
-    const calls = [
+    const calls: Array<{ name: ToolName; payload: JsonObject }> = [
       { name: ToolName.ListReportTypes, payload: {} },
       { name: ToolName.ListReports, payload: { query: "Inventory", limit: 20 } },
       {
@@ -64,16 +65,18 @@ describe("MCP RESTlet-backed report actions", () => {
 
     // Then
     expect(fakeNetSuite.actions).toEqual(
-      calls.map((call) => ({
-        action: call.name,
-        phase:
+      calls.flatMap((call) => {
+        const mutates =
           call.name === ToolName.CreateSavedSearch ||
           call.name === ToolName.UpdateSavedSearch ||
           call.name === ToolName.DeleteSavedSearch
-            ? "prepare"
-            : "preview",
-        payload: call.payload,
-      })),
+        return mutates
+          ? [
+              { action: call.name, phase: "prepare", payload: call.payload },
+              { action: call.name, phase: "preview", payload: call.payload },
+            ]
+          : [{ action: call.name, phase: "preview", payload: call.payload }]
+      }),
     )
   })
 })

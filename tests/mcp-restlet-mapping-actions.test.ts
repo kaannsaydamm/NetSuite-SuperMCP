@@ -81,6 +81,15 @@ describe("MCP RESTlet-backed mapping actions", () => {
           values: { custrecord_target: "789" },
         },
       },
+      {
+        action: ToolName.UpdateMapping,
+        phase: "preview",
+        payload: {
+          recordType: "customrecord_channel_mapping",
+          recordId: "321",
+          values: { custrecord_target: "789" },
+        },
+      },
     ])
   })
 })
