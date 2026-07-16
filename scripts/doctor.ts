@@ -81,6 +81,7 @@ async function main(): Promise<void> {
     )
     console.log("  netsuite/suitescript/supermcp_action_restlet.js")
     console.log("  netsuite/suitescript/supermcp_diagnostic_actions.js")
+    console.log("  netsuite/suitescript/supermcp_record_explorer_actions.js")
     console.log("  netsuite/suitescript/supermcp_read_actions.js")
     console.log("  netsuite/suitescript/supermcp_transform_actions.js")
     console.log("  netsuite/suitescript/supermcp_integration_actions.js")

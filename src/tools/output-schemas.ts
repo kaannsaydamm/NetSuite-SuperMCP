@@ -11,6 +11,7 @@ import {
   TokenEligibilityOutputSchema,
   TokenMetadataOutputSchema,
 } from "../contracts/identity-schemas"
+import { RecordExplorerOutputSchema } from "../contracts/record-explorer-schemas"
 import { OperationPlanSchema } from "../operations/operation-plan"
 import { JsonValueSchema } from "../shared/json"
 import { ToolName } from "./catalog"
@@ -230,6 +231,24 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
       return IntegrationStateOutputSchema
     case ToolName.AnalyzeSegregationOfDuties:
       return SegregationOfDutiesOutputSchema
+    case ToolName.ListRecordTypes:
+    case ToolName.DescribeRecordType:
+    case ToolName.ListRecordFields:
+    case ToolName.DescribeField:
+    case ToolName.FindFieldByLabel:
+    case ToolName.FindRecordByExternalId:
+    case ToolName.BatchResolveInternalIds:
+    case ToolName.BatchGetRecords:
+    case ToolName.GetRecordWithSublists:
+    case ToolName.GetTransactionChain:
+    case ToolName.GetSystemNotes:
+    case ToolName.ExplainRecordHistory:
+    case ToolName.GetTransactionEventStream:
+    case ToolName.DiagnoseTransaction:
+    case ToolName.CreateRecordSnapshot:
+    case ToolName.DiffRecordSnapshots:
+    case ToolName.CreateEvidenceBundle:
+      return RecordExplorerOutputSchema
     case ToolName.RunSuiteQl:
       return SuiteQlOutputSchema
     case ToolName.GetRecord:

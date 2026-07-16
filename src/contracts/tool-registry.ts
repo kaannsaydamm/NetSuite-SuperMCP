@@ -38,6 +38,23 @@ import {
   RoleComparisonInputSchema,
   SegregationOfDutiesInputSchema,
 } from "./identity-schemas"
+import {
+  BatchGetRecordsInputSchema,
+  BatchResolveInternalIdsInputSchema,
+  CreateEvidenceBundleInputSchema,
+  DescribeFieldInputSchema,
+  DescribeRecordTypeInputSchema,
+  DiagnoseTransactionInputSchema,
+  DiffRecordSnapshotsInputSchema,
+  FindFieldByLabelInputSchema,
+  FindRecordByExternalIdInputSchema,
+  GetRecordWithSublistsInputSchema,
+  ListRecordFieldsInputSchema,
+  ListRecordTypesInputSchema,
+  RecordSnapshotInputSchema,
+  SystemNotesInputSchema,
+  TransactionChainInputSchema,
+} from "./record-explorer-schemas"
 
 export type ToolContract = {
   readonly name: ToolName
@@ -192,6 +209,38 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return IntegrationStateInputSchema
     case ToolName.AnalyzeSegregationOfDuties:
       return SegregationOfDutiesInputSchema
+    case ToolName.ListRecordTypes:
+      return ListRecordTypesInputSchema
+    case ToolName.DescribeRecordType:
+      return DescribeRecordTypeInputSchema
+    case ToolName.ListRecordFields:
+      return ListRecordFieldsInputSchema
+    case ToolName.DescribeField:
+      return DescribeFieldInputSchema
+    case ToolName.FindFieldByLabel:
+      return FindFieldByLabelInputSchema
+    case ToolName.FindRecordByExternalId:
+      return FindRecordByExternalIdInputSchema
+    case ToolName.BatchResolveInternalIds:
+      return BatchResolveInternalIdsInputSchema
+    case ToolName.BatchGetRecords:
+      return BatchGetRecordsInputSchema
+    case ToolName.GetRecordWithSublists:
+      return GetRecordWithSublistsInputSchema
+    case ToolName.GetTransactionChain:
+      return TransactionChainInputSchema
+    case ToolName.GetSystemNotes:
+    case ToolName.ExplainRecordHistory:
+    case ToolName.GetTransactionEventStream:
+      return SystemNotesInputSchema
+    case ToolName.DiagnoseTransaction:
+      return DiagnoseTransactionInputSchema
+    case ToolName.CreateRecordSnapshot:
+      return RecordSnapshotInputSchema
+    case ToolName.DiffRecordSnapshots:
+      return DiffRecordSnapshotsInputSchema
+    case ToolName.CreateEvidenceBundle:
+      return CreateEvidenceBundleInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -288,6 +337,54 @@ function validExampleFor(name: ToolName): JsonValue {
         permissionGroups: [
           { name: "Example conflict", permissions: ["TRAN_SALESORD", "TRAN_CUSTPYMT"] },
         ],
+      }
+    case ToolName.ListRecordTypes:
+      return { search: "sales", limit: 20 }
+    case ToolName.DescribeRecordType:
+      return { type: "salesOrder" }
+    case ToolName.ListRecordFields:
+      return { type: "salesOrder", search: "customer", limit: 50 }
+    case ToolName.DescribeField:
+      return { type: "salesOrder", fieldId: "entity" }
+    case ToolName.FindFieldByLabel:
+      return { type: "salesOrder", label: "Customer", limit: 10 }
+    case ToolName.FindRecordByExternalId:
+      return { type: "customer", externalId: "example", limit: 5 }
+    case ToolName.BatchResolveInternalIds:
+      return { type: "inventoryItem", matchField: "upccode", values: ["0123456789012"] }
+    case ToolName.BatchGetRecords:
+      return { records: [{ type: "customer", id: "123" }] }
+    case ToolName.GetRecordWithSublists:
+      return { type: "salesOrder", id: "123", sublists: ["item"], lineLimit: 100 }
+    case ToolName.GetTransactionChain:
+      return { type: "salesOrder", id: "123", maxNodes: 100, integrationReferences: [] }
+    case ToolName.GetSystemNotes:
+    case ToolName.ExplainRecordHistory:
+    case ToolName.GetTransactionEventStream:
+      return { type: "salesOrder", id: "123", limit: 100 }
+    case ToolName.DiagnoseTransaction:
+      return { type: "salesOrder", id: "123", maxNodes: 100, includeSystemNotes: true }
+    case ToolName.CreateRecordSnapshot:
+      return { type: "salesOrder", id: "123", sublists: ["item"], lineLimit: 100 }
+    case ToolName.DiffRecordSnapshots:
+      return {
+        before: {
+          ref: { type: "customer", id: "123" },
+          fingerprint: "before",
+          record: { id: "123", companyName: "Before" },
+          sublists: {},
+        },
+        after: {
+          ref: { type: "customer", id: "123" },
+          fingerprint: "after",
+          record: { id: "123", companyName: "After" },
+          sublists: {},
+        },
+      }
+    case ToolName.CreateEvidenceBundle:
+      return {
+        name: "case-123",
+        items: [{ kind: "record", source: "customer:123", payload: { id: "123" } }],
       }
     default:
       return actionExampleFor(name)

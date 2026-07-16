@@ -77,6 +77,7 @@ Deploy these SuiteScript files together:
 - [supermcp_action_restlet.js](../netsuite/suitescript/supermcp_action_restlet.js)
 - [supermcp_file_actions.js](../netsuite/suitescript/supermcp_file_actions.js)
 - [supermcp_diagnostic_actions.js](../netsuite/suitescript/supermcp_diagnostic_actions.js)
+- [supermcp_record_explorer_actions.js](../netsuite/suitescript/supermcp_record_explorer_actions.js)
 - [supermcp_inventory_actions.js](../netsuite/suitescript/supermcp_inventory_actions.js)
 - [supermcp_operation_actions.js](../netsuite/suitescript/supermcp_operation_actions.js)
 - [supermcp_platform_actions.js](../netsuite/suitescript/supermcp_platform_actions.js)
@@ -114,7 +115,7 @@ actions that cannot be represented cleanly through REST Record CRUD.
 
 Run `ns_getSuperMcpVersion` after deploy. The RESTlet portion should report the deployed RESTlet
 version, action map version, account ID, execution context `RESTLET`, current NetSuite user/role,
-and `toolCount: 69`.
+and `toolCount: 86`.
 
 ### Supported transform actions
 

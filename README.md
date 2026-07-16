@@ -12,6 +12,8 @@ Includes:
 - File-backed audit log.
 - NetSuite REST/RESTlet adapter boundaries.
 - Read, write, action, audit, capability, platform, File Cabinet, reporting, and account-permission tools.
+- Typed record/field discovery, bounded batch reads, transaction graphs, System Notes, snapshots, diffs,
+  and redacted evidence bundles.
 - Inventory stock import preparation and commit tools for XLS/CSV-derived stock counts.
 - Connector-visible version diagnostics with local MCP, npm package, RESTlet, tool-count, account, and execution-context details.
 
@@ -190,6 +192,24 @@ Use `limit` or `pageSize` for paged platform/report reads. Read-only direct call
 `phase: "preview"`. Mutating direct calls are prepare-only and can change NetSuite only through a
 bound, single-use `ns_commitAction` operation plan. The calling harness still owns user approval
 and tool availability.
+
+## Record Explorer And Evidence
+
+Record discovery tools expose record types and fields without requiring the model to guess internal
+IDs: `ns_listRecordTypes`, `ns_describeRecordType`, `ns_listRecordFields`, `ns_describeField`, and
+`ns_findFieldByLabel`. REST metadata is preferred; unsupported record families use the bundled,
+permanent read-only SuiteScript fallback.
+
+`ns_batchResolveInternalIds`, `ns_batchGetRecords`, and `ns_getRecordWithSublists` are explicitly
+bounded and return per-record gaps instead of discarding successful reads. Transaction inspection
+uses `ns_getTransactionChain`, `ns_getSystemNotes`, `ns_explainRecordHistory`,
+`ns_getTransactionEventStream`, and `ns_diagnoseTransaction`. System Notes retain NetSuite's raw
+values and returned sequence. SuperMCP does not normalize, sort, compare, infer, or rewrite date/time
+values.
+
+`ns_createRecordSnapshot`, `ns_diffRecordSnapshots`, and `ns_createEvidenceBundle` produce typed
+business-field differences and deterministic, secret-redacted evidence manifests with SHA-256
+hashes. Evidence remains read-only and cites its source record, query, log, file, or audit reference.
 
 ## Inventory Stock Imports
 

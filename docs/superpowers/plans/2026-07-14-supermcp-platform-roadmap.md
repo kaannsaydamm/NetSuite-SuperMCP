@@ -262,20 +262,20 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Build metadata adapters that prefer REST metadata and fall back to permanent SuiteScript discovery for unsupported record families.
-- [ ] Implement bounded batch reads with per-record success/error results.
-- [ ] Build transaction graph edges from `createdfrom`, applying transactions, links, and configured integration references.
-- [ ] Return graph nodes and edges plus a compact human-readable tree.
-- [ ] Map System Notes into typed field-change events in NetSuite-returned sequence while preserving original values.
-- [ ] Do not sort, merge, shift, infer, compare, normalize, or rewrite any date/time value.
-- [ ] Build evidence references that point to record IDs, searches, script logs, files, and audit events.
-- [ ] Add `ns_createEvidenceBundle` with manifest, hashes, redacted payloads, and deterministic file layout.
+- [x] Build metadata adapters that prefer REST metadata and fall back to permanent SuiteScript discovery for unsupported record families.
+- [x] Implement bounded batch reads with per-record success/error results.
+- [x] Build transaction graph edges from `createdfrom`, applying transactions, links, and configured integration references.
+- [x] Return graph nodes and edges plus a compact human-readable tree.
+- [x] Map System Notes into typed field-change events in NetSuite-returned sequence while preserving original values.
+- [x] Do not sort, merge, shift, infer, compare, normalize, or rewrite any date/time value.
+- [x] Build evidence references that point to record IDs, searches, script logs, files, and audit events.
+- [x] Add `ns_createEvidenceBundle` with manifest, hashes, redacted payloads, and deterministic file layout.
 
 ### Acceptance Gate
 
-- [ ] A sales order query returns its complete available transaction chain in one call.
-- [ ] Missing permissions produce partial results with explicit gaps.
-- [ ] Evidence claims always cite source records or logs.
+- [x] A sales order query returns its complete available transaction chain in one call.
+- [x] Missing permissions produce partial results with explicit gaps.
+- [x] Evidence claims always cite source records or logs.
 
 ---
 

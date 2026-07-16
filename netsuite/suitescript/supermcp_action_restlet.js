@@ -11,6 +11,7 @@ define([
   "./supermcp_integration_actions",
   "./supermcp_mapping_actions",
   "./supermcp_platform_actions",
+  "./supermcp_record_explorer_actions",
   "./supermcp_read_actions",
   "./supermcp_report_actions",
   "./supermcp_transform_actions",
@@ -23,14 +24,15 @@ define([
   integrationActions,
   mappingActions,
   platformActions,
+  recordExplorerActions,
   readActions,
   reportActions,
   transformActions,
 ) => {
   const PHASES = ["prepare", "preview", "commit"]
-  const RESTLET_VERSION = "0.1.30"
-  const ACTION_MAP_VERSION = "2026-07-16.1"
-  const TOOL_COUNT = 69
+  const RESTLET_VERSION = "0.1.31"
+  const ACTION_MAP_VERSION = "2026-07-16.2"
+  const TOOL_COUNT = 86
   const SYSTEM_ACTIONS = {
     ns_getSuperMcpVersion: getSuperMcpVersion,
     ns_checkAccountPermissions: checkAccountPermissions,
@@ -44,6 +46,7 @@ define([
       transformActions.run(actionRequest) ||
       inventoryActions.run(actionRequest) ||
       platformActions.run(actionRequest) ||
+      recordExplorerActions.run(actionRequest) ||
       reportActions.run(actionRequest) ||
       fileActions.run(actionRequest) ||
       readActions.run(actionRequest) ||
@@ -120,6 +123,7 @@ define([
         "diagnostic",
         "inventory",
         "platform",
+        "recordExplorer",
         "report",
         "file",
         "read",

@@ -46,6 +46,7 @@ NetSuite:
 - `netsuite/suitescript/supermcp_action_restlet.js`
 - `netsuite/suitescript/supermcp_file_actions.js`
 - `netsuite/suitescript/supermcp_diagnostic_actions.js`
+- `netsuite/suitescript/supermcp_record_explorer_actions.js`
 - `netsuite/suitescript/supermcp_inventory_actions.js`
 - `netsuite/suitescript/supermcp_operation_actions.js`
 - `netsuite/suitescript/supermcp_platform_actions.js`
@@ -69,7 +70,7 @@ netsuite-supermcp doctor
 
 From any connected MCP client, also run `ns_getSuperMcpVersion`. It should show the same installed
 package version and RESTlet version, `restlet.reachable: true`, the expected NetSuite account ID,
-and `toolCount: 69`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
+and `toolCount: 86`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
 the MCP process first and redeploy the RESTlet if `restlet.version` is old.
 
 If you use SuiteCloud CLI instead of the NetSuite UI, Oracle's current CLI package is

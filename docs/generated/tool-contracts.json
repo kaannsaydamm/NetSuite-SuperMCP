@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolCount": 69,
+  "toolCount": 86,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -370,6 +370,435 @@
       ],
       "risk": "low",
       "title": "analyze Segregation Of Duties"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "records": [
+            {
+              "id": "123",
+              "type": "customer"
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "records": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "maxLength": 255,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "id"
+              ],
+              "type": "object"
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "records"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_batchGetRecords",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "batch Get Records"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "matchField": "upccode",
+          "type": "inventoryItem",
+          "values": [
+            "0123456789012"
+          ]
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "matchField": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "type",
+          "matchField",
+          "values"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_batchResolveInternalIds",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "batch Resolve Internal Ids"
     },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
@@ -1837,6 +2266,278 @@
       "title": "copy File"
     },
     {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "items": [
+            {
+              "kind": "record",
+              "payload": {
+                "id": "123"
+              },
+              "source": "customer:123"
+            }
+          ],
+          "name": "case-123"
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "record",
+                    "search",
+                    "scriptLog",
+                    "file",
+                    "audit",
+                    "query",
+                    "note"
+                  ],
+                  "type": "string"
+                },
+                "payload": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "source": {
+                  "maxLength": 500,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "source",
+                "payload"
+              ],
+              "type": "object"
+            },
+            "maxItems": 250,
+            "minItems": 1,
+            "type": "array"
+          },
+          "name": {
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "items"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_createEvidenceBundle",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "create Evidence Bundle"
+    },
+    {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
       "effects": [
         "May change NetSuite only during an explicit commit phase."
@@ -2401,6 +3102,226 @@
       ],
       "risk": "medium",
       "title": "create Record"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "id": "123",
+          "lineLimit": 100,
+          "sublists": [
+            "item"
+          ],
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "lineLimit": {
+            "default": 250,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "sublists": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "sublists",
+          "lineLimit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_createRecordSnapshot",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "create Record Snapshot"
     },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
@@ -3826,6 +4747,396 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "fieldId": "entity",
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "fieldId": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "fieldId"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_describeField",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "describe Field"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_describeRecordType",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "describe Record Type"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "name": "ns_fulfillSalesOrder"
         }
       },
@@ -4116,6 +5427,582 @@
       ],
       "risk": "low",
       "title": "diagnose Authentication"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "id": "123",
+          "includeSystemNotes": true,
+          "maxNodes": 100,
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "includeSystemNotes": {
+            "default": true,
+            "type": "boolean"
+          },
+          "integrationReferences": {
+            "default": [],
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "recordType": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                  "type": "string"
+                },
+                "transactionField": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "recordType",
+                "transactionField"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10,
+            "type": "array"
+          },
+          "maxNodes": {
+            "default": 100,
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "maxNodes",
+          "integrationReferences",
+          "includeSystemNotes"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_diagnoseTransaction",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "diagnose Transaction"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "after": {
+            "fingerprint": "after",
+            "record": {
+              "companyName": "After",
+              "id": "123"
+            },
+            "ref": {
+              "id": "123",
+              "type": "customer"
+            },
+            "sublists": {}
+          },
+          "before": {
+            "fingerprint": "before",
+            "record": {
+              "companyName": "Before",
+              "id": "123"
+            },
+            "ref": {
+              "id": "123",
+              "type": "customer"
+            },
+            "sublists": {}
+          }
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "before": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "before",
+          "after"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_diffRecordSnapshots",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "diff Record Snapshots"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -4426,6 +6313,213 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "id": "123",
+          "limit": 100,
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "limit": {
+            "default": 250,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_explainRecordHistory",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "explain Record History"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "profile": "current"
         }
       },
@@ -4547,6 +6641,213 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "label": "Customer",
+          "limit": 10,
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "limit": {
+            "default": 20,
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "label",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_findFieldByLabel",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "find Field By Label"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "limit": 25,
           "search": "inventory"
         }
@@ -4646,6 +6947,213 @@
       ],
       "risk": "low",
       "title": "find Inventory Adjustment Accounts"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "externalId": "example",
+          "limit": 5,
+          "type": "customer"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "externalId": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "limit": {
+            "default": 5,
+            "maximum": 20,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "externalId",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_findRecordByExternalId",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "find Record By External Id"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -7060,6 +9568,226 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "id": "123",
+          "lineLimit": 100,
+          "sublists": [
+            "item"
+          ],
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "lineLimit": {
+            "default": 250,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "sublists": {
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "type": "array"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "sublists",
+          "lineLimit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getRecordWithSublists",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Record With Sublists"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "limit": 10,
           "scriptId": "123"
         }
@@ -7351,6 +10079,213 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "id": "123",
+          "limit": 100,
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "limit": {
+            "default": 250,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getSystemNotes",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get System Notes"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "name": "ns_fulfillSalesOrder"
         }
       },
@@ -7432,6 +10367,445 @@
       ],
       "risk": "low",
       "title": "get Tool Example"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "id": "123",
+          "integrationReferences": [],
+          "maxNodes": 100,
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "integrationReferences": {
+            "default": [],
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "recordType": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                  "type": "string"
+                },
+                "transactionField": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "recordType",
+                "transactionField"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10,
+            "type": "array"
+          },
+          "maxNodes": {
+            "default": 100,
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "maxNodes",
+          "integrationReferences"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getTransactionChain",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Transaction Chain"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "id": "123",
+          "limit": 100,
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "limit": {
+            "default": 250,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getTransactionEventStream",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Transaction Event Stream"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -8473,6 +11847,412 @@
       ],
       "risk": "low",
       "title": "list Platform Objects"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "limit": 50,
+          "search": "customer",
+          "type": "salesOrder"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 200,
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "search": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_listRecordFields",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "list Record Fields"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "limit": 20,
+          "search": "sales"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 100,
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "search": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "limit"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_listRecordTypes",
+      "outputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "manifest": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "type": "array"
+          },
+          "snapshot": {
+            "additionalProperties": false,
+            "properties": {
+              "fingerprint": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "sublists": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "fingerprint",
+              "record",
+              "sublists"
+            ],
+            "type": "object"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "list Record Types"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
