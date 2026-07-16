@@ -256,7 +256,7 @@ Cross-cutting modules:
 - `ns_batchGetRecords` and `ns_getRecordWithSublists`.
 - `ns_getTransactionChain` covering orders, invoices, fulfillments, receipts, returns, credits, payments, and related integration records.
 - `ns_getSystemNotes` and `ns_explainRecordHistory`.
-- `ns_buildTransactionTimeline` using event ordering without date/time normalization or correction.
+- `ns_getTransactionEventStream` preserving NetSuite's returned event sequence and original values; the MCP does not synthesize chronology.
 - `ns_diagnoseTransaction` and ranked root-cause hypotheses with evidence references.
 - Record snapshot, diff, and evidence bundle primitives.
 
@@ -266,7 +266,8 @@ Cross-cutting modules:
 - [ ] Implement bounded batch reads with per-record success/error results.
 - [ ] Build transaction graph edges from `createdfrom`, applying transactions, links, and configured integration references.
 - [ ] Return graph nodes and edges plus a compact human-readable tree.
-- [ ] Normalize System Notes into field change events while preserving original NetSuite values.
+- [ ] Map System Notes into typed field-change events in NetSuite-returned sequence while preserving original values.
+- [ ] Do not sort, merge, shift, infer, compare, normalize, or rewrite any date/time value.
 - [ ] Build evidence references that point to record IDs, searches, script logs, files, and audit events.
 - [ ] Add `ns_createEvidenceBundle` with manifest, hashes, redacted payloads, and deterministic file layout.
 
