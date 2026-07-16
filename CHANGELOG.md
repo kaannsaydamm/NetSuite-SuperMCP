@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.37
+
+- Added evidence-preserving process variants, edges, bottleneck facts, and explicit unknown gaps.
+- Added observed/inferred/configured rule discovery and field-writer conflict analysis.
+- Added declarative data-quality, master-data, invariant, and provider-owned policy evaluation.
+- Added isolated downstream, GL, inventory-state, and channel-allocation simulations.
+- Added uncertainty-aware root-cause ranking with supporting and contradicting evidence.
+- Simulations never commit, and GL output labels NetSuite-provided facts separately from estimates.
+
 ## 0.1.36
 
 - Added requester-owned, immutable versioned business terms and metric definitions.

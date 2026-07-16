@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+import { registerAssuranceTools } from "./assurance-tools"
 import { registerCustomizationTools } from "./customization-tools"
 import { registerIdentityTools } from "./identity-tools"
 import { registerIntegrationTools } from "./integration-tools"
@@ -19,5 +20,6 @@ export function registerTools(server: McpServer, dependencies: ToolDependencies)
   registerIntegrationTools(server, dependencies)
   registerCustomizationTools(server, dependencies)
   registerSemanticTools(server, dependencies)
+  registerAssuranceTools(server, dependencies)
   registerNetSuiteTools(server, dependencies)
 }

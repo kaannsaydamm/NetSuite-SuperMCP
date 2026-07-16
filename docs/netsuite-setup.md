@@ -117,7 +117,7 @@ actions that cannot be represented cleanly through REST Record CRUD.
 
 Run `ns_getSuperMcpVersion` after deploy. The RESTlet portion should report the deployed RESTlet
 version, action map version, account ID, execution context `RESTLET`, current NetSuite user/role,
-and `toolCount: 153`.
+and `toolCount: 165`.
 
 ### Supported transform actions
 

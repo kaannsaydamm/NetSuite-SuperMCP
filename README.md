@@ -296,6 +296,28 @@ fields, and caller-supplied record, integration, Saved Search, or query referenc
 evidence attached. No semantic tool normalizes, converts, compares, infers, or rewrites date/time
 values.
 
+## Process Assurance And Simulation
+
+`ns_discoverProcess` builds process variants and edges from explicitly ordered transaction-chain
+evidence, calculates bottleneck facts only from caller-supplied durations, and preserves visibility
+gaps as `unknown`. `ns_discoverBusinessRules` requires every candidate to be labeled `observed`,
+`inferred`, or `configured` with confidence, source location, and evidence.
+`ns_analyzeFieldWriteConflicts` groups multiple field writers and reports ordering as `unknown`
+unless every writer includes explicit ordering evidence.
+
+`ns_profileDataQuality`, `ns_validateMasterData`, and `ns_evaluateInvariants` run bounded declarative
+rules with severity and remediation. Pattern rules use only a literal `*` wildcard, not arbitrary
+regular expressions. `ns_evaluatePolicyFacts` returns matches and effects but always reports
+`enforced: false`; the provider or agent harness owns enforcement and approval.
+
+`ns_simulateDownstreamImpact`, `ns_simulateInventoryState`, and
+`ns_simulateChannelAllocation` require complete scenario inputs and return `mutatesNetSuite: false`.
+They never enter an operation commit path and never select a location, status, channel, account, or
+policy default. `ns_previewGlImpact` accepts exactly one source: NetSuite-provided GL lines, explicit
+caller estimates, or a prepared operation plan. Non-NetSuite sources are always labeled estimated.
+`ns_rankRootCauses` ranks explicit hypotheses while retaining supporting evidence, contradicting
+evidence, and uncertainty.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

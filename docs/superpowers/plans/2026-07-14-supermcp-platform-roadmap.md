@@ -445,19 +445,19 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Build process graphs from transaction chains and event evidence, preserving unknown gaps.
-- [ ] Extract candidate business rules with source locations and confidence levels.
-- [ ] Detect multiple writers to the same field and report ordering evidence when available.
-- [ ] Implement declarative data-quality rules and invariant checks with severity and remediation suggestions.
-- [ ] Keep policy decisions in harness-controlled configuration; SuperMCP returns policy facts and evaluation results.
-- [ ] Use NetSuite-provided GL impact where available and label estimates explicitly.
-- [ ] Keep simulations isolated from commit paths and require explicit scenario inputs.
+- [x] Build process graphs from transaction chains and event evidence, preserving unknown gaps.
+- [x] Extract candidate business rules with source locations and confidence levels.
+- [x] Detect multiple writers to the same field and report ordering evidence when available.
+- [x] Implement declarative data-quality rules and invariant checks with severity and remediation suggestions.
+- [x] Keep policy decisions in harness-controlled configuration; SuperMCP returns policy facts and evaluation results.
+- [x] Use NetSuite-provided GL impact where available and label estimates explicitly.
+- [x] Keep simulations isolated from commit paths and require explicit scenario inputs.
 
 ### Acceptance Gate
 
-- [ ] Discovered rules are labeled as observed, inferred, or configured.
-- [ ] Simulations never mutate NetSuite.
-- [ ] Root-cause rankings include contradicting evidence and uncertainty.
+- [x] Discovered rules are labeled as observed, inferred, or configured.
+- [x] Simulations never mutate NetSuite.
+- [x] Root-cause rankings include contradicting evidence and uncertainty.
 
 ---
 

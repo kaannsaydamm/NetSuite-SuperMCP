@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { AssuranceOutputSchema } from "../contracts/assurance-schemas"
 import {
   AuthenticationDiagnosisOutputSchema,
   IdentityRelationshipOutputSchema,
@@ -379,6 +380,19 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.GenerateMetricReport:
     case ToolName.ExportMetricResult:
       return SemanticOutputSchema
+    case ToolName.DiscoverProcess:
+    case ToolName.DiscoverBusinessRules:
+    case ToolName.AnalyzeFieldWriteConflicts:
+    case ToolName.ProfileDataQuality:
+    case ToolName.ValidateMasterData:
+    case ToolName.EvaluateInvariants:
+    case ToolName.EvaluatePolicyFacts:
+    case ToolName.SimulateDownstreamImpact:
+    case ToolName.PreviewGlImpact:
+    case ToolName.SimulateInventoryState:
+    case ToolName.SimulateChannelAllocation:
+    case ToolName.RankRootCauses:
+      return AssuranceOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:

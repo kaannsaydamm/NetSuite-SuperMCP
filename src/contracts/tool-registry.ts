@@ -29,6 +29,20 @@ import {
 import { outputSchemaFor } from "../tools/output-schemas"
 import { actionInputSchemaFor } from "./action-schemas"
 import {
+  DiscoverProcessInputSchema,
+  DiscoverRulesInputSchema,
+  EvaluateInvariantsInputSchema,
+  EvaluatePolicyFactsInputSchema,
+  FieldWriteConflictInputSchema,
+  PreviewGlImpactInputSchema,
+  ProfileDataQualityInputSchema,
+  RankRootCausesInputSchema,
+  SimulateChannelAllocationInputSchema,
+  SimulateDownstreamImpactInputSchema,
+  SimulateInventoryStateInputSchema,
+  ValidateMasterDataInputSchema,
+} from "./assurance-schemas"
+import {
   CleanupPlanInputSchema,
   CustomizationDiffInputSchema,
   CustomizationInventoryInputSchema,
@@ -426,6 +440,30 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return GenerateMetricReportInputSchema
     case ToolName.ExportMetricResult:
       return ExportMetricResultInputSchema
+    case ToolName.DiscoverProcess:
+      return DiscoverProcessInputSchema
+    case ToolName.DiscoverBusinessRules:
+      return DiscoverRulesInputSchema
+    case ToolName.AnalyzeFieldWriteConflicts:
+      return FieldWriteConflictInputSchema
+    case ToolName.ProfileDataQuality:
+      return ProfileDataQualityInputSchema
+    case ToolName.ValidateMasterData:
+      return ValidateMasterDataInputSchema
+    case ToolName.EvaluateInvariants:
+      return EvaluateInvariantsInputSchema
+    case ToolName.EvaluatePolicyFacts:
+      return EvaluatePolicyFactsInputSchema
+    case ToolName.SimulateDownstreamImpact:
+      return SimulateDownstreamImpactInputSchema
+    case ToolName.PreviewGlImpact:
+      return PreviewGlImpactInputSchema
+    case ToolName.SimulateInventoryState:
+      return SimulateInventoryStateInputSchema
+    case ToolName.SimulateChannelAllocation:
+      return SimulateChannelAllocationInputSchema
+    case ToolName.RankRootCauses:
+      return RankRootCausesInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -840,6 +878,137 @@ function validExampleFor(name: ToolName): JsonValue {
         limit: 100,
         format: "jsonl",
         compression: "gzip",
+      }
+    case ToolName.DiscoverProcess:
+      return {
+        traces: [{ caseId: "SO1", steps: [{ node: "salesOrder", evidence: [] }], gaps: [] }],
+      }
+    case ToolName.DiscoverBusinessRules:
+      return {
+        artifacts: [
+          {
+            id: "customscript_example",
+            kind: "script",
+            rules: [
+              {
+                condition: "status is pending",
+                action: "set approval flag",
+                classification: "observed",
+                confidence: 1,
+                sourceLocation: "SuiteScripts/example.js:10",
+                evidence: [{ source: "file", reference: "SuiteScripts/example.js:10" }],
+              },
+            ],
+          },
+        ],
+      }
+    case ToolName.AnalyzeFieldWriteConflicts:
+      return {
+        writers: [
+          {
+            recordType: "salesOrder",
+            field: "memo",
+            writerId: "customscript_example",
+            context: "afterSubmit",
+            order: 1,
+            evidence: [{ source: "script", reference: "customscript_example:10" }],
+          },
+        ],
+      }
+    case ToolName.ProfileDataQuality:
+    case ToolName.ValidateMasterData:
+      return {
+        records: [{ key: "item:1", fields: { sku: "ABC" }, evidence: [] }],
+        rules: [
+          {
+            id: "sku-required",
+            field: "sku",
+            severity: "high",
+            rule: "required",
+            remediation: "Set an explicit SKU.",
+          },
+        ],
+      }
+    case ToolName.EvaluateInvariants:
+      return {
+        phase: "pre",
+        records: [{ key: "item:1", fields: { quantity: 1 }, evidence: [] }],
+        invariants: [
+          {
+            id: "quantity-nonnegative",
+            severity: "high",
+            predicate: { field: "quantity", operator: "gte", value: 0 },
+            message: "Quantity must be nonnegative.",
+            remediation: "Review the source quantity.",
+          },
+        ],
+      }
+    case ToolName.EvaluatePolicyFacts:
+      return {
+        facts: { environment: "sandbox" },
+        policies: [
+          {
+            id: "sandbox-review",
+            predicate: { field: "environment", operator: "equals", value: "sandbox" },
+            effect: "review",
+            metadata: {},
+          },
+        ],
+      }
+    case ToolName.SimulateDownstreamImpact:
+      return {
+        scenarioId: "scenario-1",
+        changes: [
+          { recordType: "item", recordId: "1", field: "isinactive", before: false, after: true },
+        ],
+        dependencies: [
+          {
+            fromRecordType: "item",
+            field: "isinactive",
+            target: "savedsearch:inventory",
+            effect: "record may be excluded",
+            evidence: [],
+          },
+        ],
+      }
+    case ToolName.PreviewGlImpact:
+      return {
+        estimatedLines: [
+          { accountId: "100", debit: 10, credit: 0, evidence: [] },
+          { accountId: "200", debit: 0, credit: 10, evidence: [] },
+        ],
+      }
+    case ToolName.SimulateInventoryState:
+      return {
+        initial: [{ itemId: "1", locationId: "2", quantity: 5 }],
+        adjustments: [{ itemId: "1", locationId: "2", quantityDelta: -1, evidence: [] }],
+      }
+    case ToolName.SimulateChannelAllocation:
+      return {
+        inventory: [{ itemId: "1", locationId: "2", quantity: 5 }],
+        channels: [
+          {
+            channelId: "channel-a",
+            itemId: "1",
+            locationId: "2",
+            demand: 3,
+            cap: 3,
+            priority: 1,
+            evidence: [],
+          },
+        ],
+      }
+    case ToolName.RankRootCauses:
+      return {
+        hypotheses: [
+          {
+            id: "missing-mapping",
+            explanation: "A required mapping is absent.",
+            priorConfidence: 0.5,
+            supportingEvidence: [{ source: "integration", reference: "job:1" }],
+            contradictingEvidence: [],
+          },
+        ],
       }
     default:
       return actionExampleFor(name)

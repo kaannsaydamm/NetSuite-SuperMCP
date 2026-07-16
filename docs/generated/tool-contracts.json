@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolCount": 153,
+  "toolCount": 165,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -88,6 +88,153 @@
       ],
       "risk": "low",
       "title": "ack Integration Event"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "writers": [
+            {
+              "context": "afterSubmit",
+              "evidence": [
+                {
+                  "reference": "customscript_example:10",
+                  "source": "script"
+                }
+              ],
+              "field": "memo",
+              "order": 1,
+              "recordType": "salesOrder",
+              "writerId": "customscript_example"
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "writers": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "context": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "field": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "order": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "recordType": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "writerId": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "recordType",
+                "field",
+                "writerId",
+                "context",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 5000,
+            "type": "array"
+          }
+        },
+        "required": [
+          "writers"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_analyzeFieldWriteConflicts",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "analyze Field Write Conflicts"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -8535,6 +8682,391 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "artifacts": [
+            {
+              "id": "customscript_example",
+              "kind": "script",
+              "rules": [
+                {
+                  "action": "set approval flag",
+                  "classification": "observed",
+                  "condition": "status is pending",
+                  "confidence": 1,
+                  "evidence": [
+                    {
+                      "reference": "SuiteScripts/example.js:10",
+                      "source": "file"
+                    }
+                  ],
+                  "sourceLocation": "SuiteScripts/example.js:10"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "script",
+                    "workflow",
+                    "form",
+                    "savedSearch",
+                    "fieldConfiguration"
+                  ],
+                  "type": "string"
+                },
+                "rules": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "action": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "classification": {
+                        "enum": [
+                          "observed",
+                          "inferred",
+                          "configured"
+                        ],
+                        "type": "string"
+                      },
+                      "condition": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "confidence": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "detail": {
+                              "$ref": "#/$defs/__schema0"
+                            },
+                            "reference": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "source": {
+                              "minLength": 1,
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "reference"
+                          ],
+                          "type": "object"
+                        },
+                        "maxItems": 20,
+                        "minItems": 1,
+                        "type": "array"
+                      },
+                      "sourceLocation": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "condition",
+                      "action",
+                      "classification",
+                      "confidence",
+                      "sourceLocation",
+                      "evidence"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 500,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "rules"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "type": "array"
+          }
+        },
+        "required": [
+          "artifacts"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_discoverBusinessRules",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "discover Business Rules"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "traces": [
+            {
+              "caseId": "SO1",
+              "gaps": [],
+              "steps": [
+                {
+                  "evidence": [],
+                  "node": "salesOrder"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "traces": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "caseId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "gaps": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "afterNode": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "evidence": {
+                        "default": [],
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "detail": {
+                              "$ref": "#/$defs/__schema0"
+                            },
+                            "reference": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "source": {
+                              "minLength": 1,
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "reference"
+                          ],
+                          "type": "object"
+                        },
+                        "maxItems": 20,
+                        "type": "array"
+                      },
+                      "reason": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "reason",
+                      "evidence"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                "steps": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "durationMs": {
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "default": [],
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "detail": {
+                              "$ref": "#/$defs/__schema0"
+                            },
+                            "reference": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "source": {
+                              "minLength": 1,
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "reference"
+                          ],
+                          "type": "object"
+                        },
+                        "maxItems": 20,
+                        "type": "array"
+                      },
+                      "node": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "node",
+                      "evidence"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 500,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "caseId",
+                "steps",
+                "gaps"
+              ],
+              "type": "object"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "traces"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_discoverProcess",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "discover Process"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "eventType": "failed",
           "idempotencyKey": "event-1",
           "payload": {},
@@ -8624,6 +9156,401 @@
       ],
       "risk": "low",
       "title": "emit Integration Event"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "invariants": [
+            {
+              "id": "quantity-nonnegative",
+              "message": "Quantity must be nonnegative.",
+              "predicate": {
+                "field": "quantity",
+                "operator": "gte",
+                "value": 0
+              },
+              "remediation": "Review the source quantity.",
+              "severity": "high"
+            }
+          ],
+          "phase": "pre",
+          "records": [
+            {
+              "evidence": [],
+              "fields": {
+                "quantity": 1
+              },
+              "key": "item:1"
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "invariants": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "message": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "predicate": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "field": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "operator": {
+                      "enum": [
+                        "exists",
+                        "equals",
+                        "notEquals",
+                        "in",
+                        "gte",
+                        "lte"
+                      ],
+                      "type": "string"
+                    },
+                    "value": {
+                      "$ref": "#/$defs/__schema0"
+                    },
+                    "values": {
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 500,
+                      "minItems": 1,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "field",
+                    "operator"
+                  ],
+                  "type": "object"
+                },
+                "remediation": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "severity": {
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high",
+                    "critical"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "severity",
+                "predicate",
+                "message",
+                "remediation"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "type": "array"
+          },
+          "phase": {
+            "enum": [
+              "pre",
+              "post"
+            ],
+            "type": "string"
+          },
+          "records": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "fields": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "key": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "fields",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          }
+        },
+        "required": [
+          "phase",
+          "records",
+          "invariants"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_evaluateInvariants",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "evaluate Invariants"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "facts": {
+            "environment": "sandbox"
+          },
+          "policies": [
+            {
+              "effect": "review",
+              "id": "sandbox-review",
+              "metadata": {},
+              "predicate": {
+                "field": "environment",
+                "operator": "equals",
+                "value": "sandbox"
+              }
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "facts": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "policies": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "effect": {
+                  "enum": [
+                    "allow",
+                    "deny",
+                    "review"
+                  ],
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "default": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "predicate": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "field": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "operator": {
+                      "enum": [
+                        "exists",
+                        "equals",
+                        "notEquals",
+                        "in",
+                        "gte",
+                        "lte"
+                      ],
+                      "type": "string"
+                    },
+                    "value": {
+                      "$ref": "#/$defs/__schema0"
+                    },
+                    "values": {
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 500,
+                      "minItems": 1,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "field",
+                    "operator"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "id",
+                "predicate",
+                "effect",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "type": "array"
+          }
+        },
+        "required": [
+          "facts",
+          "policies"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_evaluatePolicyFacts",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "evaluate Policy Facts"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -22127,6 +23054,432 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "estimatedLines": [
+            {
+              "accountId": "100",
+              "credit": 0,
+              "debit": 10,
+              "evidence": []
+            },
+            {
+              "accountId": "200",
+              "credit": 10,
+              "debit": 0,
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "estimatedLines": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "accountId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "credit": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "debit": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "memo": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "accountId",
+                "debit",
+                "credit",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 5000,
+            "type": "array"
+          },
+          "netSuiteProvidedLines": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "accountId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "credit": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "debit": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "memo": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "accountId",
+                "debit",
+                "credit",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 5000,
+            "type": "array"
+          },
+          "operationId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_previewGlImpact",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "preview Gl Impact"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "records": [
+            {
+              "evidence": [],
+              "fields": {
+                "sku": "ABC"
+              },
+              "key": "item:1"
+            }
+          ],
+          "rules": [
+            {
+              "field": "sku",
+              "id": "sku-required",
+              "remediation": "Set an explicit SKU.",
+              "rule": "required",
+              "severity": "high"
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "records": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "fields": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "key": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "fields",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "rules": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "allowed": {
+                  "items": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "maxItems": 500,
+                  "type": "array"
+                },
+                "expectedType": {
+                  "enum": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "object",
+                    "array",
+                    "null"
+                  ],
+                  "type": "string"
+                },
+                "field": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "min": {
+                  "type": "number"
+                },
+                "pattern": {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                "references": {
+                  "items": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "maxItems": 10000,
+                  "type": "array"
+                },
+                "remediation": {
+                  "maxLength": 1000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "rule": {
+                  "enum": [
+                    "required",
+                    "type",
+                    "pattern",
+                    "range",
+                    "enum",
+                    "unique",
+                    "reference"
+                  ],
+                  "type": "string"
+                },
+                "severity": {
+                  "enum": [
+                    "info",
+                    "low",
+                    "medium",
+                    "high",
+                    "critical"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "field",
+                "severity",
+                "rule",
+                "remediation"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "type": "array"
+          }
+        },
+        "required": [
+          "records",
+          "rules"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_profileDataQuality",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "profile Data Quality"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "canaryId": "123e4567-e89b-42d3-a456-426614174000"
         }
       },
@@ -22161,6 +23514,169 @@
       ],
       "risk": "low",
       "title": "promote Canary"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "hypotheses": [
+            {
+              "contradictingEvidence": [],
+              "explanation": "A required mapping is absent.",
+              "id": "missing-mapping",
+              "priorConfidence": 0.5,
+              "supportingEvidence": [
+                {
+                  "reference": "job:1",
+                  "source": "integration"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "hypotheses": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "contradictingEvidence": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                "explanation": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "priorConfidence": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "supportingEvidence": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "id",
+                "explanation",
+                "supportingEvidence",
+                "contradictingEvidence",
+                "priorConfidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "hypotheses"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_rankRootCauses",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "rank Root Causes"
     },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
@@ -27076,6 +28592,557 @@
       "title": "shadow Payload"
     },
     {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "channels": [
+            {
+              "cap": 3,
+              "channelId": "channel-a",
+              "demand": 3,
+              "evidence": [],
+              "itemId": "1",
+              "locationId": "2",
+              "priority": 1
+            }
+          ],
+          "inventory": [
+            {
+              "itemId": "1",
+              "locationId": "2",
+              "quantity": 5
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "channels": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "cap": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "channelId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "demand": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "itemId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "locationId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "priority": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "statusId": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "channelId",
+                "itemId",
+                "locationId",
+                "demand",
+                "cap",
+                "priority",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "inventory": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "itemId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "locationId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "statusId": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "itemId",
+                "locationId",
+                "quantity"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          }
+        },
+        "required": [
+          "inventory",
+          "channels"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_simulateChannelAllocation",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "simulate Channel Allocation"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "changes": [
+            {
+              "after": true,
+              "before": false,
+              "field": "isinactive",
+              "recordId": "1",
+              "recordType": "item"
+            }
+          ],
+          "dependencies": [
+            {
+              "effect": "record may be excluded",
+              "evidence": [],
+              "field": "isinactive",
+              "fromRecordType": "item",
+              "target": "savedsearch:inventory"
+            }
+          ],
+          "scenarioId": "scenario-1"
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "changes": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "after": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "before": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "field": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "recordId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "recordType": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "recordType",
+                "recordId",
+                "field",
+                "before",
+                "after"
+              ],
+              "type": "object"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "type": "array"
+          },
+          "dependencies": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "effect": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "field": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "fromRecordType": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "target": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "fromRecordType",
+                "field",
+                "target",
+                "effect",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 5000,
+            "type": "array"
+          },
+          "scenarioId": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenarioId",
+          "changes",
+          "dependencies"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_simulateDownstreamImpact",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "simulate Downstream Impact"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "adjustments": [
+            {
+              "evidence": [],
+              "itemId": "1",
+              "locationId": "2",
+              "quantityDelta": -1
+            }
+          ],
+          "initial": [
+            {
+              "itemId": "1",
+              "locationId": "2",
+              "quantity": 5
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "adjustments": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "itemId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "locationId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "quantityDelta": {
+                  "type": "number"
+                },
+                "statusId": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "itemId",
+                "locationId",
+                "quantityDelta",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "initial": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "itemId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "locationId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "statusId": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "itemId",
+                "locationId",
+                "quantity"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          }
+        },
+        "required": [
+          "initial",
+          "adjustments"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_simulateInventoryState",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Inventory",
+        "Inventory Adjustment"
+      ],
+      "risk": "low",
+      "title": "simulate Inventory State"
+    },
+    {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
       "effects": [
         "May change NetSuite only during an explicit commit phase."
@@ -29596,6 +31663,234 @@
       ],
       "risk": "low",
       "title": "validate Integration Contract"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "records": [
+            {
+              "evidence": [],
+              "fields": {
+                "sku": "ABC"
+              },
+              "key": "item:1"
+            }
+          ],
+          "rules": [
+            {
+              "field": "sku",
+              "id": "sku-required",
+              "remediation": "Set an explicit SKU.",
+              "rule": "required",
+              "severity": "high"
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "records": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "detail": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "reference": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "reference"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                "fields": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "key": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "fields",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "rules": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "allowed": {
+                  "items": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "maxItems": 500,
+                  "type": "array"
+                },
+                "expectedType": {
+                  "enum": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "object",
+                    "array",
+                    "null"
+                  ],
+                  "type": "string"
+                },
+                "field": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "min": {
+                  "type": "number"
+                },
+                "pattern": {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                "references": {
+                  "items": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "maxItems": 10000,
+                  "type": "array"
+                },
+                "remediation": {
+                  "maxLength": 1000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "rule": {
+                  "enum": [
+                    "required",
+                    "type",
+                    "pattern",
+                    "range",
+                    "enum",
+                    "unique",
+                    "reference"
+                  ],
+                  "type": "string"
+                },
+                "severity": {
+                  "enum": [
+                    "info",
+                    "low",
+                    "medium",
+                    "high",
+                    "critical"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "field",
+                "severity",
+                "rule",
+                "remediation"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "type": "array"
+          }
+        },
+        "required": [
+          "records",
+          "rules"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_validateMasterData",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "validate Master Data"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
