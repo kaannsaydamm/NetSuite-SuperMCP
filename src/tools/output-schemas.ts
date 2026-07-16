@@ -150,6 +150,7 @@ const ScriptAnalysisOutputSchema = z
   .loose()
 
 const IntegrationOutputSchema = z.object({}).loose()
+const CustomizationOutputSchema = z.object({}).loose()
 
 const ToolExampleOutputSchema = z.object({
   name: z.string(),
@@ -352,6 +353,20 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.PollIntegrationOutbox:
     case ToolName.AckIntegrationEvent:
       return IntegrationOutputSchema
+    case ToolName.InventoryCustomizations:
+    case ToolName.DiffCustomizationEnvironments:
+    case ToolName.GenerateSuiteCloudProject:
+    case ToolName.ValidateSuiteCloudProject:
+    case ToolName.PreviewCustomizationDeployment:
+    case ToolName.PrepareCustomizationDeployment:
+    case ToolName.GetCustomizationDeployment:
+    case ToolName.RecordCustomizationDeploymentResult:
+    case ToolName.VerifyCustomizationDeployment:
+    case ToolName.PrepareCustomizationRollback:
+    case ToolName.PlanCustomizationMigration:
+    case ToolName.PlanCustomizationCleanup:
+    case ToolName.GenerateSystemDocumentation:
+      return CustomizationOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:

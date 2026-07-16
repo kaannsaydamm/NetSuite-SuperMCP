@@ -43,6 +43,12 @@ const STATEFUL_OR_PREREQUISITE_TOOLS = new Set<ToolName>([
   ToolName.EmitIntegrationEvent,
   ToolName.PollIntegrationOutbox,
   ToolName.AckIntegrationEvent,
+  ToolName.GenerateSuiteCloudProject,
+  ToolName.PrepareCustomizationDeployment,
+  ToolName.GetCustomizationDeployment,
+  ToolName.RecordCustomizationDeploymentResult,
+  ToolName.VerifyCustomizationDeployment,
+  ToolName.PrepareCustomizationRollback,
 ])
 
 const envPath = join(resolve(process.cwd()), ".env")

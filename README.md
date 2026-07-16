@@ -257,6 +257,25 @@ Synthetic test data and anonymization require explicit templates and field lists
 subscriptions use a persistent idempotent outbox; SuperMCP does not contact endpoints itself. The
 provider polls and delivers events, then acknowledges success or failure for deterministic retry.
 
+## Customization Drift And Deployment Plans
+
+`ns_inventoryCustomizations` uses permanent native NetSuite searches for custom records, fields,
+lists, scripts, deployments, workflows, forms, searches, roles, integrations, bundles, SuiteApps,
+and files. Objects without a stable script ID are returned as explicit gaps. Environment comparison
+uses type, script ID, definition checksum, deployment state, permissions, and dependencies; it never
+matches by internal ID alone and excludes date/time fields from drift checks.
+
+`ns_generateSuiteCloudProject` creates a bounded checksum-pinned project from explicitly selected
+objects and files. Validate and preview it before `ns_prepareCustomizationDeployment`. Preparation
+stores a provider command, changed object list, confirmation, and harness-approval requirement but
+does not execute SuiteCloud or mutate NetSuite. After the provider runs the reviewed command,
+`ns_recordCustomizationDeploymentResult` records uploaded files, changed objects, validation
+warnings, and provider evidence. `ns_verifyCustomizationDeployment` checks the live RESTlet version.
+
+Rollback output includes only files whose previous content and checksum were captured. Migration,
+cleanup, technical-debt, orphan, and documentation outputs never invent owners or delete objects;
+cleanup remains a proposal for the normal operation-plan flow.
+
 ## Inventory Stock Imports
 
 For stock count files such as Fastmag/Paris stock exports, parse the file into rows and call:

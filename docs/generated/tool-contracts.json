@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolCount": 130,
+  "toolCount": 143,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -6999,6 +6999,353 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "source": [
+            {
+              "definition": {
+                "scriptType": "RESTlet"
+              },
+              "dependencies": [],
+              "metadata": {
+                "provenance": [
+                  {
+                    "source": "example"
+                  }
+                ]
+              },
+              "name": "Example",
+              "permissions": [],
+              "scriptId": "customscript_example",
+              "type": "script"
+            }
+          ],
+          "sourceEnvironment": "sandbox",
+          "target": [],
+          "targetEnvironment": "production"
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "checksum": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "definition": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "dependencies": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "deploymentState": {
+                  "type": "string"
+                },
+                "internalId": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "default": {
+                    "provenance": []
+                  },
+                  "properties": {
+                    "businessOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "criticality": {
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                      ],
+                      "type": "string"
+                    },
+                    "owner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provenance": {
+                      "default": [],
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "technicalOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "provenance"
+                  ],
+                  "type": "object"
+                },
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "permissions": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "scriptId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "customRecord",
+                    "customField",
+                    "customList",
+                    "script",
+                    "scriptDeployment",
+                    "workflow",
+                    "form",
+                    "savedSearch",
+                    "role",
+                    "integration",
+                    "bundle",
+                    "suiteApp",
+                    "file"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "scriptId",
+                "name",
+                "definition",
+                "permissions",
+                "dependencies",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "sourceEnvironment": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "target": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "checksum": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "definition": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "dependencies": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "deploymentState": {
+                  "type": "string"
+                },
+                "internalId": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "default": {
+                    "provenance": []
+                  },
+                  "properties": {
+                    "businessOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "criticality": {
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                      ],
+                      "type": "string"
+                    },
+                    "owner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provenance": {
+                      "default": [],
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "technicalOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "provenance"
+                  ],
+                  "type": "object"
+                },
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "permissions": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "scriptId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "customRecord",
+                    "customField",
+                    "customList",
+                    "script",
+                    "scriptDeployment",
+                    "workflow",
+                    "form",
+                    "savedSearch",
+                    "role",
+                    "integration",
+                    "bundle",
+                    "suiteApp",
+                    "file"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "scriptId",
+                "name",
+                "definition",
+                "permissions",
+                "dependencies",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "targetEnvironment": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "sourceEnvironment",
+          "targetEnvironment",
+          "source",
+          "target"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_diffCustomizationEnvironments",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "diff Customization Environments"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "after": {
             "fingerprint": "after",
             "record": {
@@ -11170,6 +11517,258 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "customizations": [
+            {
+              "definition": {
+                "scriptType": "RESTlet"
+              },
+              "dependencies": [],
+              "metadata": {
+                "provenance": [
+                  {
+                    "source": "example"
+                  }
+                ]
+              },
+              "name": "Example",
+              "permissions": [],
+              "scriptId": "customscript_example",
+              "type": "script"
+            }
+          ],
+          "files": [
+            {
+              "content": "define([], () => ({}))",
+              "path": "FileCabinet/SuiteScripts/example.js"
+            }
+          ],
+          "name": "selected-customizations"
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "customizations": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "checksum": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "definition": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "dependencies": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "deploymentState": {
+                  "type": "string"
+                },
+                "internalId": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "default": {
+                    "provenance": []
+                  },
+                  "properties": {
+                    "businessOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "criticality": {
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                      ],
+                      "type": "string"
+                    },
+                    "owner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provenance": {
+                      "default": [],
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "technicalOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "provenance"
+                  ],
+                  "type": "object"
+                },
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "permissions": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "scriptId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "customRecord",
+                    "customField",
+                    "customList",
+                    "script",
+                    "scriptDeployment",
+                    "workflow",
+                    "form",
+                    "savedSearch",
+                    "role",
+                    "integration",
+                    "bundle",
+                    "suiteApp",
+                    "file"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "scriptId",
+                "name",
+                "definition",
+                "permissions",
+                "dependencies",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "expectedChecksum": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "path": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "previousContent": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "content"
+              ],
+              "type": "object"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "customizations",
+          "files"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_generateSuiteCloudProject",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "generate Suite Cloud Project"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "count": 2,
           "seed": "test",
           "sequenceFields": [
@@ -11276,6 +11875,222 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "customizations": [
+            {
+              "definition": {
+                "scriptType": "RESTlet"
+              },
+              "dependencies": [],
+              "metadata": {
+                "provenance": [
+                  {
+                    "source": "example"
+                  }
+                ]
+              },
+              "name": "Example",
+              "permissions": [],
+              "scriptId": "customscript_example",
+              "type": "script"
+            }
+          ],
+          "title": "NetSuite Customizations"
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "customizations": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "checksum": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "definition": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "dependencies": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "deploymentState": {
+                  "type": "string"
+                },
+                "internalId": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "default": {
+                    "provenance": []
+                  },
+                  "properties": {
+                    "businessOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "criticality": {
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                      ],
+                      "type": "string"
+                    },
+                    "owner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provenance": {
+                      "default": [],
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "technicalOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "provenance"
+                  ],
+                  "type": "object"
+                },
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "permissions": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "scriptId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "customRecord",
+                    "customField",
+                    "customList",
+                    "script",
+                    "scriptDeployment",
+                    "workflow",
+                    "form",
+                    "savedSearch",
+                    "role",
+                    "integration",
+                    "bundle",
+                    "suiteApp",
+                    "file"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "scriptId",
+                "name",
+                "definition",
+                "permissions",
+                "dependencies",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "customizations"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_generateSystemDocumentation",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "generate System Documentation"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "limit": 20
         }
       },
@@ -11360,6 +12175,47 @@
       ],
       "risk": "low",
       "title": "get Audit Log"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "deploymentId": "123e4567-e89b-42d3-a456-426614174000"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "deploymentId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "deploymentId"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_getCustomizationDeployment",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "get Customization Deployment"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -15087,6 +15943,79 @@
       "title": "incremental Export"
     },
     {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "categories": [
+            "script",
+            "workflow"
+          ],
+          "maxPerCategory": 100
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "categories": {
+            "items": {
+              "enum": [
+                "customRecord",
+                "customField",
+                "customList",
+                "script",
+                "scriptDeployment",
+                "workflow",
+                "form",
+                "savedSearch",
+                "role",
+                "integration",
+                "bundle",
+                "suiteApp",
+                "file"
+              ],
+              "type": "string"
+            },
+            "maxItems": 13,
+            "minItems": 1,
+            "type": "array"
+          },
+          "maxPerCategory": {
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "categories",
+          "maxPerCategory"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_inventoryCustomizations",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "inventory Customizations"
+    },
+    {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
       "effects": [
         "May change NetSuite only during an explicit commit phase."
@@ -17512,6 +18441,490 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "customizations": [
+            {
+              "definition": {
+                "scriptType": "RESTlet"
+              },
+              "dependencies": [],
+              "metadata": {
+                "provenance": [
+                  {
+                    "source": "example"
+                  }
+                ]
+              },
+              "name": "Example",
+              "permissions": [],
+              "scriptId": "customscript_example",
+              "type": "script"
+            }
+          ],
+          "usageEvidence": [
+            {
+              "evidence": [
+                "search"
+              ],
+              "references": 0,
+              "scriptId": "customscript_example"
+            }
+          ]
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "customizations": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "checksum": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "definition": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "dependencies": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "deploymentState": {
+                  "type": "string"
+                },
+                "internalId": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "default": {
+                    "provenance": []
+                  },
+                  "properties": {
+                    "businessOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "criticality": {
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                      ],
+                      "type": "string"
+                    },
+                    "owner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provenance": {
+                      "default": [],
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "technicalOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "provenance"
+                  ],
+                  "type": "object"
+                },
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "permissions": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "scriptId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "customRecord",
+                    "customField",
+                    "customList",
+                    "script",
+                    "scriptDeployment",
+                    "workflow",
+                    "form",
+                    "savedSearch",
+                    "role",
+                    "integration",
+                    "bundle",
+                    "suiteApp",
+                    "file"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "scriptId",
+                "name",
+                "definition",
+                "permissions",
+                "dependencies",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          },
+          "usageEvidence": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                "references": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "scriptId": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scriptId",
+                "references",
+                "evidence"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          }
+        },
+        "required": [
+          "customizations",
+          "usageEvidence"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_planCustomizationCleanup",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "plan Customization Cleanup"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "customizations": [
+            {
+              "definition": {
+                "scriptType": "RESTlet"
+              },
+              "dependencies": [],
+              "metadata": {
+                "provenance": [
+                  {
+                    "source": "example"
+                  }
+                ]
+              },
+              "name": "Example",
+              "permissions": [],
+              "scriptId": "customscript_example",
+              "type": "script"
+            }
+          ],
+          "sourceAccount": "source",
+          "targetAccount": "target",
+          "targetScriptIds": []
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "customizations": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "checksum": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "definition": {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "dependencies": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "deploymentState": {
+                  "type": "string"
+                },
+                "internalId": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "default": {
+                    "provenance": []
+                  },
+                  "properties": {
+                    "businessOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "criticality": {
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                      ],
+                      "type": "string"
+                    },
+                    "owner": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provenance": {
+                      "default": [],
+                      "items": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "technicalOwner": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "provenance"
+                  ],
+                  "type": "object"
+                },
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "permissions": {
+                  "default": [],
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 1000,
+                  "type": "array"
+                },
+                "scriptId": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "customRecord",
+                    "customField",
+                    "customList",
+                    "script",
+                    "scriptDeployment",
+                    "workflow",
+                    "form",
+                    "savedSearch",
+                    "role",
+                    "integration",
+                    "bundle",
+                    "suiteApp",
+                    "file"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "scriptId",
+                "name",
+                "definition",
+                "permissions",
+                "dependencies",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "maxItems": 10000,
+            "minItems": 1,
+            "type": "array"
+          },
+          "sourceAccount": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "targetAccount": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "targetScriptIds": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 10000,
+            "type": "array"
+          }
+        },
+        "required": [
+          "sourceAccount",
+          "targetAccount",
+          "customizations",
+          "targetScriptIds"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_planCustomizationMigration",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "plan Customization Migration"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "limit": 20
         }
       },
@@ -19168,6 +20581,106 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "changedScriptIds": [
+            "customscript_example"
+          ],
+          "expectedLiveVersion": "0.1.34",
+          "projectId": "123e4567-e89b-42d3-a456-426614174000"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "changedScriptIds": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "type": "array"
+          },
+          "expectedLiveVersion": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "projectId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "projectId",
+          "changedScriptIds"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_prepareCustomizationDeployment",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "prepare Customization Deployment"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "projectId": "123e4567-e89b-42d3-a456-426614174000"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "projectId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "projectId"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_prepareCustomizationRollback",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "prepare Customization Rollback"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "adjustmentAccountId": "454",
           "locationId": "2",
           "rows": [
@@ -19738,6 +21251,65 @@
       ],
       "risk": "low",
       "title": "preview Clone Saved Search"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "changedScriptIds": [
+            "customscript_example"
+          ],
+          "expectedLiveVersion": "0.1.34",
+          "projectId": "123e4567-e89b-42d3-a456-426614174000"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "changedScriptIds": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "type": "array"
+          },
+          "expectedLiveVersion": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "projectId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "projectId",
+          "changedScriptIds"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_previewCustomizationDeployment",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "preview Customization Deployment"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -21830,6 +23402,140 @@
       ],
       "risk": "low",
       "title": "reconcile Returns"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "changedObjects": [
+            "customscript_example"
+          ],
+          "confirmation": "recordCustomizationDeployment:123e4567-e89b-42d3-a456-426614174000",
+          "deploymentId": "123e4567-e89b-42d3-a456-426614174000",
+          "providerEvidence": [
+            {
+              "command": "project:deploy",
+              "exitCode": 0
+            }
+          ],
+          "succeeded": true,
+          "uploadedFiles": [
+            "SuiteScripts/example.js"
+          ],
+          "validationWarnings": []
+        }
+      },
+      "inputSchema": {
+        "$defs": {
+          "__schema0": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "items": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema0"
+                },
+                "propertyNames": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "changedObjects": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "deploymentId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          },
+          "providerEvidence": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          },
+          "succeeded": {
+            "type": "boolean"
+          },
+          "uploadedFiles": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "validationWarnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          }
+        },
+        "required": [
+          "deploymentId",
+          "confirmation",
+          "succeeded",
+          "uploadedFiles",
+          "changedObjects",
+          "validationWarnings",
+          "providerEvidence"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_recordCustomizationDeploymentResult",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "record Customization Deployment Result"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -26967,6 +28673,47 @@
       "examples": {
         "invalid": null,
         "valid": {
+          "projectId": "123e4567-e89b-42d3-a456-426614174000"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "projectId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "projectId"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_validateSuiteCloudProject",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "validate Suite Cloud Project"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
           "params": [
             "F"
           ],
@@ -27347,6 +29094,47 @@
       ],
       "risk": "low",
       "title": "validate Tool Request"
+    },
+    {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": null,
+        "valid": {
+          "deploymentId": "123e4567-e89b-42d3-a456-426614174000"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "deploymentId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "deploymentId"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_verifyCustomizationDeployment",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "verify Customization Deployment"
     },
     {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",

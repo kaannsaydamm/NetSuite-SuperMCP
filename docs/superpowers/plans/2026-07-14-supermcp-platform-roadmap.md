@@ -385,18 +385,18 @@ Cross-cutting modules:
 
 ### Implementation Units
 
-- [ ] Build a canonical customization model with stable script IDs and checksums.
-- [ ] Compare environments by script ID, definition, deployment state, permissions, and dependencies.
-- [ ] Generate SuiteCloud projects from selected, checksum-pinned customization sets.
-- [ ] Require validate, preview diff, deployment operation plan, and post-deploy verification.
-- [ ] Store owner, business owner, technical owner, criticality, and provenance as metadata without inventing values.
-- [ ] Produce cleanup plans only; deletion remains a separate prepared operation.
+- [x] Build a canonical customization model with stable script IDs and checksums.
+- [x] Compare environments by script ID, definition, deployment state, permissions, and dependencies.
+- [x] Generate SuiteCloud projects from selected, checksum-pinned customization sets.
+- [x] Require validate, preview diff, deployment operation plan, and post-deploy verification.
+- [x] Store owner, business owner, technical owner, criticality, and provenance as metadata without inventing values.
+- [x] Produce cleanup plans only; deletion remains a separate prepared operation.
 
 ### Acceptance Gate
 
-- [ ] Environment diff never relies on internal IDs alone.
-- [ ] Deployment reports uploaded files, changed objects, validation warnings, and live version verification.
-- [ ] Rollback claims are limited to restorable files/objects with verified previous content.
+- [x] Environment diff never relies on internal IDs alone.
+- [x] Deployment reports uploaded files, changed objects, validation warnings, and live version verification.
+- [x] Rollback claims are limited to restorable files/objects with verified previous content.
 
 ---
 

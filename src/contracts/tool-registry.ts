@@ -29,6 +29,18 @@ import {
 import { outputSchemaFor } from "../tools/output-schemas"
 import { actionInputSchemaFor } from "./action-schemas"
 import {
+  CleanupPlanInputSchema,
+  CustomizationDiffInputSchema,
+  CustomizationInventoryInputSchema,
+  DeploymentInputSchema,
+  GenerateCustomizationDocsInputSchema,
+  GenerateCustomizationProjectInputSchema,
+  MigrationPlanInputSchema,
+  PrepareCustomizationDeploymentInputSchema,
+  ProjectInputSchema,
+  RecordDeploymentResultInputSchema,
+} from "./customization-schemas"
+import {
   DiagnoseAuthenticationInputSchema,
   IdentityProfileInputSchema,
   IntegrationStateInputSchema,
@@ -359,6 +371,29 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return PollOutboxInputSchema
     case ToolName.AckIntegrationEvent:
       return AckOutboxInputSchema
+    case ToolName.InventoryCustomizations:
+      return CustomizationInventoryInputSchema
+    case ToolName.DiffCustomizationEnvironments:
+      return CustomizationDiffInputSchema
+    case ToolName.GenerateSuiteCloudProject:
+      return GenerateCustomizationProjectInputSchema
+    case ToolName.ValidateSuiteCloudProject:
+    case ToolName.PrepareCustomizationRollback:
+      return ProjectInputSchema
+    case ToolName.PreviewCustomizationDeployment:
+    case ToolName.PrepareCustomizationDeployment:
+      return PrepareCustomizationDeploymentInputSchema
+    case ToolName.GetCustomizationDeployment:
+    case ToolName.VerifyCustomizationDeployment:
+      return DeploymentInputSchema
+    case ToolName.RecordCustomizationDeploymentResult:
+      return RecordDeploymentResultInputSchema
+    case ToolName.PlanCustomizationMigration:
+      return MigrationPlanInputSchema
+    case ToolName.PlanCustomizationCleanup:
+      return CleanupPlanInputSchema
+    case ToolName.GenerateSystemDocumentation:
+      return GenerateCustomizationDocsInputSchema
     default:
       return actionInputSchemaFor(name)
   }
@@ -672,6 +707,58 @@ function validExampleFor(name: ToolName): JsonValue {
       return { limit: 20 }
     case ToolName.AckIntegrationEvent:
       return { eventId: "123e4567-e89b-42d3-a456-426614174000", delivered: true }
+    case ToolName.InventoryCustomizations:
+      return { categories: ["script", "workflow"], maxPerCategory: 100 }
+    case ToolName.DiffCustomizationEnvironments:
+      return {
+        sourceEnvironment: "sandbox",
+        targetEnvironment: "production",
+        source: [customizationExample()],
+        target: [],
+      }
+    case ToolName.GenerateSuiteCloudProject:
+      return {
+        name: "selected-customizations",
+        customizations: [customizationExample()],
+        files: [{ path: "FileCabinet/SuiteScripts/example.js", content: "define([], () => ({}))" }],
+      }
+    case ToolName.ValidateSuiteCloudProject:
+    case ToolName.PrepareCustomizationRollback:
+      return { projectId: "123e4567-e89b-42d3-a456-426614174000" }
+    case ToolName.PreviewCustomizationDeployment:
+    case ToolName.PrepareCustomizationDeployment:
+      return {
+        projectId: "123e4567-e89b-42d3-a456-426614174000",
+        changedScriptIds: ["customscript_example"],
+        expectedLiveVersion: "0.1.34",
+      }
+    case ToolName.GetCustomizationDeployment:
+    case ToolName.VerifyCustomizationDeployment:
+      return { deploymentId: "123e4567-e89b-42d3-a456-426614174000" }
+    case ToolName.RecordCustomizationDeploymentResult:
+      return {
+        deploymentId: "123e4567-e89b-42d3-a456-426614174000",
+        confirmation: "recordCustomizationDeployment:123e4567-e89b-42d3-a456-426614174000",
+        succeeded: true,
+        uploadedFiles: ["SuiteScripts/example.js"],
+        changedObjects: ["customscript_example"],
+        validationWarnings: [],
+        providerEvidence: [{ command: "project:deploy", exitCode: 0 }],
+      }
+    case ToolName.PlanCustomizationMigration:
+      return {
+        sourceAccount: "source",
+        targetAccount: "target",
+        customizations: [customizationExample()],
+        targetScriptIds: [],
+      }
+    case ToolName.PlanCustomizationCleanup:
+      return {
+        customizations: [customizationExample()],
+        usageEvidence: [{ scriptId: "customscript_example", references: 0, evidence: ["search"] }],
+      }
+    case ToolName.GenerateSystemDocumentation:
+      return { title: "NetSuite Customizations", customizations: [customizationExample()] }
     default:
       return actionExampleFor(name)
   }
@@ -698,6 +785,18 @@ function integrationContractExample(): JsonValue {
     },
     mappings: {},
     invariants: [{ rule: "nonnegative", field: "amount" }],
+  }
+}
+
+function customizationExample(): JsonValue {
+  return {
+    type: "script",
+    scriptId: "customscript_example",
+    name: "Example",
+    definition: { scriptType: "RESTlet" },
+    permissions: [],
+    dependencies: [],
+    metadata: { provenance: [{ source: "example" }] },
   }
 }
 

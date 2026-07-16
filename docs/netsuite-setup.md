@@ -75,6 +75,7 @@ does not bypass NetSuite authorization.
 Deploy these SuiteScript files together:
 
 - [supermcp_action_restlet.js](../netsuite/suitescript/supermcp_action_restlet.js)
+- [supermcp_customization_actions.js](../netsuite/suitescript/supermcp_customization_actions.js)
 - [supermcp_file_actions.js](../netsuite/suitescript/supermcp_file_actions.js)
 - [supermcp_diagnostic_actions.js](../netsuite/suitescript/supermcp_diagnostic_actions.js)
 - [supermcp_record_explorer_actions.js](../netsuite/suitescript/supermcp_record_explorer_actions.js)
@@ -116,7 +117,7 @@ actions that cannot be represented cleanly through REST Record CRUD.
 
 Run `ns_getSuperMcpVersion` after deploy. The RESTlet portion should report the deployed RESTlet
 version, action map version, account ID, execution context `RESTLET`, current NetSuite user/role,
-and `toolCount: 130`.
+and `toolCount: 143`.
 
 ### Supported transform actions
 

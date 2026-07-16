@@ -38,6 +38,8 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     jobStorePath: "./data/test-read-jobs.json",
     exportDirectory: "./data/test-exports",
     integrationStorePath: "./data/test-integrations.json",
+    customizationStorePath: "./data/test-customization-deployments.json",
+    customizationProjectDirectory: "./data/test-customization-projects",
     cursorSecret: "test-cursor-secret-value",
   } satisfies AppConfig
 

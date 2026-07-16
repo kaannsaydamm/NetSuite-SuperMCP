@@ -61,6 +61,8 @@ describe("parseConfig", () => {
       expect(result.value.jobStorePath).toBe("./data/read-jobs.json")
       expect(result.value.exportDirectory).toBe("./data/exports")
       expect(result.value.integrationStorePath).toBe("./data/integrations.json")
+      expect(result.value.customizationStorePath).toBe("./data/customization-deployments.json")
+      expect(result.value.customizationProjectDirectory).toBe("./data/customization-projects")
     }
   })
 

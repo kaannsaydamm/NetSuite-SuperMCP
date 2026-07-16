@@ -51,6 +51,8 @@ const ConfigSchema = z
     jobStorePath: z.string().min(1),
     exportDirectory: z.string().min(1),
     integrationStorePath: z.string().min(1),
+    customizationStorePath: z.string().min(1),
+    customizationProjectDirectory: z.string().min(1),
     cursorSecret: z.string().min(16),
   })
   .superRefine((value, context) => {
@@ -100,6 +102,10 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
     jobStorePath: env["JOB_STORE_PATH"] ?? "./data/read-jobs.json",
     exportDirectory: env["EXPORT_DIRECTORY"] ?? "./data/exports",
     integrationStorePath: env["INTEGRATION_STORE_PATH"] ?? "./data/integrations.json",
+    customizationStorePath:
+      env["CUSTOMIZATION_STORE_PATH"] ?? "./data/customization-deployments.json",
+    customizationProjectDirectory:
+      env["CUSTOMIZATION_PROJECT_DIRECTORY"] ?? "./data/customization-projects",
     cursorSecret:
       env["MCP_CURSOR_SECRET"] ??
       env["MCP_BEARER_TOKEN"] ??

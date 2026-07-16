@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.35
+
+- Added native customization inventory with explicit gaps for inaccessible or unstable-ID objects.
+- Added stable script-ID and checksum environment drift comparison that ignores internal-ID changes
+  and excludes date/time fields.
+- Added bounded checksum-pinned SuiteCloud project generation, validation, deployment preview,
+  provider-approved deployment plans, result recording, and live version verification.
+- Added rollback planning limited to files with verified previous content.
+- Added cross-account migration, dependency mapping, orphan/unused customization cleanup proposals,
+  technical-debt facts, and deterministic system documentation.
+- Customization ownership metadata remains unknown unless supplied; cleanup never deletes objects.
+
 ## 0.1.34
 
 - Added versioned integration contracts, typed validation, deterministic reconciliation, and

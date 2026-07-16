@@ -1,5 +1,6 @@
 import type { AuditLog } from "../audit"
 import type { AppConfig } from "../config"
+import type { CustomizationStore } from "../customizations/customization-store"
 import type { IntegrationStore } from "../integrations/integration-store"
 import type { ExportStore } from "../jobs/export-store"
 import type { JobStore } from "../jobs/job-store"
@@ -20,6 +21,7 @@ export type ToolDependencies = {
   readonly exportStore: ExportStore
   readonly cursorCodec: CursorCodec
   readonly integrationStore: IntegrationStore
+  readonly customizationStore: CustomizationStore
   readonly requester: string
   readonly client: string
 }
