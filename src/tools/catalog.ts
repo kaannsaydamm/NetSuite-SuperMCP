@@ -146,6 +146,7 @@ export const RecordInputSchema = RecordRefSchema
 export const RecordCreateInputSchema = RecordCreateRequestSchema
 export const RecordUpdateInputSchema = RecordUpdateRequestSchema
 export const RecordDeleteInputSchema = RecordDeleteRequestSchema
+export const RecordDeletePlanInputSchema = RecordRefSchema
 export const RecordMetadataInputSchema = RecordMetadataRequestSchema
 export const TransactionLinesInputSchema = TransactionLinesRequestSchema
 export const SuiteQlInputSchema = SuiteQlRequestSchema

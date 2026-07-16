@@ -183,13 +183,14 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.RunSuiteQl:
       return SuiteQlOutputSchema
     case ToolName.GetRecord:
+    case ToolName.GetRecordMetadata:
+    case ToolName.GetTransactionLines:
+      return NetSuiteRecordOutputSchema
     case ToolName.CreateRecord:
     case ToolName.UpdateRecord:
     case ToolName.SubmitFields:
     case ToolName.DeleteRecord:
-    case ToolName.GetRecordMetadata:
-    case ToolName.GetTransactionLines:
-      return NetSuiteRecordOutputSchema
+      return OperationPlanSchema
     case ToolName.FindInventoryAdjustmentAccounts:
       return InventoryAdjustmentAccountOutputSchema
     case ToolName.PrepareInventoryStockImport:

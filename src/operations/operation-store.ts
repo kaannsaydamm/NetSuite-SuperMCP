@@ -12,6 +12,7 @@ export type OperationPlan = OperationIdentity & {
   readonly action: string
   readonly confirmation: string
   readonly environment: NetSuiteEnvironment
+  readonly executor: "record" | "restlet"
   readonly impact: JsonObject
   readonly kind: string
   readonly operationId: string
@@ -29,6 +30,7 @@ export type OperationPlan = OperationIdentity & {
 export type CreateOperationPlanRequest = OperationIdentity & {
   readonly action: string
   readonly environment: NetSuiteEnvironment
+  readonly executor?: "record" | "restlet"
   readonly impact: JsonObject
   readonly kind: string
   readonly payload: JsonObject
@@ -46,6 +48,7 @@ export class OperationStore {
     const operationId = randomUUID()
     const plan = {
       ...request,
+      executor: request.executor ?? "restlet",
       operationId,
       confirmation: `commit:${request.action}:${operationId}`,
       phase: "prepare",

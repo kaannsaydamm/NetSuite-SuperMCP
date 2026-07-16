@@ -1,11 +1,12 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+import { prepareRecordOperation } from "../operations/record-operation"
 import type { JsonObject, JsonValue } from "../shared/json"
 import {
   InventoryAdjustmentAccountSearchInputSchema,
   InventoryStockImportCommitInputSchema,
   InventoryStockImportPrepareInputSchema,
   RecordCreateInputSchema,
-  RecordDeleteInputSchema,
+  RecordDeletePlanInputSchema,
   RecordInputSchema,
   RecordMetadataInputSchema,
   RecordUpdateInputSchema,
@@ -110,7 +111,7 @@ function registerCreateRecordTool(server: McpServer, dependencies: ToolDependenc
     ToolName.CreateRecord,
     {
       title: "Create NetSuite record",
-      description: "Creates one NetSuite record through REST Record API POST.",
+      description: "Prepares a NetSuite record creation plan without saving a record.",
       inputSchema: RecordCreateInputSchema,
       outputSchema: outputSchemaFor(ToolName.CreateRecord),
     },
@@ -119,7 +120,8 @@ function registerCreateRecordTool(server: McpServer, dependencies: ToolDependenc
         toolName: ToolName.CreateRecord,
         dependencies,
         input,
-        execute: () => dependencies.netsuite.createRecord(input),
+        execute: () =>
+          prepareRecordOperation(dependencies, ToolName.CreateRecord, jsonAuditInput(input)),
       }),
   )
 }
@@ -133,7 +135,7 @@ function registerRecordPatchTool(
     toolName,
     {
       title: toolName,
-      description: "Updates one NetSuite record through REST Record API PATCH.",
+      description: "Prepares a NetSuite record update plan without saving a record.",
       inputSchema: RecordUpdateInputSchema,
       outputSchema: outputSchemaFor(toolName),
     },
@@ -142,10 +144,7 @@ function registerRecordPatchTool(
         toolName,
         dependencies,
         input,
-        execute: () =>
-          toolName === ToolName.SubmitFields
-            ? dependencies.netsuite.submitFields(input)
-            : dependencies.netsuite.updateRecord(input),
+        execute: () => prepareRecordOperation(dependencies, toolName, jsonAuditInput(input)),
       }),
   )
 }
@@ -155,8 +154,8 @@ function registerDeleteRecordTool(server: McpServer, dependencies: ToolDependenc
     ToolName.DeleteRecord,
     {
       title: "Delete NetSuite record",
-      description: "Deletes one NetSuite record through REST Record API DELETE.",
-      inputSchema: RecordDeleteInputSchema,
+      description: "Prepares a NetSuite record deletion plan without deleting the record.",
+      inputSchema: RecordDeletePlanInputSchema,
       outputSchema: outputSchemaFor(ToolName.DeleteRecord),
     },
     async (input) =>
@@ -164,7 +163,7 @@ function registerDeleteRecordTool(server: McpServer, dependencies: ToolDependenc
         toolName: ToolName.DeleteRecord,
         dependencies,
         input,
-        execute: () => dependencies.netsuite.deleteRecord(input),
+        execute: () => prepareRecordOperation(dependencies, ToolName.DeleteRecord, input),
       }),
   )
 }

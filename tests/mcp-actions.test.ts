@@ -43,7 +43,7 @@ class CommittedFulfillmentClient extends FakeNetSuiteClient {
 }
 
 describe("MCP NetSuite actions", () => {
-  it("routes record creation through the REST record client", async () => {
+  it("prepares record creation without calling the REST record client", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -61,13 +61,14 @@ describe("MCP NetSuite actions", () => {
 
     // Then
     expect(response.status).toBe(200)
-    expect(fakeNetSuite.createdRecords).toEqual([
-      { type: "customer", values: { companyName: "Acme" } },
-    ])
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const plan = JSON.parse(body.result.content[0].text)
+    expect(plan).toMatchObject({ action: ToolName.CreateRecord, phase: "prepare", used: false })
+    expect(fakeNetSuite.createdRecords).toHaveLength(0)
     expect(fakeNetSuite.actions).toHaveLength(0)
   })
 
-  it("routes record updates through the REST record client", async () => {
+  it("prepares record updates from a source snapshot", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -85,13 +86,14 @@ describe("MCP NetSuite actions", () => {
 
     // Then
     expect(response.status).toBe(200)
-    expect(fakeNetSuite.updatedRecords).toEqual([
-      { type: "customer", id: "123", values: { email: "buyer@example.com" } },
-    ])
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const plan = JSON.parse(body.result.content[0].text)
+    expect(plan).toMatchObject({ action: ToolName.UpdateRecord, phase: "prepare", used: false })
+    expect(fakeNetSuite.updatedRecords).toHaveLength(0)
     expect(fakeNetSuite.actions).toHaveLength(0)
   })
 
-  it("routes submit fields through the REST record client", async () => {
+  it("prepares submit-fields updates from a source snapshot", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -109,13 +111,14 @@ describe("MCP NetSuite actions", () => {
 
     // Then
     expect(response.status).toBe(200)
-    expect(fakeNetSuite.submittedFields).toEqual([
-      { type: "customer", id: "123", values: { phone: "555-0100" } },
-    ])
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const plan = JSON.parse(body.result.content[0].text)
+    expect(plan).toMatchObject({ action: ToolName.SubmitFields, phase: "prepare", used: false })
+    expect(fakeNetSuite.submittedFields).toHaveLength(0)
     expect(fakeNetSuite.actions).toHaveLength(0)
   })
 
-  it("routes confirmed record deletes through the REST record client", async () => {
+  it("prepares record deletion without deleting the record", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -127,7 +130,44 @@ describe("MCP NetSuite actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.DeleteRecord,
-        arguments: { type: "customer", id: "123", confirmation: "delete:customer:123" },
+        arguments: { type: "customer", id: "123" },
+      },
+    })
+
+    // Then
+    expect(response.status).toBe(200)
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const plan = JSON.parse(body.result.content[0].text)
+    expect(plan).toMatchObject({ action: ToolName.DeleteRecord, phase: "prepare", used: false })
+    expect(fakeNetSuite.deletedRecords).toHaveLength(0)
+    expect(fakeNetSuite.actions).toHaveLength(0)
+  })
+
+  it("commits a prepared record deletion with the server-created confirmation", async () => {
+    // Given
+    const fakeNetSuite = new FakeNetSuiteClient()
+    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
+
+    const prepareResponse = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 13,
+      method: "tools/call",
+      params: {
+        name: ToolName.DeleteRecord,
+        arguments: { type: "customer", id: "123" },
+      },
+    })
+    const prepareBody = ToolTextResponseSchema.parse(await prepareResponse.json())
+    const plan = JSON.parse(prepareBody.result.content[0].text)
+
+    // When
+    const response = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 14,
+      method: "tools/call",
+      params: {
+        name: ToolName.CommitAction,
+        arguments: { operationId: plan.operationId, confirmation: plan.confirmation },
       },
     })
 
@@ -136,29 +176,6 @@ describe("MCP NetSuite actions", () => {
     expect(fakeNetSuite.deletedRecords).toEqual([
       { type: "customer", id: "123", confirmation: "delete:customer:123" },
     ])
-    expect(fakeNetSuite.actions).toHaveLength(0)
-  })
-
-  it("rejects record deletes without matching confirmation", async () => {
-    // Given
-    const fakeNetSuite = new FakeNetSuiteClient()
-    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
-
-    // When
-    const response = await mcpCall(app, {
-      jsonrpc: "2.0",
-      id: 13,
-      method: "tools/call",
-      params: {
-        name: ToolName.DeleteRecord,
-        arguments: { type: "customer", id: "123", confirmation: "delete:vendor:123" },
-      },
-    })
-
-    // Then
-    expect(response.status).toBe(200)
-    expect(JSON.stringify(await response.json())).toContain("confirmation must match")
-    expect(fakeNetSuite.deletedRecords).toHaveLength(0)
   })
 
   it("routes production named mutations to prepare without creating a transaction", async () => {

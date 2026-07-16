@@ -1,6 +1,12 @@
 import { randomUUID } from "node:crypto"
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
-import type { RestletAction } from "../netsuite/types"
+import {
+  RecordCreateRequestSchema,
+  RecordDeleteRequestSchema,
+  RecordUpdateRequestSchema,
+  type RestletAction,
+} from "../netsuite/types"
+import type { OperationPlan } from "../operations/operation-store"
 import { snapshotFingerprint } from "../operations/snapshot"
 import type { JsonObject, JsonValue } from "../shared/json"
 import {
@@ -270,11 +276,7 @@ function registerCommitOperationTool(server: McpServer, dependencies: ToolDepend
             input.confirmation,
             identity,
           )
-          const currentPreview = await dependencies.netsuite.runRestletAction({
-            action: plan.action,
-            phase: "preview",
-            payload: plan.payload,
-          })
+          const currentPreview = await previewOperation(dependencies, plan)
           if (snapshotFingerprint(currentPreview) !== plan.snapshotFingerprint) {
             throw new Error(
               "OPERATION_SOURCE_CHANGED: NetSuite source no longer matches the prepared plan",
@@ -282,11 +284,7 @@ function registerCommitOperationTool(server: McpServer, dependencies: ToolDepend
           }
           dependencies.operationStore.beginCommit(input.operationId, input.confirmation, identity)
           try {
-            const result = await dependencies.netsuite.runRestletAction({
-              action: plan.action,
-              phase: "commit",
-              payload: plan.payload,
-            })
+            const result = await commitOperation(dependencies, plan)
             const committed = { ...result, operationId: plan.operationId, used: true }
             dependencies.operationStore.completeCommit(plan.operationId, committed)
             return committed
@@ -297,6 +295,66 @@ function registerCommitOperationTool(server: McpServer, dependencies: ToolDepend
         },
       }),
   )
+}
+
+async function previewOperation(
+  dependencies: ToolDependencies,
+  plan: OperationPlan,
+): Promise<JsonObject> {
+  if (plan.executor === "restlet") {
+    return await dependencies.netsuite.runRestletAction({
+      action: plan.action,
+      phase: "preview",
+      payload: plan.payload,
+    })
+  }
+  if (plan.action === ToolName.CreateRecord) {
+    return plan.preview
+  }
+  const type = requirePlanString(plan.payload, "type")
+  const id = requirePlanString(plan.payload, "id")
+  return {
+    source: await dependencies.netsuite.getRecord({ type, id }),
+    requestedValues: plan.payload["values"] ?? {},
+  }
+}
+
+async function commitOperation(
+  dependencies: ToolDependencies,
+  plan: OperationPlan,
+): Promise<JsonObject> {
+  if (plan.executor === "restlet") {
+    return await dependencies.netsuite.runRestletAction({
+      action: plan.action,
+      phase: "commit",
+      payload: plan.payload,
+    })
+  }
+  switch (plan.action) {
+    case ToolName.CreateRecord:
+      return await dependencies.netsuite.createRecord(RecordCreateRequestSchema.parse(plan.payload))
+    case ToolName.UpdateRecord:
+      return await dependencies.netsuite.updateRecord(RecordUpdateRequestSchema.parse(plan.payload))
+    case ToolName.SubmitFields:
+      return await dependencies.netsuite.submitFields(RecordUpdateRequestSchema.parse(plan.payload))
+    case ToolName.DeleteRecord: {
+      const type = requirePlanString(plan.payload, "type")
+      const id = requirePlanString(plan.payload, "id")
+      return await dependencies.netsuite.deleteRecord(
+        RecordDeleteRequestSchema.parse({ type, id, confirmation: `delete:${type}:${id}` }),
+      )
+    }
+    default:
+      throw new Error(`Unsupported record operation: ${plan.action}`)
+  }
+}
+
+function requirePlanString(payload: JsonObject, field: string): string {
+  const value = payload[field]
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error(`${field} must be a non-empty string`)
+  }
+  return value
 }
 
 function directActionPhase(toolName: ToolName): RestletAction["phase"] {
