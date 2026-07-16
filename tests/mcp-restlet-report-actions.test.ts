@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { createApp } from "../src/app"
 import { ToolName } from "../src/tools/catalog"
-import { mcpCall } from "./mcp-support"
+import { mcpCall, ToolTextResponseSchema } from "./mcp-support"
 import { FakeNetSuiteClient, testConfig } from "./test-support"
 
 describe("MCP RESTlet-backed report actions", () => {
@@ -51,6 +51,15 @@ describe("MCP RESTlet-backed report actions", () => {
         },
       })
       expect(response.status).toBe(200)
+      if (
+        call.name === ToolName.CreateSavedSearch ||
+        call.name === ToolName.UpdateSavedSearch ||
+        call.name === ToolName.DeleteSavedSearch
+      ) {
+        const body = ToolTextResponseSchema.parse(await response.json())
+        const plan = JSON.parse(body.result.content[0].text)
+        expect(plan).toMatchObject({ action: call.name, phase: "prepare", used: false })
+      }
     }
 
     // Then
@@ -61,7 +70,7 @@ describe("MCP RESTlet-backed report actions", () => {
           call.name === ToolName.CreateSavedSearch ||
           call.name === ToolName.UpdateSavedSearch ||
           call.name === ToolName.DeleteSavedSearch
-            ? "commit"
+            ? "prepare"
             : "preview",
         payload: call.payload,
       })),

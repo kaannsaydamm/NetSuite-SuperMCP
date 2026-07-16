@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { createApp } from "../src/app"
 import { ToolName } from "../src/tools/catalog"
-import { mcpCall } from "./mcp-support"
+import { mcpCall, ToolTextResponseSchema } from "./mcp-support"
 import { FakeNetSuiteClient, testConfig } from "./test-support"
 
 describe("MCP RESTlet-backed file actions", () => {
@@ -60,10 +60,15 @@ describe("MCP RESTlet-backed file actions", () => {
 
     // Then
     expect(response.status).toBe(200)
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const plan = JSON.parse(body.result.content[0].text)
+    expect(plan).toMatchObject({ action: ToolName.WriteFile, phase: "prepare", used: false })
+    expect(plan.operationId).toBeString()
+    expect(plan.confirmation).toBe(`commit:${ToolName.WriteFile}:${plan.operationId}`)
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.WriteFile,
-        phase: "commit",
+        phase: "prepare",
         payload: {
           fileId: "SuiteScripts/SuperMCP/example.js",
           contents: "define([], () => ({}))",
@@ -102,13 +107,18 @@ describe("MCP RESTlet-backed file actions", () => {
         },
       })
       expect(response.status).toBe(200)
+      if (call.name !== ToolName.ListFileCabinet) {
+        const body = ToolTextResponseSchema.parse(await response.json())
+        const plan = JSON.parse(body.result.content[0].text)
+        expect(plan).toMatchObject({ action: call.name, phase: "prepare", used: false })
+      }
     }
 
     // Then
     expect(fakeNetSuite.actions).toEqual(
       calls.map((call) => ({
         action: call.name,
-        phase: call.name === ToolName.ListFileCabinet ? "preview" : "commit",
+        phase: call.name === ToolName.ListFileCabinet ? "preview" : "prepare",
         payload: call.payload,
       })),
     )

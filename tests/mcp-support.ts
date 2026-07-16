@@ -32,6 +32,10 @@ export const CapabilitiesPayloadSchema = z.object({
 export async function mcpCall(
   app: ReturnType<typeof createApp>,
   payload: object,
+  identity: { readonly client: string; readonly requester: string } = {
+    requester: "test-user",
+    client: "bun-test",
+  },
 ): Promise<Response> {
   return await app.request("/mcp", {
     method: "POST",
@@ -39,8 +43,8 @@ export async function mcpCall(
       authorization: "Bearer test-token-12345",
       "content-type": "application/json",
       accept: "application/json, text/event-stream",
-      "x-supermcp-user": "test-user",
-      "x-supermcp-client": "bun-test",
+      "x-supermcp-user": identity.requester,
+      "x-supermcp-client": identity.client,
     },
     body: JSON.stringify(payload),
   })

@@ -8,11 +8,13 @@ import type { AppConfig } from "./config"
 import type { NetSuiteClient } from "./netsuite/client"
 import { OAuthNetSuiteClient } from "./netsuite/client"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
+import { OperationStore } from "./operations/operation-store"
 import { registerTools } from "./tools/registry"
 
 export type AppDependencies = {
   readonly netsuite?: NetSuiteClient
   readonly auditLog?: AuditLog
+  readonly operationStore?: OperationStore
 }
 
 export function createApp(config: AppConfig, dependencies: AppDependencies = {}): Hono {
@@ -23,6 +25,7 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
   const netsuite =
     dependencies.netsuite ??
     new OAuthNetSuiteClient(config.netsuite, () => tokenProvider.getAccessToken())
+  const operationStore = dependencies.operationStore ?? new OperationStore()
 
   app.get("/health", (context) =>
     context.json({
@@ -54,6 +57,7 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       config,
       auditLog,
       netsuite,
+      operationStore,
       requester: identity.requester,
       client: identity.client,
     })

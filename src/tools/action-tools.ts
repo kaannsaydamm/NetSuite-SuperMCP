@@ -1,7 +1,13 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { RestletAction } from "../netsuite/types"
 import type { JsonObject, JsonValue } from "../shared/json"
-import { GenericActionInputSchema, RestletActionInputSchema, ToolName } from "./catalog"
+import {
+  CommitOperationInputSchema,
+  GenericActionInputSchema,
+  PrepareOperationInputSchema,
+  PreviewOperationInputSchema,
+  ToolName,
+} from "./catalog"
 import { outputSchemaFor } from "./output-schemas"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
@@ -65,35 +71,13 @@ const readOnlyActionTools = new Set<ToolName>([
   ToolName.GetMapping,
 ])
 
-const prepareOnlyActionTools = new Set<ToolName>([
-  ToolName.TransformRecord,
-  ToolName.FulfillSalesOrder,
-  ToolName.InvoiceSalesOrder,
-  ToolName.ReceivePurchaseOrder,
-  ToolName.BillPurchaseOrder,
-])
-
-const phasedActionTools = [
-  ToolName.PrepareAction,
-  ToolName.PreviewAction,
-  ToolName.CommitAction,
-] as const
-
-type PhasedActionToolName = (typeof phasedActionTools)[number]
-
-const phaseByTool = {
-  [ToolName.PrepareAction]: "prepare",
-  [ToolName.PreviewAction]: "preview",
-  [ToolName.CommitAction]: "commit",
-} satisfies Record<PhasedActionToolName, RestletAction["phase"]>
-
 export function registerActionTools(server: McpServer, dependencies: ToolDependencies): void {
   for (const toolName of actionTools) {
     server.registerTool(
       toolName,
       {
         title: toolName,
-        description: prepareOnlyActionTools.has(toolName)
+        description: !readOnlyActionTools.has(toolName)
           ? `Prepares NetSuite action ${toolName} without saving a record. Commit the reviewed operation separately.`
           : `Runs NetSuite action ${toolName} through the RESTlet action layer.`,
         inputSchema: GenericActionInputSchema,
@@ -104,46 +88,147 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
           toolName,
           dependencies,
           input,
-          execute: () =>
-            dependencies.netsuite.runRestletAction({
+          execute: async () => {
+            const payload = normalizeDirectActionPayload(input)
+            const phase = directActionPhase(toolName)
+            const result = await dependencies.netsuite.runRestletAction({
               action: toolName,
-              phase: directActionPhase(toolName),
-              payload: normalizeDirectActionPayload(input),
-            }),
+              phase,
+              payload,
+            })
+            if (phase !== "prepare") {
+              return result
+            }
+            return createOperationPlan(dependencies, toolName, payload, result)
+          },
         }),
     )
   }
+  registerPrepareOperationTool(server, dependencies)
+  registerPreviewOperationTool(server, dependencies)
+  registerCommitOperationTool(server, dependencies)
+}
 
-  for (const toolName of phasedActionTools) {
-    server.registerTool(
-      toolName,
-      {
-        title: toolName,
-        description: `Runs a generic ${toolName} request against the RESTlet action layer.`,
-        inputSchema: RestletActionInputSchema,
-        outputSchema: outputSchemaFor(toolName),
-      },
-      async (input) => {
-        const action = normalizePhasedAction(toolName, input)
-        return runNetSuiteTool({
-          toolName,
-          dependencies,
-          input: action,
-          execute: () => dependencies.netsuite.runRestletAction(action),
-        })
-      },
-    )
-  }
+function registerPrepareOperationTool(server: McpServer, dependencies: ToolDependencies): void {
+  server.registerTool(
+    ToolName.PrepareAction,
+    {
+      title: "Prepare NetSuite operation",
+      description: "Validates and stores a single-use NetSuite operation without saving a record.",
+      inputSchema: PrepareOperationInputSchema,
+      outputSchema: outputSchemaFor(ToolName.PrepareAction),
+    },
+    async (input) =>
+      runNetSuiteTool({
+        toolName: ToolName.PrepareAction,
+        dependencies,
+        input,
+        execute: async () => {
+          const preview = await dependencies.netsuite.runRestletAction({
+            action: input.action,
+            phase: "prepare",
+            payload: input.payload,
+          })
+          return createOperationPlan(dependencies, input.action, input.payload, preview)
+        },
+      }),
+  )
+}
+
+function registerPreviewOperationTool(server: McpServer, dependencies: ToolDependencies): void {
+  server.registerTool(
+    ToolName.PreviewAction,
+    {
+      title: "Preview prepared NetSuite operation",
+      description: "Replays a stored operation in preview mode without saving a record.",
+      inputSchema: PreviewOperationInputSchema,
+      outputSchema: outputSchemaFor(ToolName.PreviewAction),
+    },
+    async (input) =>
+      runNetSuiteTool({
+        toolName: ToolName.PreviewAction,
+        dependencies,
+        input,
+        execute: async () => {
+          const plan = dependencies.operationStore.preview(
+            input.operationId,
+            operationIdentity(dependencies),
+          )
+          const preview = await dependencies.netsuite.runRestletAction({
+            action: plan.action,
+            phase: "preview",
+            payload: plan.payload,
+          })
+          return { ...plan, phase: "preview", preview }
+        },
+      }),
+  )
+}
+
+function registerCommitOperationTool(server: McpServer, dependencies: ToolDependencies): void {
+  server.registerTool(
+    ToolName.CommitAction,
+    {
+      title: "Commit prepared NetSuite operation",
+      description: "Commits exactly one unused server-side operation plan after confirmation.",
+      inputSchema: CommitOperationInputSchema,
+      outputSchema: outputSchemaFor(ToolName.CommitAction),
+    },
+    async (input) =>
+      runNetSuiteTool({
+        toolName: ToolName.CommitAction,
+        dependencies,
+        input,
+        execute: async () => {
+          const plan = dependencies.operationStore.beginCommit(
+            input.operationId,
+            input.confirmation,
+            operationIdentity(dependencies),
+          )
+          const result = await dependencies.netsuite.runRestletAction({
+            action: plan.action,
+            phase: "commit",
+            payload: plan.payload,
+          })
+          return { ...result, operationId: plan.operationId, used: true }
+        },
+      }),
+  )
 }
 
 function directActionPhase(toolName: ToolName): RestletAction["phase"] {
   if (readOnlyActionTools.has(toolName)) {
     return "preview"
   }
-  if (prepareOnlyActionTools.has(toolName)) {
-    return "prepare"
+  return "prepare"
+}
+
+function createOperationPlan(
+  dependencies: ToolDependencies,
+  action: string,
+  payload: JsonObject,
+  preview: JsonObject,
+): JsonObject {
+  const restletConfirmation = preview["confirmation"]
+  const commitPayload =
+    typeof restletConfirmation === "string" && payload["confirmation"] === undefined
+      ? { ...payload, confirmation: restletConfirmation }
+      : payload
+  return dependencies.operationStore.create({
+    action,
+    payload: commitPayload,
+    preview,
+    ...operationIdentity(dependencies),
+    environment: dependencies.config.netsuite.environment,
+  })
+}
+
+function operationIdentity(dependencies: ToolDependencies) {
+  return {
+    accountId: dependencies.config.netsuite.accountId,
+    requester: dependencies.requester,
+    client: dependencies.client,
   }
-  return "commit"
 }
 
 function normalizeDirectActionPayload(input: {
@@ -161,11 +246,4 @@ function normalizeDirectActionPayload(input: {
     }
   }
   return payload
-}
-
-function normalizePhasedAction(
-  toolName: PhasedActionToolName,
-  input: RestletAction,
-): RestletAction {
-  return { ...input, phase: phaseByTool[toolName] }
 }

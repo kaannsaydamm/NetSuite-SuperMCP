@@ -5,6 +5,7 @@ import { parseConfig } from "./config"
 import { formatConfigError } from "./config-help"
 import { OAuthNetSuiteClient } from "./netsuite/client"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
+import { OperationStore } from "./operations/operation-store"
 import { registerTools } from "./tools/registry"
 
 const parsedConfig = parseConfig(process.env)
@@ -18,6 +19,7 @@ const config = parsedConfig.value
 const auditLog = new AuditLog(config.auditLogPath)
 const tokenProvider = new NetSuiteTokenProvider(config.netsuite)
 const netsuite = new OAuthNetSuiteClient(config.netsuite, () => tokenProvider.getAccessToken())
+const operationStore = new OperationStore()
 const server = new McpServer(
   { name: config.serverName, version: config.serverVersion },
   {
@@ -30,6 +32,7 @@ registerTools(server, {
   config,
   auditLog,
   netsuite,
+  operationStore,
   requester: process.env["MCP_REQUESTER"] ?? "local-agent",
   client: process.env["MCP_CLIENT"] ?? "stdio",
 })

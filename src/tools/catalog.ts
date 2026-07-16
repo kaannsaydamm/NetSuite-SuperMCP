@@ -1,5 +1,10 @@
 import { z } from "zod"
 import {
+  CommitOperationRequestSchema,
+  PrepareOperationRequestSchema,
+  PreviewOperationRequestSchema,
+} from "../contracts/operation-schemas"
+import {
   InventoryAdjustmentAccountSearchRequestSchema,
   InventoryStockImportCommitRequestSchema,
   InventoryStockImportPrepareRequestSchema,
@@ -8,7 +13,6 @@ import {
   RecordMetadataRequestSchema,
   RecordRefSchema,
   RecordUpdateRequestSchema,
-  RestletActionSchema,
   SuiteQlRequestSchema,
   TransactionLinesRequestSchema,
 } from "../netsuite/types"
@@ -155,7 +159,9 @@ export const GenericActionInputSchema = z
   })
   .catchall(JsonValueSchema)
 
-export const RestletActionInputSchema = RestletActionSchema
+export const PrepareOperationInputSchema = PrepareOperationRequestSchema
+export const PreviewOperationInputSchema = PreviewOperationRequestSchema
+export const CommitOperationInputSchema = CommitOperationRequestSchema
 export const InventoryAdjustmentAccountSearchInputSchema =
   InventoryAdjustmentAccountSearchRequestSchema
 export const InventoryStockImportPrepareInputSchema = InventoryStockImportPrepareRequestSchema

@@ -20,22 +20,16 @@ const RestletActionOutputSchema = z
   })
   .loose()
 
-const FileWriteOutputSchema = z
+const OperationPlanOutputSchema = z
   .object({
     action: z.string(),
-    phase: z.enum(["prepare", "preview", "commit"]),
-    file: z
-      .object({
-        id: z.string().optional(),
-        name: z.string().optional(),
-        fileType: z.string().optional(),
-        folder: z.union([z.string(), z.number()]).optional(),
-        size: z.number().optional(),
-      })
-      .loose(),
-    contentLength: z.number().optional(),
-    confirmation: z.string().optional(),
-    saved: z.boolean().optional(),
+    confirmation: z.string(),
+    environment: z.enum(["sandbox", "production"]),
+    operationId: z.string().uuid(),
+    payload: z.record(z.string(), JsonValueSchema),
+    phase: z.literal("prepare"),
+    preview: z.record(z.string(), JsonValueSchema),
+    used: z.literal(false),
   })
   .loose()
 
@@ -211,12 +205,14 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.ListReportTypes:
     case ToolName.ListReports:
     case ToolName.RunSearch:
+      return SearchActionOutputSchema
     case ToolName.CreateSavedSearch:
     case ToolName.UpdateSavedSearch:
     case ToolName.DeleteSavedSearch:
-      return SearchActionOutputSchema
+      return OperationPlanOutputSchema
     case ToolName.ListFileCabinet:
     case ToolName.GetFile:
+      return FileCabinetOutputSchema
     case ToolName.WriteFile:
     case ToolName.CreateFolder:
     case ToolName.UpdateFolder:
@@ -224,12 +220,13 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.CopyFile:
     case ToolName.MoveFile:
     case ToolName.DeleteFile:
-      return toolName === ToolName.WriteFile ? FileWriteOutputSchema : FileCabinetOutputSchema
+      return OperationPlanOutputSchema
     case ToolName.GetIntegrationLogs:
     case ToolName.GetScriptLogs:
     case ToolName.FindScriptErrors:
     case ToolName.ListScripts:
     case ToolName.ListScriptDeployments:
+      return RestletActionOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:
@@ -238,9 +235,10 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.GetFailedIntegrationJobs:
     case ToolName.ExplainIntegrationError:
     case ToolName.RetryIntegrationJob:
-    case ToolName.GetMapping:
     case ToolName.UpdateMapping:
     case ToolName.PrepareAction:
+      return OperationPlanOutputSchema
+    case ToolName.GetMapping:
     case ToolName.PreviewAction:
     case ToolName.CommitAction:
       return RestletActionOutputSchema
