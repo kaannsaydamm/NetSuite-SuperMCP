@@ -65,6 +65,14 @@ const readOnlyActionTools = new Set<ToolName>([
   ToolName.GetMapping,
 ])
 
+const prepareOnlyActionTools = new Set<ToolName>([
+  ToolName.TransformRecord,
+  ToolName.FulfillSalesOrder,
+  ToolName.InvoiceSalesOrder,
+  ToolName.ReceivePurchaseOrder,
+  ToolName.BillPurchaseOrder,
+])
+
 const phasedActionTools = [
   ToolName.PrepareAction,
   ToolName.PreviewAction,
@@ -85,7 +93,9 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
       toolName,
       {
         title: toolName,
-        description: `Runs NetSuite action ${toolName} through the RESTlet action layer.`,
+        description: prepareOnlyActionTools.has(toolName)
+          ? `Prepares NetSuite action ${toolName} without saving a record. Commit the reviewed operation separately.`
+          : `Runs NetSuite action ${toolName} through the RESTlet action layer.`,
         inputSchema: GenericActionInputSchema,
         outputSchema: outputSchemaFor(toolName),
       },
@@ -97,7 +107,7 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
           execute: () =>
             dependencies.netsuite.runRestletAction({
               action: toolName,
-              phase: readOnlyActionTools.has(toolName) ? "preview" : "commit",
+              phase: directActionPhase(toolName),
               payload: normalizeDirectActionPayload(input),
             }),
         }),
@@ -124,6 +134,16 @@ export function registerActionTools(server: McpServer, dependencies: ToolDepende
       },
     )
   }
+}
+
+function directActionPhase(toolName: ToolName): RestletAction["phase"] {
+  if (readOnlyActionTools.has(toolName)) {
+    return "preview"
+  }
+  if (prepareOnlyActionTools.has(toolName)) {
+    return "prepare"
+  }
+  return "commit"
 }
 
 function normalizeDirectActionPayload(input: {

@@ -124,7 +124,7 @@ describe("MCP NetSuite actions", () => {
     expect(fakeNetSuite.deletedRecords).toHaveLength(0)
   })
 
-  it("lets production mutating tools reach the configured NetSuite account", async () => {
+  it("routes production named mutations to prepare without creating a transaction", async () => {
     // Given
     const auditLogPath = await tempAuditPath()
     const fakeNetSuite = new FakeNetSuiteClient()
@@ -157,13 +157,13 @@ describe("MCP NetSuite actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.BillPurchaseOrder,
-        phase: "commit",
+        phase: "prepare",
         payload: { purchaseOrderId: "123" },
       },
     ])
   })
 
-  it("routes direct action tools to commit", async () => {
+  it("routes named transaction action tools to prepare", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -184,7 +184,7 @@ describe("MCP NetSuite actions", () => {
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.BillPurchaseOrder,
-        phase: "commit",
+        phase: "prepare",
         payload: { purchaseOrderId: "123" },
       },
     ])
