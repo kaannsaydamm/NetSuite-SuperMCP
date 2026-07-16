@@ -111,7 +111,7 @@ actions that cannot be represented cleanly through REST Record CRUD.
 
 Run `ns_getSuperMcpVersion` after deploy. The RESTlet portion should report the deployed RESTlet
 version, action map version, account ID, execution context `RESTLET`, current NetSuite user/role,
-and `toolCount: 54`.
+and `toolCount: 58`.
 
 ### Supported transform actions
 
@@ -171,8 +171,8 @@ defaults to 1 MB and cannot exceed the `File.getContents()` 10 MB in-memory limi
 | `ns_updateSavedSearch` | `searchId`, `values`, `confirmation` | Updates saved search fields through NetSuite permissions |
 | `ns_deleteSavedSearch` | `searchId`, `confirmation` | Deletes a saved search |
 
-Read-only platform/report direct tools run as `phase: "preview"`. Mutating saved-search tools run
-as `phase: "commit"` and require their confirmation string. Direct MCP calls accept either
+Read-only platform/report direct tools run as `phase: "preview"`. Mutating saved-search tools
+create operation plans and can be committed only with `ns_commitAction`. Direct MCP calls accept either
 top-level arguments or `{ "payload": { ... } }`; both shapes are routed to the same RESTlet payload.
 
 ### Supported File Cabinet management actions
@@ -188,9 +188,8 @@ top-level arguments or `{ "payload": { ... } }`; both shapes are routed to the s
 | `ns_moveFile` | `fileId`, `targetFolderId`, `confirmation` | Moves a File Cabinet file to another folder |
 | `ns_deleteFile` | `fileId`, `confirmation` | Deletes a File Cabinet file |
 
-`ns_writeFile` uses NetSuite `N/file`. Call it through `ns_prepareAction` or `ns_previewAction`
-first to get the required confirmation string, then commit through `ns_writeFile` or
-`ns_commitAction`. Existing files can be targeted by internal ID or File Cabinet path in `fileId`;
+`ns_writeFile` uses NetSuite `N/file` and returns a server-side operation plan. Preview that plan,
+then commit it through `ns_commitAction`. Existing files can be targeted by internal ID or File Cabinet path in `fileId`;
 new files require `folderId`, `name`, and optional `fileType` such as `JAVASCRIPT`.
 
 Examples:

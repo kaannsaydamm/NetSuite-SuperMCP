@@ -3,7 +3,6 @@ import { OperationPlanSchema } from "../operations/operation-plan"
 import { JsonValueSchema } from "../shared/json"
 import { ToolName } from "./catalog"
 
-const LooseJsonObjectOutputSchema = z.object({}).loose()
 const NetSuiteRecordOutputSchema = z
   .object({
     id: z.union([z.string(), z.number()]).optional(),
@@ -87,28 +86,6 @@ const InventoryAdjustmentAccountOutputSchema = z
   })
   .loose()
 
-const InventoryStockImportOutputSchema = z
-  .object({
-    confirmation: z.string(),
-    counts: z.record(z.string(), z.number()),
-    lines: z.array(z.record(z.string(), JsonValueSchema)).optional(),
-    noChangeLines: z.array(z.record(z.string(), JsonValueSchema)).optional(),
-    rejectedLines: z.array(z.record(z.string(), JsonValueSchema)).optional(),
-    totals: z.record(z.string(), z.number()),
-  })
-  .loose()
-
-const InventoryStockCommitOutputSchema = z
-  .object({
-    committed: z.boolean(),
-    confirmation: z.string(),
-    counts: z.record(z.string(), z.number()),
-    totals: z.record(z.string(), z.number()),
-    record: z.record(z.string(), JsonValueSchema).optional(),
-    reason: z.string().optional(),
-  })
-  .loose()
-
 const AccountPermissionOutputSchema = z
   .object({
     accountId: z.string(),
@@ -131,6 +108,40 @@ const CapabilitiesOutputSchema = z.object({
       name: z.string(),
       risk: z.enum(["low", "medium", "high"]),
       mutatesNetSuite: z.boolean(),
+      effects: z.array(z.string()),
+      requiredPermissions: z.array(z.string()),
+      phaseSupport: z.array(z.enum(["prepare", "preview", "commit"])),
+    }),
+  ),
+})
+
+const ToolDescriptionOutputSchema = z.object({
+  name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  risk: z.enum(["low", "medium", "high", "critical"]),
+  mutatesNetSuite: z.boolean(),
+  effects: z.array(z.string()),
+  requiredPermissions: z.array(z.string()),
+  phaseSupport: z.array(z.enum(["prepare", "preview", "commit"])),
+  inputSchema: JsonValueSchema,
+  outputSchema: JsonValueSchema,
+})
+
+const ToolExampleOutputSchema = z.object({
+  name: z.string(),
+  valid: JsonValueSchema,
+  invalid: JsonValueSchema,
+})
+
+const ToolValidationOutputSchema = z.object({
+  valid: z.boolean(),
+  normalized: JsonValueSchema.optional(),
+  issues: z.array(
+    z.object({
+      code: z.string(),
+      path: z.string(),
+      message: z.string(),
     }),
   ),
 })
@@ -180,6 +191,12 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
           events: z.array(z.record(z.string(), JsonValueSchema)),
         })
         .loose()
+    case ToolName.DescribeTool:
+      return ToolDescriptionOutputSchema
+    case ToolName.GetToolExample:
+      return ToolExampleOutputSchema
+    case ToolName.ValidateToolRequest:
+      return ToolValidationOutputSchema
     case ToolName.RunSuiteQl:
       return SuiteQlOutputSchema
     case ToolName.GetRecord:
@@ -194,9 +211,8 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.FindInventoryAdjustmentAccounts:
       return InventoryAdjustmentAccountOutputSchema
     case ToolName.PrepareInventoryStockImport:
-      return InventoryStockImportOutputSchema
     case ToolName.CommitInventoryStockImport:
-      return InventoryStockCommitOutputSchema
+      return OperationPlanSchema
     case ToolName.RunSavedSearch:
     case ToolName.RunReport:
     case ToolName.ListPlatformObjects:
@@ -245,6 +261,6 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.CommitAction:
       return RestletActionOutputSchema
     default:
-      return LooseJsonObjectOutputSchema
+      throw new Error(`MISSING_OUTPUT_SCHEMA: ${toolName} has no typed output schema`)
   }
 }

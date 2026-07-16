@@ -73,7 +73,7 @@ permission toggles. Approval remains owned by the client application, harness, o
 
 After any npm update or RESTlet deploy, restart the client-side MCP server process and call
 `ns_getSuperMcpVersion` from that client. A healthy current connector reports matching
-`configuredVersion`, `packageVersion`, and `restlet.version`, plus `toolCount: 54`.
+`configuredVersion`, `packageVersion`, and `restlet.version`, plus `toolCount: 58`.
 
 ## NetSuite OAuth
 
@@ -141,6 +141,10 @@ Use `ns_listCapabilities` to inspect each tool's risk level and whether it mutat
 `ns_checkAccountPermissions` to probe the configured NetSuite account's effective REST, SuiteQL,
 record metadata, and optional RESTlet access.
 
-Read-only RESTlet-backed direct tools are sent with `phase: "preview"` so the response semantics
-match the non-mutating behavior. Mutating direct tools are sent with `phase: "commit"` and should
-be controlled by the client approval flow and, where required, confirmation strings.
+Read-only RESTlet-backed direct tools are sent with `phase: "preview"`. Mutating tools are
+prepare-only and require a server-created, single-use `operationId` plus `ns_commitAction`; the
+client approval flow remains controlled by the provider/harness.
+
+Use `ns_describeTool`, `ns_getToolExample`, and `ns_validateToolRequest` when a client needs exact
+arguments or effects. After a contract fingerprint changes, refresh or recreate cached ChatGPT app
+connectors as described in `docs/generated/chatgpt-compatibility.md`.

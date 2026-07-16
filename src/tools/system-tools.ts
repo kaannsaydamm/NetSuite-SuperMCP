@@ -1,11 +1,14 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+import { describeTool, getToolContract, validateToolRequest } from "../contracts/tool-registry"
 import type { JsonObject } from "../shared/json"
 import { PACKAGE_VERSION } from "../version"
 import {
   AccountPermissionCheckInputSchema,
   AuditLogInputSchema,
   EmptyInputSchema,
+  ToolContractLookupInputSchema,
   ToolName,
+  ToolRequestValidationInputSchema,
   toolPolicies,
 } from "./catalog"
 import { outputSchemaFor } from "./output-schemas"
@@ -24,6 +27,8 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
     async () =>
       respond(ToolName.GetEnvironment, dependencies, {}, environmentPayload(dependencies)),
   )
+
+  registerContractTools(server, dependencies)
 
   server.registerTool(
     ToolName.GetSuperMcpVersion,
@@ -75,11 +80,17 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
         dependencies,
         {},
         {
-          tools: Object.values(toolPolicies).map((policy) => ({
-            name: policy.toolName,
-            risk: policy.risk,
-            mutatesNetSuite: policy.mutatesNetSuite,
-          })),
+          tools: Object.keys(toolPolicies).map((name) => {
+            const contract = getToolContract(name)
+            return {
+              name: contract.name,
+              risk: contract.risk,
+              mutatesNetSuite: contract.mutatesNetSuite,
+              effects: contract.effects,
+              requiredPermissions: contract.requiredPermissions,
+              phaseSupport: contract.phaseSupport,
+            }
+          }),
         },
       ),
   )
@@ -96,6 +107,54 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
       respond(ToolName.GetAuditLog, dependencies, input, {
         events: await dependencies.auditLog.readRecent(input.limit),
       }),
+  )
+}
+
+function registerContractTools(server: McpServer, dependencies: ToolDependencies): void {
+  server.registerTool(
+    ToolName.DescribeTool,
+    {
+      title: "Describe SuperMCP tool",
+      description:
+        "Returns the typed contract, risk, effects, phases, and permission hints for one tool.",
+      inputSchema: ToolContractLookupInputSchema,
+      outputSchema: outputSchemaFor(ToolName.DescribeTool),
+    },
+    async (input) =>
+      respond(ToolName.DescribeTool, dependencies, input, describeTool(input.name) as JsonObject),
+  )
+  server.registerTool(
+    ToolName.GetToolExample,
+    {
+      title: "Get SuperMCP tool example",
+      description: "Returns one valid and one invalid local example for a tool contract.",
+      inputSchema: ToolContractLookupInputSchema,
+      outputSchema: outputSchemaFor(ToolName.GetToolExample),
+    },
+    async (input) => {
+      const contract = getToolContract(input.name)
+      return respond(ToolName.GetToolExample, dependencies, input, {
+        name: contract.name,
+        valid: contract.examples.valid,
+        invalid: contract.examples.invalid,
+      })
+    },
+  )
+  server.registerTool(
+    ToolName.ValidateToolRequest,
+    {
+      title: "Validate SuperMCP tool request",
+      description: "Validates and normalizes a tool payload locally without calling NetSuite.",
+      inputSchema: ToolRequestValidationInputSchema,
+      outputSchema: outputSchemaFor(ToolName.ValidateToolRequest),
+    },
+    async (input) =>
+      respond(
+        ToolName.ValidateToolRequest,
+        dependencies,
+        input as unknown as JsonObject,
+        validateToolRequest(input.name, input.payload) as unknown as JsonObject,
+      ),
   )
 }
 

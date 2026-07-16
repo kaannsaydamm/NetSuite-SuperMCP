@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { z } from "zod"
 import { createApp } from "../src/app"
+import { getToolContract } from "../src/contracts/tool-registry"
 import { ToolName } from "../src/tools/catalog"
 import {
   CapabilitiesPayloadSchema,
@@ -11,6 +12,14 @@ import {
 import { FakeNetSuiteClient, tempAuditPath, testConfig } from "./test-support"
 
 describe("MCP system tools", () => {
+  it("provides one passing and one rejected example for every public tool", () => {
+    for (const name of Object.values(ToolName)) {
+      const contract = getToolContract(name)
+      expect(contract.inputSchema.safeParse(contract.examples.valid).success, name).toBe(true)
+      expect(contract.inputSchema.safeParse(contract.examples.invalid).success, name).toBe(false)
+    }
+  })
+
   it("rejects unauthenticated MCP requests", async () => {
     // Given
     const app = createApp(testConfig())
@@ -76,7 +85,7 @@ describe("MCP system tools", () => {
     expect(payload.server).toMatchObject({
       name: "NetSuite SuperMCP",
       configuredVersion: "local-dev",
-      packageVersion: "0.1.28",
+      packageVersion: "0.1.29",
       toolCount: Object.keys(ToolName).length,
     })
     expect(payload.netsuite).toMatchObject({
@@ -123,7 +132,69 @@ describe("MCP system tools", () => {
       name: ToolName.BillPurchaseOrder,
       risk: "high",
       mutatesNetSuite: true,
+      effects: ["May change NetSuite only during an explicit commit phase."],
+      requiredPermissions: ["Record-specific create or edit permission"],
+      phaseSupport: ["prepare", "preview", "commit"],
     })
+  })
+
+  it("describes, examples, and locally validates a typed transaction tool", async () => {
+    // Given
+    const fakeNetSuite = new FakeNetSuiteClient()
+    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
+
+    // When
+    const describeResponse = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 61,
+      method: "tools/call",
+      params: {
+        name: ToolName.DescribeTool,
+        arguments: { name: ToolName.FulfillSalesOrder },
+      },
+    })
+    const exampleResponse = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 62,
+      method: "tools/call",
+      params: {
+        name: ToolName.GetToolExample,
+        arguments: { name: ToolName.FulfillSalesOrder },
+      },
+    })
+    const validationResponse = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 63,
+      method: "tools/call",
+      params: {
+        name: ToolName.ValidateToolRequest,
+        arguments: {
+          name: ToolName.FulfillSalesOrder,
+          payload: { salesOrderId: "321" },
+        },
+      },
+    })
+    const describe = JSON.parse(
+      ToolTextResponseSchema.parse(await describeResponse.json()).result.content[0].text,
+    )
+    const example = JSON.parse(
+      ToolTextResponseSchema.parse(await exampleResponse.json()).result.content[0].text,
+    )
+    const validation = JSON.parse(
+      ToolTextResponseSchema.parse(await validationResponse.json()).result.content[0].text,
+    )
+
+    // Then
+    expect(describe).toMatchObject({
+      name: ToolName.FulfillSalesOrder,
+      risk: "high",
+      phaseSupport: ["prepare", "preview", "commit"],
+    })
+    expect(JSON.stringify(describe.inputSchema)).toContain("selection")
+    expect(example.valid).toMatchObject({ selection: { mode: "allOpen" } })
+    expect(validation).toMatchObject({ valid: false })
+    expect(JSON.stringify(validation.issues)).toContain("selection")
+    expect(fakeNetSuite.actions).toHaveLength(0)
   })
 
   it("checks configured NetSuite account permissions with safe probes", async () => {
@@ -215,7 +286,11 @@ describe("MCP system tools", () => {
       method: "tools/call",
       params: {
         name: ToolName.UpdateMapping,
-        arguments: { action: "mapping", payload: { token: "secret", mappingId: "1" } },
+        arguments: {
+          recordType: "customrecord_mapping",
+          recordId: "1",
+          values: { token: "secret" },
+        },
       },
     })
 

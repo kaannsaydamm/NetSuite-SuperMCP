@@ -7,7 +7,7 @@ export const OperationPlanSchema = z
     kind: z.string().min(1),
     action: z.string().min(1),
     environment: z.enum(["sandbox", "production"]),
-    executor: z.enum(["record", "restlet"]),
+    executor: z.enum(["record", "restlet", "inventory"]),
     accountId: z.string().min(1),
     requester: z.string().min(1),
     client: z.string().min(1),

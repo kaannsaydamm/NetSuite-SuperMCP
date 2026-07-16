@@ -1,5 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+import type { InventoryStockImportPrepareRequest } from "../netsuite/types"
 import { prepareRecordOperation } from "../operations/record-operation"
+import { snapshotFingerprint } from "../operations/snapshot"
 import type { JsonObject, JsonValue } from "../shared/json"
 import {
   InventoryAdjustmentAccountSearchInputSchema,
@@ -15,7 +17,7 @@ import {
   TransactionLinesInputSchema,
 } from "./catalog"
 import { findInventoryAdjustmentAccounts } from "./inventory-adjustment-accounts"
-import { commitInventoryStockImport, prepareInventoryStockImport } from "./inventory-stock-import"
+import { prepareInventoryStockImport } from "./inventory-stock-import"
 import { outputSchemaFor } from "./output-schemas"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
@@ -186,7 +188,7 @@ function registerInventoryStockImportTools(
         toolName: ToolName.PrepareInventoryStockImport,
         dependencies,
         input: jsonAuditInput(input),
-        execute: () => prepareInventoryStockImport(dependencies.netsuite, input),
+        execute: () => prepareInventoryOperation(dependencies, input),
       }),
   )
 
@@ -195,7 +197,7 @@ function registerInventoryStockImportTools(
     {
       title: "Commit inventory stock import",
       description:
-        "Creates one NetSuite inventoryAdjustment through the permanent SuperMCP RESTlet module after recomputing deltas and validating the prepare confirmation string. No temporary SuiteScript files are created or uploaded.",
+        "Legacy convenience name that prepares a server-side inventory adjustment operation plan. It never commits directly; use ns_commitAction with the returned operationId and confirmation.",
       inputSchema: InventoryStockImportCommitInputSchema,
       outputSchema: outputSchemaFor(ToolName.CommitInventoryStockImport),
     },
@@ -204,9 +206,49 @@ function registerInventoryStockImportTools(
         toolName: ToolName.CommitInventoryStockImport,
         dependencies,
         input: jsonAuditInput(input),
-        execute: () => commitInventoryStockImport(dependencies.netsuite, input),
+        execute: () => prepareInventoryOperation(dependencies, input),
       }),
   )
+}
+
+async function prepareInventoryOperation(
+  dependencies: ToolDependencies,
+  input: InventoryStockImportPrepareRequest,
+): Promise<JsonObject> {
+  const payload = jsonAuditInput(input)
+  const preview = await prepareInventoryStockImport(dependencies.netsuite, input)
+  const rejected = Array.isArray(preview["rejectedLines"]) ? preview["rejectedLines"].length : 0
+  return dependencies.operationStore.create({
+    action: ToolName.CommitInventoryStockImport,
+    kind: "inventoryAdjustment",
+    executor: "inventory",
+    environment: dependencies.config.netsuite.environment,
+    accountId: dependencies.config.netsuite.accountId,
+    requester: dependencies.requester,
+    client: dependencies.client,
+    source: {
+      locationId: input.locationId,
+      adjustmentAccountId: input.adjustmentAccountId,
+      ...(input.subsidiaryId === undefined ? {} : { subsidiaryId: input.subsidiaryId }),
+      ...(input.inventoryStatusId === undefined
+        ? {}
+        : { inventoryStatusId: input.inventoryStatusId }),
+    },
+    selection: { mode: "absoluteStockRows", rowCount: input.rows.length },
+    payload,
+    preview,
+    snapshotFingerprint: snapshotFingerprint(preview),
+    impact: {
+      summary: `Prepare an absolute-stock inventory adjustment for ${input.rows.length} explicit rows at location ${input.locationId}. No record was saved.`,
+      details: preview,
+    },
+    warnings: [
+      ...(dependencies.config.netsuite.environment === "production"
+        ? ["This plan targets a production NetSuite account."]
+        : []),
+      ...(rejected > 0 ? [`${rejected} input rows are rejected; commit will not proceed.`] : []),
+    ],
+  })
 }
 
 function registerInventoryAdjustmentAccountTool(

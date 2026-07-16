@@ -12,7 +12,7 @@ export type OperationPlan = OperationIdentity & {
   readonly action: string
   readonly confirmation: string
   readonly environment: NetSuiteEnvironment
-  readonly executor: "record" | "restlet"
+  readonly executor: "inventory" | "record" | "restlet"
   readonly impact: JsonObject
   readonly kind: string
   readonly operationId: string
@@ -30,7 +30,7 @@ export type OperationPlan = OperationIdentity & {
 export type CreateOperationPlanRequest = OperationIdentity & {
   readonly action: string
   readonly environment: NetSuiteEnvironment
-  readonly executor?: "record" | "restlet"
+  readonly executor?: "inventory" | "record" | "restlet"
   readonly impact: JsonObject
   readonly kind: string
   readonly payload: JsonObject

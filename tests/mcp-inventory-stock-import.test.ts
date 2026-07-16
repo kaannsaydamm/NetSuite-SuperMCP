@@ -121,13 +121,19 @@ describe("MCP inventory stock import", () => {
 
     // Then
     expect(response.status).toBe(200)
-    expect(payload.confirmation).toBe("commitInventoryStockImport:1:2")
-    expect(payload.lines[0].delta).toBe(2)
-    expect(payload.rejectedLines[0].reason).toBe("missing-item")
+    expect(payload).toMatchObject({
+      action: ToolName.CommitInventoryStockImport,
+      executor: "inventory",
+      phase: "prepare",
+      used: false,
+    })
+    expect(payload.preview.confirmation).toBe("commitInventoryStockImport:1:2")
+    expect(payload.preview.lines[0].delta).toBe(2)
+    expect(payload.preview.rejectedLines[0].reason).toBe("missing-item")
     expect(fakeNetSuite.createdRecords).toHaveLength(0)
   })
 
-  it("rejects commit when confirmation does not match recomputed deltas", async () => {
+  it("turns the legacy commit helper into a prepare-only operation plan", async () => {
     // Given
     const fakeNetSuite = new InventoryImportNetSuiteClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
@@ -142,17 +148,18 @@ describe("MCP inventory stock import", () => {
         arguments: {
           locationId: "2",
           adjustmentAccountId: "123",
-          confirmation: "wrong",
           rows: [{ itemKey: "8680503521824", targetQuantity: 3 }],
         },
       },
     })
+    const body = ToolTextResponseSchema.parse(await response.json())
+    const payload = JSON.parse(body.result.content[0].text)
 
     // Then
     expect(response.status).toBe(200)
-    expect(JSON.stringify(await response.json())).toContain(
-      "confirmation must match commitInventoryStockImport:1:2",
-    )
+    expect(payload.action).toBe(ToolName.CommitInventoryStockImport)
+    expect(payload.confirmation).toStartWith(`commit:${ToolName.CommitInventoryStockImport}:`)
+    expect(fakeNetSuite.actions).toHaveLength(0)
     expect(fakeNetSuite.createdRecords).toHaveLength(0)
   })
 
@@ -162,7 +169,7 @@ describe("MCP inventory stock import", () => {
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
 
     // When
-    const response = await mcpCall(app, {
+    const preparedResponse = await mcpCall(app, {
       jsonrpc: "2.0",
       id: 33,
       method: "tools/call",
@@ -176,12 +183,23 @@ describe("MCP inventory stock import", () => {
           tranDate: "2026-07-09",
           memo: "Paris stock import",
           externalId: "paris-stock-2026-07-08",
-          confirmation: "commitInventoryStockImport:1:2",
           rows: [
             { itemKey: "8680503521824", targetQuantity: 3 },
             { itemKey: "8680503521831", targetQuantity: 4 },
           ],
         },
+      },
+    })
+    const preparedBody = ToolTextResponseSchema.parse(await preparedResponse.json())
+    const plan = JSON.parse(preparedBody.result.content[0].text)
+
+    const response = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 34,
+      method: "tools/call",
+      params: {
+        name: ToolName.CommitAction,
+        arguments: { operationId: plan.operationId, confirmation: plan.confirmation },
       },
     })
 

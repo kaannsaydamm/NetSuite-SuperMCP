@@ -1,6 +1,6 @@
 {
   "name": "netsuite-supermcp",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "description": "A NetSuite MCP server with OAuth, REST/RESTlet tools, client installers, and account permission probes.",
   "private": false,
   "license": "MIT",
@@ -37,6 +37,7 @@
     "setup.sh",
     "src",
     ".env.example",
+    "CHANGELOG.md",
     "LICENSE",
     "README.md"
   ],
@@ -75,12 +76,14 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "prepack": "bun run typecheck && bun run lint && bun test && bun run check:restlet-contract",
+    "prepack": "bun run typecheck && bun run lint && bun test && bun run check:restlet-contract && bun run check:contracts",
     "postinstall": "node ./bin/postinstall.mjs",
     "test": "bun test",
     "smoke": "bun run scripts/smoke.ts",
     "probe:live": "bun run scripts/live-tool-probe.ts",
-    "check:restlet-contract": "bun run scripts/check-restlet-contract.ts"
+    "check:restlet-contract": "bun run scripts/check-restlet-contract.ts",
+    "generate:contracts": "bun run scripts/generate-tool-contracts.ts",
+    "check:contracts": "bun run scripts/generate-tool-contracts.ts --check"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",

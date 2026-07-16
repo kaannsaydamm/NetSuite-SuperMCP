@@ -8,5 +8,5 @@ data/
 *.log
 .mcp.json
 .vscode/mcp.json
-generated/
+/generated/
 .netsuite-supermcp-suitecloud*/

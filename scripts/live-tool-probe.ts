@@ -96,6 +96,12 @@ function buildProbes(discovered: {
     { name: ToolName.GetEnvironment, arguments: {} },
     { name: ToolName.GetSuperMcpVersion, arguments: {} },
     { name: ToolName.ListCapabilities, arguments: {} },
+    { name: ToolName.DescribeTool, arguments: { name: ToolName.FulfillSalesOrder } },
+    { name: ToolName.GetToolExample, arguments: { name: ToolName.GetRecord } },
+    {
+      name: ToolName.ValidateToolRequest,
+      arguments: { name: ToolName.GetRecord, payload: { type: "customer", id: "1" } },
+    },
     { name: ToolName.GetAuditLog, arguments: { limit: 1 } },
     {
       name: ToolName.CheckAccountPermissions,
@@ -107,14 +113,6 @@ function buildProbes(discovered: {
       arguments: { type: "customer", mediaType: "application/schema+json" },
     },
     { name: ToolName.RunSuiteQl, arguments: { query: "SELECT id FROM customer", limit: 1 } },
-    {
-      name: ToolName.PreviewAction,
-      arguments: { action: ToolName.CheckAccountPermissions, phase: "commit", payload: {} },
-    },
-    {
-      name: ToolName.PrepareAction,
-      arguments: { action: ToolName.CheckAccountPermissions, phase: "commit", payload: {} },
-    },
   ]
 
   if (discovered.customerId !== undefined) {
@@ -145,100 +143,13 @@ function buildProbes(discovered: {
     })
   }
 
-  for (const [action, payload] of Object.entries(preparePayloads()) as [ToolName, JsonObject][]) {
-    probes.push({
-      name: ToolName.PrepareAction,
-      covers: action,
-      arguments: { action, phase: "commit", payload },
-    })
-  }
-
   return probes
 }
 
-function preparePayloads(): Partial<Record<ToolName, JsonObject>> {
-  return {
-    [ToolName.RunSavedSearch]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
-    [ToolName.RunReport]: { reportId: "customsearch_supermcp_probe", pageSize: 1 },
-    [ToolName.GetFile]: {
-      fileId: "SuiteScripts/SuperMCP/supermcp_action_restlet.js",
-      maxBytes: 1024,
-    },
-    [ToolName.ListPlatformObjects]: {
-      category: "scripts",
-      columns: ["name", "internalid"],
-      pageSize: 5,
-    },
-    [ToolName.GetPlatformObject]: { recordType: "script", recordId: "1", fields: ["name"] },
-    [ToolName.SearchRecords]: {
-      recordType: "customer",
-      columns: ["internalid", "entityid"],
-      pageSize: 5,
-    },
-    [ToolName.ListReportTypes]: {},
-    [ToolName.ListReports]: { pageSize: 5 },
-    [ToolName.RunSearch]: {
-      recordType: "customer",
-      columns: ["internalid", "entityid"],
-      pageSize: 5,
-    },
-    [ToolName.ListFileCabinet]: { maxEntries: 1 },
-    [ToolName.GetIntegrationLogs]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
-    [ToolName.GetScriptLogs]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
-    [ToolName.FindScriptErrors]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
-    [ToolName.ListScripts]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
-    [ToolName.ListScriptDeployments]: { savedSearchId: "customsearch_supermcp_probe", pageSize: 1 },
-    [ToolName.GetFailedIntegrationJobs]: {
-      savedSearchId: "customsearch_supermcp_probe",
-      pageSize: 1,
-    },
-    [ToolName.ExplainIntegrationError]: {
-      recordType: "customrecord_supermcp_probe",
-      recordId: "1",
-      fields: ["name"],
-    },
-    [ToolName.TransformRecord]: { fromType: "salesorder", fromId: "1", toType: "invoice" },
-    [ToolName.FulfillSalesOrder]: { salesOrderId: "1" },
-    [ToolName.InvoiceSalesOrder]: { salesOrderId: "1" },
-    [ToolName.ReceivePurchaseOrder]: { purchaseOrderId: "1" },
-    [ToolName.BillPurchaseOrder]: { purchaseOrderId: "1" },
-    [ToolName.RetryIntegrationJob]: {
-      recordType: "customrecord_supermcp_probe",
-      recordId: "1",
-      values: { custrecord_supermcp_probe: true },
-    },
-    [ToolName.GetMapping]: {
-      recordType: "customrecord_supermcp_probe",
-      recordId: "1",
-      fields: ["name"],
-    },
-    [ToolName.UpdateMapping]: {
-      recordType: "customrecord_supermcp_probe",
-      recordId: "1",
-      values: { custrecord_supermcp_probe: true },
-    },
-  }
-}
-
 function liveUnsafeTools(): readonly ToolName[] {
-  return [
-    ToolName.CreateRecord,
-    ToolName.WriteFile,
-    ToolName.CreateFolder,
-    ToolName.UpdateFolder,
-    ToolName.DeleteFolder,
-    ToolName.CopyFile,
-    ToolName.MoveFile,
-    ToolName.DeleteFile,
-    ToolName.CreateSavedSearch,
-    ToolName.UpdateSavedSearch,
-    ToolName.DeleteSavedSearch,
-    ToolName.UpdateRecord,
-    ToolName.SubmitFields,
-    ToolName.DeleteRecord,
-    ToolName.CommitAction,
-    ToolName.CommitInventoryStockImport,
-  ]
+  return (Object.keys(toolPolicies) as ToolName[]).filter(
+    (toolName) => toolPolicies[toolName].mutatesNetSuite,
+  )
 }
 
 async function discoverSafeIds(netsuite: OAuthNetSuiteClient): Promise<{

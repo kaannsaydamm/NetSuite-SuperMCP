@@ -44,6 +44,6 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!node_modules", "!dist", "!coverage"]
+    "includes": ["**", "!node_modules", "!dist", "!coverage", "!docs/generated/tool-contracts.json"]
   }
 }

@@ -163,8 +163,9 @@ are exercised through `ns_prepareAction` so NetSuite data is not changed.
 SuiteScript source files and File Cabinet folders can be listed with `ns_listFileCabinet`, read
 with `ns_getFile`, and managed with `ns_writeFile`, `ns_createFolder`, `ns_updateFolder`,
 `ns_deleteFolder`, `ns_copyFile`, `ns_moveFile`, and `ns_deleteFile` through the RESTlet action
-layer. Use `ns_prepareAction`/`ns_previewAction` first to get the required confirmation string
-before committing File Cabinet writes/deletes/moves.
+layer. Mutating File Cabinet tools return a server-side operation plan without changing NetSuite.
+Review it with `ns_previewAction`, then pass its `operationId` and exact `confirmation` to
+`ns_commitAction`.
 
 Direct tool calls accept either top-level arguments or a `payload` object. These are equivalent:
 
@@ -186,8 +187,9 @@ Platform/report discovery tools include `ns_listPlatformObjects`, `ns_getPlatfor
 `ns_createSavedSearch`, `ns_updateSavedSearch`, and `ns_deleteSavedSearch`. These run under the
 configured NetSuite OAuth role, so NetSuite permissions decide what the agent can see or mutate.
 Use `limit` or `pageSize` for paged platform/report reads. Read-only direct calls return
-`phase: "preview"`; mutating direct calls still use `phase: "commit"` and rely on client approval
-plus confirmation strings where required.
+`phase: "preview"`. Mutating direct calls are prepare-only and can change NetSuite only through a
+bound, single-use `ns_commitAction` operation plan. The calling harness still owns user approval
+and tool availability.
 
 ## Inventory Stock Imports
 
@@ -196,13 +198,14 @@ For stock count files such as Fastmag/Paris stock exports, parse the file into r
 - `ns_prepareInventoryStockImport`
 - `ns_commitInventoryStockImport`
 
-The prepare tool matches each row to NetSuite items with `itemMatchField` (`upccode` by default),
-reads current stock from `inventorybalance` for the target `locationId`, calculates
-`targetQuantity - currentQuantity`, and returns rejected rows plus a confirmation string. It does
-not change NetSuite.
+Both names prepare the same server-side operation plan; `ns_commitInventoryStockImport` remains as
+a compatibility alias and does not commit directly. The planner matches each row to NetSuite items
+with `itemMatchField` (`upccode` by default), reads current stock from `inventorybalance` for the
+target `locationId`, calculates `targetQuantity - currentQuantity`, and returns rejected rows,
+impact details, an opaque `operationId`, and an exact confirmation. It does not change NetSuite.
 
-The commit tool recomputes the same plan, requires the exact confirmation string, rejects commits
-while missing/duplicate/ambiguous rows exist, and creates one `inventoryAdjustment` with
+Commit with `ns_commitAction`. It recomputes and fingerprints the same stock state, rejects stale
+plans and plans with missing/duplicate/ambiguous rows, and creates one `inventoryAdjustment` with
 `adjustQtyBy` lines through the permanent SuperMCP RESTlet inventory module. It never uploads a
 temporary SuiteScript file or modifies the RESTlet at runtime. Required NetSuite IDs are
 `locationId` and `adjustmentAccountId`; provide `subsidiaryId` when the account requires it.
@@ -215,6 +218,14 @@ Use `ns_findInventoryAdjustmentAccounts` to find likely `adjustmentAccountId` va
 accounts without leaving the agent. Pass `search` or `preferredAccountNumberPrefix` when the user
 knows the local chart-of-accounts convention; otherwise it searches generic inventory/stock
 adjustment terms and returns candidate internal IDs for review.
+
+## Typed Tool Contracts
+
+Every public tool has a bounded input schema, output schema, risk/effect metadata, permission hints,
+phase behavior, and valid/invalid examples. Use `ns_describeTool`, `ns_getToolExample`, and
+`ns_validateToolRequest`; validation is local and does not call NetSuite. Generated references are
+in [docs/generated/tool-contracts.md](docs/generated/tool-contracts.md) and cached ChatGPT app
+guidance is in [docs/generated/chatgpt-compatibility.md](docs/generated/chatgpt-compatibility.md).
 
 Deployment details are in [docs/deployment.md](docs/deployment.md).
 Agent client setup details are in [docs/client-setup.md](docs/client-setup.md).

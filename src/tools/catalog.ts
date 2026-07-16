@@ -10,7 +10,6 @@ import {
 } from "../contracts/operation-schemas"
 import {
   InventoryAdjustmentAccountSearchRequestSchema,
-  InventoryStockImportCommitRequestSchema,
   InventoryStockImportPrepareRequestSchema,
   RecordCreateRequestSchema,
   RecordDeleteRequestSchema,
@@ -79,6 +78,9 @@ export const ToolName = {
   PrepareCompensation: "ns_prepareCompensation",
   GetAuditLog: "ns_getAuditLog",
   ListCapabilities: "ns_listCapabilities",
+  DescribeTool: "ns_describeTool",
+  GetToolExample: "ns_getToolExample",
+  ValidateToolRequest: "ns_validateToolRequest",
 } as const
 
 export type ToolName = (typeof ToolName)[keyof typeof ToolName]
@@ -121,6 +123,9 @@ export const toolPolicies = {
   [ToolName.GetMapping]: low(ToolName.GetMapping),
   [ToolName.GetAuditLog]: low(ToolName.GetAuditLog),
   [ToolName.ListCapabilities]: low(ToolName.ListCapabilities),
+  [ToolName.DescribeTool]: low(ToolName.DescribeTool),
+  [ToolName.GetToolExample]: low(ToolName.GetToolExample),
+  [ToolName.ValidateToolRequest]: low(ToolName.ValidateToolRequest),
   [ToolName.CreateRecord]: medium(ToolName.CreateRecord),
   [ToolName.UpdateRecord]: medium(ToolName.UpdateRecord),
   [ToolName.SubmitFields]: medium(ToolName.SubmitFields),
@@ -159,12 +164,11 @@ export const AccountPermissionCheckInputSchema = z.object({
   includeRestlet: z.boolean().default(false),
 })
 
-export const GenericActionInputSchema = z
-  .object({
-    action: z.string().min(1).optional(),
-    payload: z.record(z.string(), JsonValueSchema).optional(),
-  })
-  .catchall(JsonValueSchema)
+export const ToolContractLookupInputSchema = z.object({ name: z.string().min(1) })
+export const ToolRequestValidationInputSchema = z.object({
+  name: z.string().min(1),
+  payload: JsonValueSchema,
+})
 
 export const PrepareOperationInputSchema = PrepareOperationRequestSchema
 export const PreviewOperationInputSchema = PreviewOperationRequestSchema
@@ -178,7 +182,7 @@ export {
 export const InventoryAdjustmentAccountSearchInputSchema =
   InventoryAdjustmentAccountSearchRequestSchema
 export const InventoryStockImportPrepareInputSchema = InventoryStockImportPrepareRequestSchema
-export const InventoryStockImportCommitInputSchema = InventoryStockImportCommitRequestSchema
+export const InventoryStockImportCommitInputSchema = InventoryStockImportPrepareRequestSchema
 
 function low(toolName: ToolName): ToolPolicy {
   return { toolName, risk: ToolRisk.Low, mutatesNetSuite: false }

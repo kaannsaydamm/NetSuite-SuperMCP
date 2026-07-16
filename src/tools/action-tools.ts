@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto"
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+import { actionInputSchemaFor } from "../contracts/action-schemas"
 import {
+  InventoryStockImportCommitRequestSchema,
+  InventoryStockImportPrepareRequestSchema,
   RecordCreateRequestSchema,
   RecordDeleteRequestSchema,
   RecordUpdateRequestSchema,
@@ -11,7 +14,6 @@ import { snapshotFingerprint } from "../operations/snapshot"
 import type { JsonObject, JsonValue } from "../shared/json"
 import {
   CommitOperationInputSchema,
-  GenericActionInputSchema,
   GenericTransformOperationInputSchema,
   PrepareCompensationInputSchema,
   PrepareOperationInputSchema,
@@ -20,6 +22,7 @@ import {
   SalesOrderOperationInputSchema,
   ToolName,
 } from "./catalog"
+import { commitInventoryStockImport, prepareInventoryStockImport } from "./inventory-stock-import"
 import { outputSchemaFor } from "./output-schemas"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
@@ -191,7 +194,7 @@ function directActionInputSchema(toolName: ToolName) {
     case ToolName.TransformRecord:
       return GenericTransformOperationInputSchema
     default:
-      return GenericActionInputSchema
+      return actionInputSchemaFor(toolName)
   }
 }
 
@@ -308,6 +311,12 @@ async function previewOperation(
       payload: plan.payload,
     })
   }
+  if (plan.executor === "inventory") {
+    return await prepareInventoryStockImport(
+      dependencies.netsuite,
+      InventoryStockImportPrepareRequestSchema.parse(plan.payload),
+    )
+  }
   if (plan.action === ToolName.CreateRecord) {
     return plan.preview
   }
@@ -329,6 +338,17 @@ async function commitOperation(
       phase: "commit",
       payload: plan.payload,
     })
+  }
+  if (plan.executor === "inventory") {
+    const preview = await prepareInventoryStockImport(
+      dependencies.netsuite,
+      InventoryStockImportPrepareRequestSchema.parse(plan.payload),
+    )
+    const confirmation = requirePlanString(preview, "confirmation")
+    return await commitInventoryStockImport(
+      dependencies.netsuite,
+      InventoryStockImportCommitRequestSchema.parse({ ...plan.payload, confirmation }),
+    )
   }
   switch (plan.action) {
     case ToolName.CreateRecord:
