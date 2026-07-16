@@ -1,4 +1,5 @@
 import { authorizeTool } from "../policy"
+import { createRequestId, type ErrorEnvelope, toErrorEnvelope } from "../shared/error-envelope"
 import type { JsonObject } from "../shared/json"
 import type { ToolName } from "./catalog"
 import { toolPolicies } from "./catalog"
@@ -13,17 +14,34 @@ export type NetSuiteToolRequest = {
 
 export async function runNetSuiteTool(request: NetSuiteToolRequest): Promise<ToolResponse> {
   const { toolName, dependencies, input, execute } = request
+  const requestId = createRequestId()
   const policy = toolPolicies[toolName]
   authorizeTool(policy)
 
   try {
     const result = await execute()
-    await writeAudit({ dependencies, toolName, input, result, status: "succeeded" })
-    return toolText(result)
+    const responseResult = { ...result, requestId }
+    await writeAudit({
+      dependencies,
+      toolName,
+      input,
+      result: responseResult,
+      status: "succeeded",
+      requestId,
+    })
+    return toolText(responseResult)
   } catch (error) {
-    const result = { error: error instanceof Error ? error.message : "Unknown NetSuite error" }
-    await writeAudit({ dependencies, toolName, input, result, status: "failed" })
-    return toolError(result.error)
+    const envelope = toErrorEnvelope(error, requestId)
+    const auditEnvelope = JSON.parse(JSON.stringify(envelope)) as JsonObject
+    await writeAudit({
+      dependencies,
+      toolName,
+      input,
+      result: auditEnvelope,
+      status: "failed",
+      requestId,
+    })
+    return toolError(envelope)
   }
 }
 
@@ -33,8 +51,17 @@ export async function respond(
   input: JsonObject,
   result: JsonObject,
 ): Promise<ToolResponse> {
-  await writeAudit({ dependencies, toolName, input, result, status: "succeeded" })
-  return toolText(result)
+  const requestId = createRequestId()
+  const responseResult = { ...result, requestId }
+  await writeAudit({
+    dependencies,
+    toolName,
+    input,
+    result: responseResult,
+    status: "succeeded",
+    requestId,
+  })
+  return toolText(responseResult)
 }
 
 type AuditWriteRequest = {
@@ -43,6 +70,7 @@ type AuditWriteRequest = {
   readonly input: JsonObject
   readonly result: JsonObject
   readonly status: "blocked" | "succeeded" | "failed"
+  readonly requestId: string
 }
 
 async function writeAudit(request: AuditWriteRequest): Promise<void> {
@@ -55,6 +83,7 @@ async function writeAudit(request: AuditWriteRequest): Promise<void> {
     environment: request.dependencies.config.netsuite.environment,
     requester: request.dependencies.requester,
     client: request.dependencies.client,
+    requestId: request.requestId,
     input: request.input,
     result: request.result,
   })
@@ -67,6 +96,6 @@ function toolText(value: JsonObject): ToolResponse {
   }
 }
 
-function toolError(message: string): ToolResponse {
-  return { content: [{ type: "text", text: message }], isError: true }
+function toolError(envelope: ErrorEnvelope): ToolResponse {
+  return { content: [{ type: "text", text: JSON.stringify(envelope, null, 2) }], isError: true }
 }

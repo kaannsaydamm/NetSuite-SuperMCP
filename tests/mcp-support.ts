@@ -20,6 +20,7 @@ export const ToolTextResponseSchema = z.object({
 })
 
 export const CapabilitiesPayloadSchema = z.object({
+  requestId: z.string().uuid(),
   tools: z.array(
     z.object({
       name: z.string(),

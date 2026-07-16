@@ -16,6 +16,7 @@ export type AuditEvent = {
   readonly risk: ToolRisk
   readonly environment: NetSuiteEnvironment
   readonly requester: string
+  readonly requestId: string
   readonly client: string
   readonly input: JsonObject
   readonly result: JsonObject
@@ -28,6 +29,7 @@ const AuditEventSchema = z.object({
   risk: AuditRiskSchema,
   environment: z.enum(["sandbox", "production"]),
   requester: z.string().min(1),
+  requestId: z.string().uuid(),
   client: z.string().min(1),
   input: z.record(z.string(), JsonValueSchema),
   result: z.record(z.string(), JsonValueSchema),

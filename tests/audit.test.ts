@@ -21,6 +21,7 @@ describe("AuditLog", () => {
       environment: "sandbox",
       requester: "kaan",
       client: "claude",
+      requestId: "00000000-0000-4000-8000-000000000001",
       input: { token: "secret-token", mappingId: "123" },
       result: { privateKey: "secret-key", id: "456" },
     })
@@ -46,6 +47,7 @@ describe("AuditLog", () => {
       environment: "sandbox",
       requester: "kaan",
       client: "claude",
+      requestId: "00000000-0000-4000-8000-000000000002",
       input: {},
       result: { sequence: 1 },
     })
@@ -57,6 +59,7 @@ describe("AuditLog", () => {
       environment: "production",
       requester: "kaan",
       client: "claude",
+      requestId: "00000000-0000-4000-8000-000000000003",
       input: {},
       result: { sequence: 2 },
     })

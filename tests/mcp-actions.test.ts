@@ -514,7 +514,15 @@ describe("MCP NetSuite actions", () => {
     })
 
     // Then
-    expect(JSON.stringify(await response.json())).toContain("OPERATION_SOURCE_CHANGED")
+    const responseBody = ToolTextResponseSchema.parse(await response.json())
+    const errorEnvelope = JSON.parse(responseBody.result.content[0].text)
+    expect(errorEnvelope).toMatchObject({
+      error: {
+        code: "OPERATION_SOURCE_CHANGED",
+        retryable: false,
+        requestId: expect.any(String),
+      },
+    })
     expect(fakeNetSuite.actions.map(({ phase }) => phase)).toEqual([
       "prepare",
       "preview",
