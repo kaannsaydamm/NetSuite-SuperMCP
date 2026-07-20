@@ -99,6 +99,28 @@ describe("parseConfig", () => {
     }
   })
 
+  it("allows remote MCP OAuth to start before the first NetSuite refresh token exists", () => {
+    const result = parseConfig({
+      ...validEnv,
+      MCP_AUTH_MODE: "oauth",
+      MCP_PUBLIC_URL: "https://mcp.example.com",
+      MCP_OAUTH_SECRET: "test-oauth-secret-that-is-at-least-32-characters",
+      NETSUITE_OAUTH_FLOW: "authorization_code",
+      NETSUITE_CLIENT_ID: "client-id",
+      NETSUITE_CLIENT_SECRET: "client-secret",
+      NETSUITE_REFRESH_TOKEN: "",
+      NETSUITE_AUTHORIZATION_URL:
+        "https://1234567-sb1.app.netsuite.com/app/login/oauth2/authorize.nl",
+      NETSUITE_REDIRECT_URI: "https://mcp.example.com/oauth/netsuite/callback",
+      NETSUITE_CONSUMER_KEY: "",
+      NETSUITE_CERTIFICATE_ID: "",
+      NETSUITE_PRIVATE_KEY_PEM_BASE64: "",
+    })
+
+    expect(result.ok).toBe(true)
+    if (result.ok) expect(result.value.authMode).toBe("oauth")
+  })
+
   it("returns a typed config error when required secrets are missing", () => {
     // Given
     const env = { ...validEnv, MCP_BEARER_TOKEN: "" }

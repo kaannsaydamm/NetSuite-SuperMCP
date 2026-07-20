@@ -25,17 +25,19 @@ The local MCP endpoint listens on:
 http://127.0.0.1:3025/mcp
 ```
 
-## Temporary Public URL
+## OAuth-Protected Public URL
 
-For local ChatGPT testing without OpenAI's tunnel client:
+For Claude custom connectors or another OAuth-capable remote MCP client:
 
 ```bash
 netsuite-supermcp public-url
 ```
 
-This starts the local MCP server in loopback-only no-auth mode, downloads ngrok when needed, starts
-an HTTPS tunnel, and prints the public `/mcp` URL. Use that URL in ChatGPT with Authentication set
-to `No auth`. Stop the terminal to close both the local server and ngrok.
+This starts ngrok and then launches SuperMCP in `MCP_AUTH_MODE=oauth`. It prints the public `/mcp`
+URL and the NetSuite callback URL. Add the callback URL to the Integration record, then enter only
+the `/mcp` URL in Claude; leave Claude's optional Client ID and Client Secret fields blank so DCR
+is used. Stop the terminal to close both the local server and ngrok. Use `NGROK_DOMAIN` or
+`--domain` for a stable callback URL.
 
 ## NetSuite RESTlet Deployment
 
@@ -110,7 +112,8 @@ trusted reverse proxy or private network.
 
 Set these through the deployment platform secret manager:
 
-- `MCP_BEARER_TOKEN`
+- `MCP_BEARER_TOKEN` for `MCP_AUTH_MODE=bearer`
+- `MCP_PUBLIC_URL` and `MCP_OAUTH_SECRET` for `MCP_AUTH_MODE=oauth`
 - `NETSUITE_CONSUMER_KEY`
 - `NETSUITE_CERTIFICATE_ID`
 - `NETSUITE_PRIVATE_KEY_PEM_BASE64`
@@ -123,7 +126,8 @@ NetSuite environment and endpoint values:
 - `NETSUITE_RESTLET_URL`
 - `NETSUITE_TOKEN_URL`
 - `NETSUITE_OAUTH_FLOW`
-- `NETSUITE_REFRESH_TOKEN` when using browser authorization-code OAuth.
+- `NETSUITE_REFRESH_TOKEN` when using local browser authorization-code OAuth. It is not required at
+  process startup in remote MCP OAuth mode; each user authorizes in-browser.
 
 Operational values:
 
@@ -132,6 +136,8 @@ Operational values:
   version metadata.
 - `MCP_HOST`
 - `MCP_PORT`
+- `MCP_AUTH_MODE` (`oauth`, `bearer`, or loopback-only `none`)
+- `MCP_OAUTH_STORE_PATH` for DCR registrations and encrypted per-user NetSuite sessions
 - `AUDIT_LOG_PATH`
 - `JOB_STORE_PATH`
 - `EXPORT_DIRECTORY`
@@ -166,6 +172,8 @@ Operational values:
   persistent storage.
 - Terminate TLS at a reverse proxy or managed ingress. Do not expose the MCP endpoint over plain
   HTTP outside a private network.
+- Persist `MCP_OAUTH_STORE_PATH`, protect `MCP_OAUTH_SECRET` in a secret manager, and keep the
+  public URL stable. Losing the secret intentionally invalidates stored NetSuite sessions.
 - Use separate deployments and secret sets for sandbox and production.
 - Keep generated `.netsuite-supermcp-suitecloud*` folders out of source control; they are deploy
   artifacts and can be regenerated with `netsuite-supermcp suitecloud`.

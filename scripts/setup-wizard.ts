@@ -288,7 +288,9 @@ function buildEnv(current: Map<string, string>, answers: Answers): Map<string, s
   }
   next.set("MCP_HOST", current.get("MCP_HOST") || "127.0.0.1")
   next.set("MCP_PORT", current.get("MCP_PORT") || "3025")
+  next.set("MCP_AUTH_MODE", current.get("MCP_AUTH_MODE") || "bearer")
   next.set("MCP_BEARER_TOKEN", bearerToken)
+  next.set("MCP_OAUTH_STORE_PATH", current.get("MCP_OAUTH_STORE_PATH") || "./data/mcp-oauth.json")
   next.set("NETSUITE_ACCOUNT_ID", answers.accountId)
   next.set("NETSUITE_ENVIRONMENT", answers.environment)
   next.set("NETSUITE_BASE_URL", urls.baseUrl)
@@ -348,6 +350,9 @@ function printDone(): void {
   console.log(green("Setup finished."))
   console.log("Run a final permission probe from your MCP client with:")
   console.log(bold("  ns_checkAccountPermissions"))
+  console.log("")
+  console.log("For Claude or another remote OAuth connector, run:")
+  console.log(bold("  netsuite-supermcp public-url"))
   console.log("")
 }
 

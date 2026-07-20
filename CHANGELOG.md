@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.41 - 2026-07-20
+
+- Added MCP-native OAuth 2.1 Authorization Code flow with PKCE S256, RFC 9728 protected-resource
+  discovery, authorization-server metadata, Dynamic Client Registration, token rotation, and
+  revocation for Claude and other remote MCP clients.
+- Added per-user NetSuite OAuth brokering. MCP tokens are opaque and persisted only as hashes;
+  NetSuite refresh tokens and temporary upstream PKCE verifiers are encrypted with AES-256-GCM.
+- Added request-scoped NetSuite clients so every remote connector session runs with the NetSuite
+  account and role selected during browser authorization.
+- Changed `netsuite-supermcp public-url` to launch OAuth-protected ngrok endpoints and print the
+  exact Claude connector and NetSuite callback settings. Stable ngrok domains are supported through
+  `NGROK_DOMAIN` or `--domain`.
+- Preserved bearer and stdio modes. No date/time normalization or account-specific behavior was
+  added.
+
 ## 0.1.40
 
 - Added recursive built-in PII redaction for email, phone, address, personal-name, addressee,

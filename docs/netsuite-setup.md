@@ -30,6 +30,23 @@ Run:
 bun run oauth:login
 ```
 
+### Remote MCP OAuth for Claude
+
+SuperMCP's remote OAuth broker uses the same Integration record with these settings:
+
+- Authorization Code Grant: enabled
+- RESTlets scope: enabled
+- REST Web Services scope: enabled
+- Public Client: disabled, because SuperMCP keeps the Integration client secret server-side
+- NetSuite AI Connector Service scope: disabled; NetSuite does not allow it together with the REST
+  scopes required by SuperMCP
+- Redirect URI: the HTTPS `/oauth/netsuite/callback` URL printed by
+  `netsuite-supermcp public-url`
+
+NetSuite 2026.1 supports multiple Redirect URIs, so the local callback and a stable remote callback
+can coexist. A stable `NGROK_DOMAIN` or production domain avoids changing the Integration record on
+each launch.
+
 ## OAuth 2.0 Client Credentials
 
 For M2M, configure OAuth 2.0 Client Credentials with:

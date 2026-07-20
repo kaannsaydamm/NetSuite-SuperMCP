@@ -18,6 +18,7 @@ if (command === "--help" || command === "-h" || args.includes("--help") || args.
   console.log("")
   console.log("ChatGPT Server URL with ngrok:")
   console.log("  netsuite-supermcp public-url")
+  console.log("  Starts MCP OAuth 2.1 + PKCE; Claude Client ID/Secret stay blank")
   console.log("")
   console.log("Standard local HTTP with bearer auth:")
   console.log("  netsuite-supermcp http")

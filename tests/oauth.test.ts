@@ -88,6 +88,50 @@ describe("NetSuiteTokenProvider", () => {
       globalThis.fetch = originalFetch
     }
   })
+
+  it("persists a rotated NetSuite refresh token through the caller callback", async () => {
+    const originalFetch = globalThis.fetch
+    const rotated: string[] = []
+    const bodies: URLSearchParams[] = []
+    let requestCount = 0
+    globalThis.fetch = Object.assign(
+      async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
+        const request =
+          input instanceof Request ? new Request(input, init) : new Request(input.toString(), init)
+        bodies.push(new URLSearchParams(await request.text()))
+        requestCount += 1
+        return Response.json({
+          access_token: "access-token",
+          ...(requestCount === 1 ? { refresh_token: "rotated-refresh-token" } : {}),
+          expires_in: 3600,
+        })
+      },
+      { preconnect: originalFetch.preconnect },
+    )
+    try {
+      const provider = new NetSuiteTokenProvider(
+        {
+          ...testConfig().netsuite,
+          oauthFlow: "authorization_code",
+          clientId: "client-id",
+          clientSecret: "client-secret",
+          refreshToken: "refresh-token",
+        },
+        async (refreshToken) => {
+          rotated.push(refreshToken)
+        },
+      )
+
+      await provider.getAccessToken()
+      provider.clearCache()
+      await provider.getAccessToken()
+
+      expect(rotated).toEqual(["rotated-refresh-token"])
+      expect(bodies[1]?.get("refresh_token")).toBe("rotated-refresh-token")
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
 })
 
 describe("createAuthorizationUrl", () => {

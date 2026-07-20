@@ -7,6 +7,7 @@ import { NetSuiteNotConfiguredError, NetSuiteRequestError } from "../shared/erro
 const TokenResponseSchema = z.object({
   access_token: z.string().min(1),
   expires_in: z.number().int().positive(),
+  refresh_token: z.string().min(1).optional(),
 })
 
 type CachedToken = {
@@ -23,8 +24,14 @@ export interface OAuthControl {
 export class NetSuiteTokenProvider {
   #cachedToken: CachedToken | null = null
   #refreshingToken: Promise<string> | null = null
+  #authorizationCodeRefreshToken: string | undefined
 
-  constructor(readonly config: AppConfig["netsuite"]) {}
+  constructor(
+    readonly config: AppConfig["netsuite"],
+    readonly onRefreshToken?: (refreshToken: string) => Promise<void>,
+  ) {
+    this.#authorizationCodeRefreshToken = config.refreshToken
+  }
 
   hasCachedAccessToken(): boolean {
     return this.#cachedToken !== null
@@ -42,7 +49,7 @@ export class NetSuiteTokenProvider {
     }
     const clientId = required(this.config.clientId, "NETSUITE_CLIENT_ID")
     const clientSecret = required(this.config.clientSecret, "NETSUITE_CLIENT_SECRET")
-    const refreshToken = required(this.config.refreshToken, "NETSUITE_REFRESH_TOKEN")
+    const refreshToken = required(this.#authorizationCodeRefreshToken, "NETSUITE_REFRESH_TOKEN")
     const revokeUrl = this.config.tokenUrl.replace(/\/token(?:\?.*)?$/, "/revoke")
     try {
       await ky.post(revokeUrl, {
@@ -98,6 +105,12 @@ export class NetSuiteTokenProvider {
         accessToken: parsed.access_token,
         expiresAtMs: now + parsed.expires_in * 1000,
       }
+      if (parsed.refresh_token !== undefined && this.onRefreshToken !== undefined) {
+        await this.onRefreshToken(parsed.refresh_token)
+      }
+      if (parsed.refresh_token !== undefined) {
+        this.#authorizationCodeRefreshToken = parsed.refresh_token
+      }
       return parsed.access_token
     } catch (error) {
       if (error instanceof HTTPError) {
@@ -124,7 +137,7 @@ export class NetSuiteTokenProvider {
       grant_type: "refresh_token",
       client_id: required(this.config.clientId, "NETSUITE_CLIENT_ID"),
       client_secret: required(this.config.clientSecret, "NETSUITE_CLIENT_SECRET"),
-      refresh_token: required(this.config.refreshToken, "NETSUITE_REFRESH_TOKEN"),
+      refresh_token: required(this.#authorizationCodeRefreshToken, "NETSUITE_REFRESH_TOKEN"),
     })
   }
 

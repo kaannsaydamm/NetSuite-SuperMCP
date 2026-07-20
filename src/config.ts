@@ -6,7 +6,7 @@ import { PACKAGE_VERSION } from "./version"
 
 const EnvironmentSchema = z.enum(["sandbox", "production"])
 const OAuthFlowSchema = z.enum(["client_credentials", "authorization_code"])
-const McpAuthModeSchema = z.enum(["bearer", "none"])
+const McpAuthModeSchema = z.enum(["bearer", "oauth", "none"])
 
 const NetSuiteConfigSchema = z
   .object({
@@ -34,7 +34,6 @@ const NetSuiteConfigSchema = z
     }
     requireField(value.clientId, "clientId", context)
     requireField(value.clientSecret, "clientSecret", context)
-    requireField(value.refreshToken, "refreshToken", context)
   })
 
 const ConfigSchema = z
@@ -45,6 +44,9 @@ const ConfigSchema = z
     port: z.number().int().min(1).max(65535),
     authMode: McpAuthModeSchema,
     bearerToken: z.string().min(12).optional(),
+    publicUrl: z.string().url().optional(),
+    oauthStorePath: z.string().min(1),
+    oauthSecret: z.string().min(32).optional(),
     netsuite: NetSuiteConfigSchema,
     managementNetsuite: NetSuiteConfigSchema.optional(),
     auditLogPath: z.string().min(1),
@@ -64,8 +66,64 @@ const ConfigSchema = z
     cursorSecret: z.string().min(16),
   })
   .superRefine((value, context) => {
+    if (
+      value.authMode !== "oauth" &&
+      value.netsuite.oauthFlow === "authorization_code" &&
+      (value.netsuite.refreshToken === undefined || value.netsuite.refreshToken.length === 0)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["netsuite", "refreshToken"],
+        message: "refreshToken is required",
+      })
+    }
+    if (
+      value.managementNetsuite?.oauthFlow === "authorization_code" &&
+      (value.managementNetsuite.refreshToken === undefined ||
+        value.managementNetsuite.refreshToken.length === 0)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["managementNetsuite", "refreshToken"],
+        message: "management refreshToken is required",
+      })
+    }
     if (value.authMode === "bearer") {
       requireField(value.bearerToken, "bearerToken", context)
+      return
+    }
+
+    if (value.authMode === "oauth") {
+      requireField(value.publicUrl, "publicUrl", context)
+      requireField(value.oauthSecret, "oauthSecret", context)
+      requireField(value.netsuite.authorizationUrl, "netsuite.authorizationUrl", context)
+      requireField(value.netsuite.redirectUri, "netsuite.redirectUri", context)
+      if (value.netsuite.oauthFlow !== "authorization_code") {
+        context.addIssue({
+          code: "custom",
+          path: ["netsuite", "oauthFlow"],
+          message: "MCP_AUTH_MODE=oauth requires NETSUITE_OAUTH_FLOW=authorization_code",
+        })
+      }
+      if (value.publicUrl !== undefined && new URL(value.publicUrl).protocol !== "https:") {
+        context.addIssue({
+          code: "custom",
+          path: ["publicUrl"],
+          message: "MCP_PUBLIC_URL must use HTTPS",
+        })
+      }
+      if (
+        value.publicUrl !== undefined &&
+        value.netsuite.redirectUri !== undefined &&
+        value.netsuite.redirectUri !==
+          `${value.publicUrl.replace(/\/+$/, "")}/oauth/netsuite/callback`
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["netsuite", "redirectUri"],
+          message: "NETSUITE_REDIRECT_URI must equal MCP_PUBLIC_URL/oauth/netsuite/callback",
+        })
+      }
       return
     }
 
@@ -89,6 +147,9 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
     port: Number(env["MCP_PORT"] ?? "3025"),
     authMode: env["MCP_AUTH_MODE"] ?? "bearer",
     bearerToken: env["MCP_BEARER_TOKEN"],
+    publicUrl: nonEmptyEnv(env["MCP_PUBLIC_URL"]),
+    oauthStorePath: env["MCP_OAUTH_STORE_PATH"] ?? "./data/mcp-oauth.json",
+    oauthSecret: nonEmptyEnv(env["MCP_OAUTH_SECRET"]),
     netsuite: {
       accountId: env["NETSUITE_ACCOUNT_ID"],
       environment: env["NETSUITE_ENVIRONMENT"],

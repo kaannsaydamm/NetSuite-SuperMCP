@@ -17,6 +17,9 @@ import type { NetSuiteClient } from "./netsuite/client"
 import { OAuthNetSuiteClient } from "./netsuite/client"
 import type { OAuthControl } from "./netsuite/oauth"
 import { NetSuiteTokenProvider } from "./netsuite/oauth"
+import { mountMcpOAuthRoutes } from "./oauth/mcp-oauth-routes"
+import { McpOAuthService, type VerifiedMcpAccess } from "./oauth/mcp-oauth-service"
+import { NetSuiteAuthorizationCodeExchange } from "./oauth/netsuite-authorization-exchange"
 import { OperationStore } from "./operations/operation-store"
 import { CursorCodec } from "./query/suiteql"
 import { RunbookStore } from "./runbooks/runbook-store"
@@ -40,6 +43,7 @@ export type AppDependencies = {
   readonly runbookStore?: RunbookStore
   readonly compositeStore?: CompositeStore
   readonly harnessBudgetStore?: HarnessBudgetStore
+  readonly mcpOAuthService?: McpOAuthService
 }
 
 export function createApp(config: AppConfig, dependencies: AppDependencies = {}): Hono {
@@ -76,6 +80,20 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
           managementTokenProvider.getAccessToken(),
         ))
   const managementOauthControl = dependencies.managementOauthControl ?? managementTokenProvider
+  const mcpOAuthService =
+    dependencies.mcpOAuthService ??
+    (config.authMode === "oauth"
+      ? new McpOAuthService({
+          publicUrl: requiredOAuthConfig(config.publicUrl, "MCP_PUBLIC_URL"),
+          storePath: config.oauthStorePath,
+          encryptionSecret: requiredOAuthConfig(config.oauthSecret, "MCP_OAUTH_SECRET"),
+          accountId: config.netsuite.accountId,
+          upstream: new NetSuiteAuthorizationCodeExchange(config.netsuite),
+        })
+      : undefined)
+  const oauthTokenProviders = new Map<string, NetSuiteTokenProvider>()
+
+  if (mcpOAuthService !== undefined) mountMcpOAuthRoutes(app, mcpOAuthService)
 
   app.get("/health", (context) =>
     context.json({
@@ -94,7 +112,44 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       return context.json({ error: "unauthorized" }, 401)
     }
 
-    const identity = identityFromHeaders(context.req.raw.headers)
+    let identity = identityFromHeaders(context.req.raw.headers)
+    let requestNetsuite = netsuite
+    let requestOauthControl = dependencies.oauthControl ?? tokenProvider
+    let verifiedOAuth: VerifiedMcpAccess | undefined
+    if (config.authMode === "oauth") {
+      if (mcpOAuthService === undefined) throw new Error("MCP OAuth service is unavailable")
+      const bearerToken = bearerTokenFromHeader(context.req.header("authorization"))
+      if (bearerToken === undefined) {
+        return oauthChallenge(mcpOAuthService.publicUrl)
+      }
+      try {
+        verifiedOAuth = await mcpOAuthService.verifyAccessToken(bearerToken)
+      } catch {
+        return oauthChallenge(mcpOAuthService.publicUrl, "invalid_token")
+      }
+      identity = { requester: verifiedOAuth.subject, client: verifiedOAuth.clientId }
+      if (dependencies.netsuite === undefined) {
+        let requestTokenProvider = oauthTokenProviders.get(verifiedOAuth.sessionId)
+        if (requestTokenProvider === undefined) {
+          const sessionId = verifiedOAuth.sessionId
+          requestTokenProvider = new NetSuiteTokenProvider(
+            {
+              ...config.netsuite,
+              oauthFlow: "authorization_code",
+              refreshToken: verifiedOAuth.netSuiteRefreshToken,
+            },
+            async (refreshToken) => {
+              await mcpOAuthService.updateNetSuiteRefreshToken(sessionId, refreshToken)
+            },
+          )
+          oauthTokenProviders.set(sessionId, requestTokenProvider)
+        }
+        requestNetsuite = new OAuthNetSuiteClient(config.netsuite, () =>
+          requestTokenProvider.getAccessToken(),
+        )
+        requestOauthControl = requestTokenProvider
+      }
+    }
     let harnessContext: HarnessContext | undefined
     try {
       harnessContext = decodeHarnessContext(
@@ -129,9 +184,9 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
     registerTools(server, {
       config,
       auditLog,
-      netsuite,
+      netsuite: requestNetsuite,
       ...(managementNetsuite === undefined ? {} : { managementNetsuite }),
-      oauthControl: dependencies.oauthControl ?? tokenProvider,
+      oauthControl: requestOauthControl,
       ...(managementOauthControl === undefined ? {} : { managementOauthControl }),
       operationStore,
       jobStore,
@@ -166,4 +221,27 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
   })
 
   return app
+}
+
+function bearerTokenFromHeader(authorization: string | undefined): string | undefined {
+  if (authorization === undefined || !authorization.startsWith("Bearer ")) return undefined
+  const token = authorization.slice("Bearer ".length)
+  return token.length > 0 ? token : undefined
+}
+
+function oauthChallenge(publicUrl: string, error?: string): Response {
+  const metadata = `${publicUrl.replace(/\/+$/, "")}/.well-known/oauth-protected-resource/mcp`
+  const errorParameter = error === undefined ? "" : `, error="${error}"`
+  return new Response(JSON.stringify({ error: error ?? "unauthorized" }), {
+    status: 401,
+    headers: {
+      "content-type": "application/json",
+      "www-authenticate": `Bearer resource_metadata="${metadata}"${errorParameter}`,
+    },
+  })
+}
+
+function requiredOAuthConfig(value: string | undefined, name: string): string {
+  if (value === undefined) throw new Error(`${name} is required for MCP OAuth`)
+  return value
 }

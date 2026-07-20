@@ -6,7 +6,8 @@ NetSuite OAuth account and role you configure.
 Includes:
 
 - Streamable HTTP MCP endpoint.
-- Bearer-token protection for MCP clients.
+- OAuth 2.1 Authorization Code + PKCE protection for Claude and other remote MCP clients, with
+  Dynamic Client Registration and RFC 9728 discovery; bearer auth remains available.
 - Strict Zod config parsing.
 - Tool risk metadata and audit logging.
 - File-backed audit log.
@@ -116,29 +117,41 @@ Health check:
 http://127.0.0.1:3025/health
 ```
 
-## ChatGPT Server URL With ngrok
+## Claude / Remote MCP OAuth With ngrok
 
-For ChatGPT's custom app "Server URL" mode, run:
+For Claude custom connectors and other OAuth-capable remote MCP clients, run:
 
 ```bash
 netsuite-supermcp public-url
 ```
 
-The command starts the local MCP server, downloads the ngrok agent into your user profile when it
-is not already installed, starts an HTTPS public tunnel, and prints a URL like:
+The command starts an OAuth-protected local MCP server, downloads the ngrok agent into your user
+profile when needed, starts an HTTPS public tunnel, and prints a URL like:
 
 ```text
 https://example.ngrok-free.app/mcp
 ```
 
-In ChatGPT, use:
+Add the printed callback URL to the NetSuite Integration record's Redirect URI list. Keep
+Authorization Code Grant, RESTlets, and REST Web Services enabled; do not enable the mutually
+exclusive NetSuite AI Connector Service scope on this Integration record.
 
-- Connection: `Server URL`
-- Authentication: `No auth`
-- URL: the printed `/mcp` URL
+In Claude's `Add custom connector` dialog:
 
-Keep the terminal open while ChatGPT uses the connector. If ngrok has not been configured on the
+- Name: `NetSuite SuperMCP`
+- Remote MCP server URL: the printed `/mcp` URL
+- OAuth Client ID: leave blank
+- OAuth Client Secret: leave blank
+
+Claude uses Dynamic Client Registration, discovers the OAuth endpoints, and opens the NetSuite
+login/role selection page. Each connected user receives an isolated OAuth session and operates
+with that selected NetSuite role. SuperMCP access and refresh tokens are opaque and stored only as
+hashes; NetSuite refresh tokens are encrypted with AES-256-GCM.
+
+Keep the terminal open while a remote client uses the connector. If ngrok has not been configured on the
 machine before, the command opens the ngrok authtoken page and asks you to paste the token once.
+Set `NGROK_DOMAIN` or pass `--domain` for a stable URL so the NetSuite callback only needs to be
+registered once.
 
 ## Verification
 

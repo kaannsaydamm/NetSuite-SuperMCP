@@ -23,6 +23,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     port: 3025,
     authMode: "bearer",
     bearerToken: "test-token-12345",
+    oauthStorePath: "./data/test-mcp-oauth.json",
     netsuite: {
       accountId: "1234567_SB1",
       environment: "sandbox",

@@ -1,6 +1,7 @@
 import { spawn, spawnSync } from "node:child_process"
+import { randomBytes } from "node:crypto"
 import { existsSync } from "node:fs"
-import { copyFile, mkdir, readdir, rm } from "node:fs/promises"
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import { createServer } from "node:net"
 import { arch, homedir, platform, tmpdir } from "node:os"
 import { basename, dirname, join } from "node:path"
@@ -25,6 +26,7 @@ const minimumNgrokVersion: NgrokVersion = { major: 3, minor: 20, patch: 0 }
 const args = new Set(process.argv.slice(2))
 const requestedPort = readNumberArg("--port") ?? 3025
 const authtoken = readStringArg("--ngrok-authtoken") ?? process.env["NGROK_AUTHTOKEN"]
+const ngrokDomain = readStringArg("--domain") ?? process.env["NGROK_DOMAIN"]
 
 if (args.has("--help") || args.has("-h")) {
   printHelp()
@@ -36,14 +38,44 @@ const ngrokPath = await ensureNgrok()
 await ensureNgrokAuthtoken(ngrokPath, authtoken)
 
 const localUrl = `http://127.0.0.1:${port}`
+const ngrokArguments = ["http", localUrl, "--log=stdout", "--log-format=logfmt"]
+if (ngrokDomain !== undefined) ngrokArguments.push(`--url=${ngrokDomain}`)
+const ngrok = spawn(ngrokPath, ngrokArguments, {
+  stdio: ["ignore", "pipe", "pipe"],
+})
+let ngrokOutput = ""
+ngrok.stdout.on("data", (chunk: Buffer) => {
+  ngrokOutput += chunk.toString("utf8")
+})
+ngrok.stderr.on("data", (chunk: Buffer) => {
+  ngrokOutput += chunk.toString("utf8")
+})
+
+let publicUrl: string
+try {
+  publicUrl = await waitForNgrokUrl()
+} catch (error) {
+  ngrok.kill()
+  throw error
+}
+const callbackUrl = `${publicUrl}/oauth/netsuite/callback`
+const oauthSecret = await ensureOAuthSecret()
+const dataDirectory = userDataDir()
+await mkdir(dataDirectory, { recursive: true })
 const server = spawn("bun", ["run", join(packageRoot, "src", "index.ts")], {
-  cwd: packageRoot,
+  cwd: process.cwd(),
   stdio: ["ignore", "pipe", "pipe"],
   env: {
     ...process.env,
-    MCP_AUTH_MODE: "none",
+    MCP_AUTH_MODE: "oauth",
     MCP_HOST: "127.0.0.1",
     MCP_PORT: String(port),
+    MCP_PUBLIC_URL: publicUrl,
+    MCP_OAUTH_SECRET: oauthSecret,
+    MCP_OAUTH_STORE_PATH:
+      process.env["MCP_OAUTH_STORE_PATH"] ?? join(dataDirectory, "mcp-oauth.json"),
+    MCP_CURSOR_SECRET: process.env["MCP_CURSOR_SECRET"] ?? oauthSecret,
+    NETSUITE_REDIRECT_URI: callbackUrl,
   },
 })
 
@@ -53,17 +85,6 @@ server.stdout.on("data", (chunk: Buffer) => {
 })
 server.stderr.on("data", (chunk: Buffer) => {
   serverOutput += chunk.toString("utf8")
-})
-
-const ngrok = spawn(ngrokPath, ["http", localUrl, "--log=stdout", "--log-format=logfmt"], {
-  stdio: ["ignore", "pipe", "pipe"],
-})
-let ngrokOutput = ""
-ngrok.stdout.on("data", (chunk: Buffer) => {
-  ngrokOutput += chunk.toString("utf8")
-})
-ngrok.stderr.on("data", (chunk: Buffer) => {
-  ngrokOutput += chunk.toString("utf8")
 })
 
 let isShuttingDown = false
@@ -83,17 +104,22 @@ process.on("SIGTERM", () => {
 
 try {
   await waitForHealth(localUrl)
-  const publicUrl = await waitForNgrokUrl()
   const mcpUrl = `${publicUrl}/mcp`
   console.log("")
   console.log("NetSuite SuperMCP public URL is ready.")
   console.log("")
   console.log(`Server URL: ${mcpUrl}`)
   console.log("")
-  console.log("ChatGPT app setup:")
-  console.log("  Connection: Server URL")
-  console.log("  Authentication: No auth")
-  console.log(`  URL: ${mcpUrl}`)
+  console.log("NetSuite Integration redirect URI:")
+  console.log(`  ${callbackUrl}`)
+  console.log("")
+  console.log("Claude custom connector:")
+  console.log("  Name: NetSuite SuperMCP")
+  console.log(`  Remote MCP server URL: ${mcpUrl}`)
+  console.log("  OAuth Client ID: leave blank")
+  console.log("  OAuth Client Secret: leave blank")
+  console.log("")
+  console.log("Claude discovers OAuth automatically and opens the NetSuite login page.")
   console.log("")
   console.log("Keep this terminal open while ChatGPT uses the connector.")
   await waitUntilChildExits()
@@ -148,6 +174,23 @@ async function ensureNgrok(): Promise<string> {
     )
   }
   return executablePath
+}
+
+async function ensureOAuthSecret(): Promise<string> {
+  const configured = process.env["MCP_OAUTH_SECRET"]
+  if (configured !== undefined && configured.length >= 32) return configured
+  const directory = userDataDir()
+  const secretPath = join(directory, "oauth-secret")
+  await mkdir(directory, { recursive: true })
+  try {
+    const existing = (await readFile(secretPath, "utf8")).trim()
+    if (existing.length >= 32) return existing
+  } catch (error) {
+    if (!(error instanceof Error && "code" in error && error.code === "ENOENT")) throw error
+  }
+  const secret = randomBytes(48).toString("base64url")
+  await writeFile(secretPath, `${secret}\n`, { mode: 0o600 })
+  return secret
 }
 
 function findExistingNgrok(): string | undefined {
@@ -579,8 +622,12 @@ function readStringArg(name: string): string | undefined {
 }
 
 function printHelp(): void {
-  console.log("Usage: netsuite-supermcp public-url [--port 3025] [--ngrok-authtoken TOKEN]")
+  console.log(
+    "Usage: netsuite-supermcp public-url [--port 3025] [--ngrok-authtoken TOKEN] [--domain DOMAIN]",
+  )
   console.log("")
-  console.log("Starts NetSuite SuperMCP locally, starts ngrok, and prints a public HTTPS /mcp URL.")
-  console.log("Use that URL in ChatGPT with Authentication set to No auth.")
+  console.log("Starts an OAuth-protected NetSuite SuperMCP behind an ngrok HTTPS URL.")
+  console.log(
+    "Claude and other remote MCP clients discover OAuth and open NetSuite login automatically.",
+  )
 }

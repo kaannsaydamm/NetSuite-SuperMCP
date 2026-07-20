@@ -116,7 +116,7 @@ SuperMCP does not require a specific integration user or role name.
 
 ## HTTP Clients
 
-HTTP clients must send:
+Bearer-mode HTTP clients must send:
 
 ```text
 Authorization: Bearer <MCP_BEARER_TOKEN>
@@ -128,6 +128,24 @@ Optional audit identity headers:
 X-SuperMCP-User: kaan
 X-SuperMCP-Client: claude
 ```
+
+## Claude Remote Connector OAuth
+
+Run:
+
+```bash
+netsuite-supermcp public-url
+```
+
+The command prints both the remote MCP URL and the NetSuite callback URI. Add the callback URI to
+the NetSuite Integration record, then enter the `/mcp` URL in Claude's custom connector dialog.
+Leave Claude's OAuth Client ID and OAuth Client Secret fields blank. Claude registers itself through
+DCR and performs Authorization Code + PKCE automatically.
+
+The remote flow has two separate token boundaries. Claude receives a SuperMCP token restricted to
+the `/mcp` resource; SuperMCP separately stores the selected user's encrypted NetSuite refresh
+token. NetSuite tokens are never passed through to Claude. Disconnect/revoke removes the MCP
+session and revokes its NetSuite refresh token.
 
 ## Permissions And Approval
 
