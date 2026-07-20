@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.46 - 2026-07-20
+
+- Correct the licensor's legal name in the required and commercial licensing notices.
+
 ## 0.1.45 - 2026-07-20
 
 - Add `netsuite-supermcp --version`, `-v`, and `version` CLI commands.
