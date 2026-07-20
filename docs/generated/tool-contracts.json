@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolCount": 185,
+  "toolCount": 182,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
@@ -14037,36 +14037,6 @@
       "effects": [],
       "examples": {
         "invalid": [],
-        "valid": {}
-      },
-      "inputSchema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "additionalProperties": false,
-        "properties": {},
-        "type": "object"
-      },
-      "mutatesNetSuite": false,
-      "name": "ns_getCatalogProfile",
-      "outputSchema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "additionalProperties": {},
-        "properties": {},
-        "type": "object"
-      },
-      "phaseSupport": [
-        "preview"
-      ],
-      "requiredPermissions": [
-        "Record-specific view permission"
-      ],
-      "risk": "low",
-      "title": "get Catalog Profile"
-    },
-    {
-      "description": "Reads or validates NetSuite information without changing a business record.",
-      "effects": [],
-      "examples": {
-        "invalid": [],
         "valid": {
           "compositeId": "customer.review",
           "compositeVersion": "1.0"
@@ -14611,66 +14581,6 @@
       ],
       "risk": "low",
       "title": "get File"
-    },
-    {
-      "description": "Reads or validates NetSuite information without changing a business record.",
-      "effects": [],
-      "examples": {
-        "invalid": [],
-        "valid": {}
-      },
-      "inputSchema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "additionalProperties": false,
-        "properties": {},
-        "type": "object"
-      },
-      "mutatesNetSuite": false,
-      "name": "ns_getHarnessBudget",
-      "outputSchema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "additionalProperties": {},
-        "properties": {},
-        "type": "object"
-      },
-      "phaseSupport": [
-        "preview"
-      ],
-      "requiredPermissions": [
-        "Record-specific view permission"
-      ],
-      "risk": "low",
-      "title": "get Harness Budget"
-    },
-    {
-      "description": "Reads or validates NetSuite information without changing a business record.",
-      "effects": [],
-      "examples": {
-        "invalid": [],
-        "valid": {}
-      },
-      "inputSchema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "additionalProperties": false,
-        "properties": {},
-        "type": "object"
-      },
-      "mutatesNetSuite": false,
-      "name": "ns_getHarnessContext",
-      "outputSchema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "additionalProperties": {},
-        "properties": {},
-        "type": "object"
-      },
-      "phaseSupport": [
-        "preview"
-      ],
-      "requiredPermissions": [
-        "Record-specific view permission"
-      ],
-      "risk": "low",
-      "title": "get Harness Context"
     },
     {
       "description": "Reads or validates NetSuite information without changing a business record.",

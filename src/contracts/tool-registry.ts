@@ -239,9 +239,6 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
     case ToolName.GetSuperMcpVersion:
     case ToolName.ListCapabilities:
     case ToolName.ListReportTypes:
-    case ToolName.GetHarnessContext:
-    case ToolName.GetHarnessBudget:
-    case ToolName.GetCatalogProfile:
       return EmptyInputSchema
     case ToolName.CreateCompositeTool:
       return CompositeDefinitionSchema
@@ -534,9 +531,6 @@ function validExampleFor(name: ToolName): JsonValue {
     case ToolName.GetSuperMcpVersion:
     case ToolName.ListCapabilities:
     case ToolName.ListReportTypes:
-    case ToolName.GetHarnessContext:
-    case ToolName.GetHarnessBudget:
-    case ToolName.GetCatalogProfile:
       return {}
     case ToolName.CreateCompositeTool:
       return {

@@ -1,50 +1,6 @@
 import { z } from "zod"
 import { JsonValueSchema } from "../shared/json"
 
-const ToolProfileSchema = z.enum(["read", "preview", "operations"])
-const BudgetLimitsSchema = z.object({
-  calls: z.number().int().positive().optional(),
-  rows: z.number().int().positive().optional(),
-  records: z.number().int().positive().optional(),
-  governanceUnits: z.number().int().positive().optional(),
-  runtimeMs: z.number().int().positive().optional(),
-})
-
-export const HarnessContextSchema = z.object({
-  version: z.literal(1),
-  scopeId: z.string().regex(/^[a-zA-Z0-9_.:-]{3,200}$/),
-  provider: z.string().min(1).max(200),
-  subject: z.string().min(1).max(200),
-  profile: ToolProfileSchema,
-  allowedTools: z.array(z.string().min(1)).max(500).default([]),
-  allowedRecordTypes: z.array(z.string().min(1)).max(500).default([]),
-  budgets: BudgetLimitsSchema.default({}),
-  sensitivity: z
-    .object({
-      piiFields: z.array(z.string().min(1)).max(500).default([]),
-      piiMode: z.enum(["redact", "show"]).default("redact"),
-    })
-    .default({ piiFields: [], piiMode: "redact" }),
-  approvals: z
-    .object({
-      callbackUrl: z.string().url().optional(),
-      requiredForRisks: z
-        .array(z.enum(["low", "medium", "high", "critical"]))
-        .default(["high", "critical"]),
-      decisions: z
-        .array(
-          z.object({
-            operationId: z.string().uuid(),
-            decision: z.enum(["approved", "denied"]),
-            approverRef: z.string().min(1),
-          }),
-        )
-        .max(1000)
-        .default([]),
-    })
-    .default({ requiredForRisks: ["high", "critical"], decisions: [] }),
-})
-
 const CompositeInputSchema = z.object({
   name: z.string().regex(/^[a-z][a-zA-Z0-9_]{0,63}$/),
   type: z.enum(["string", "number", "boolean", "object", "array"]),
@@ -97,7 +53,6 @@ export const GetCompositeToolInputSchema = z.object({
   compositeId: z.string().min(1),
   compositeVersion: z.string().min(1),
 })
-export const HarnessOutputSchema = z.object({}).loose()
+export const CompositeOutputSchema = z.object({}).loose()
 
-export type HarnessContext = z.infer<typeof HarnessContextSchema>
 export type CompositeDefinition = z.infer<typeof CompositeDefinitionSchema>

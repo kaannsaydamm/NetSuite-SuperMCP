@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { AssuranceOutputSchema } from "../contracts/assurance-schemas"
-import { HarnessOutputSchema } from "../contracts/harness-schemas"
+import { CompositeOutputSchema } from "../contracts/harness-schemas"
 import {
   AuthenticationDiagnosisOutputSchema,
   IdentityRelationshipOutputSchema,
@@ -411,12 +411,9 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
     case ToolName.RecordEvidenceClaim:
     case ToolName.GetEvidenceMemory:
       return RunbookOutputSchema
-    case ToolName.GetHarnessContext:
-    case ToolName.GetHarnessBudget:
-    case ToolName.GetCatalogProfile:
     case ToolName.CreateCompositeTool:
     case ToolName.GetCompositeTool:
-      return HarnessOutputSchema
+      return CompositeOutputSchema
     case ToolName.TransformRecord:
     case ToolName.FulfillSalesOrder:
     case ToolName.InvoiceSalesOrder:

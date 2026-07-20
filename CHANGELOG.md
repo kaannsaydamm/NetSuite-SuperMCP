@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.47 - 2026-07-20
+
+- Remove SuperMCP-level response redaction, usage budgets, rate/scope enforcement, and production
+  preview catalog restrictions; NetSuite account and role permissions are now authoritative.
+- Remove the obsolete harness context, budget, and catalog-profile tools while retaining composite
+  tools, audit logging, operation plans, snapshots, and evidence records.
+- Return authorized File Cabinet and SuiteScript contents unchanged, including multiline source.
+
 ## 0.1.46 - 2026-07-20
 
 - Correct the licensor's legal name in the required and commercial licensing notices.

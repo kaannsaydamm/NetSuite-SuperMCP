@@ -146,8 +146,6 @@ Operational values:
 - `SEMANTIC_STORE_PATH`
 - `RUNBOOK_STORE_PATH`
 - `COMPOSITE_STORE_PATH`
-- `HARNESS_BUDGET_STORE_PATH`
-- `MCP_HARNESS_CONTEXT_SECRET` (optional; enables signed harness scopes)
 - `RUNBOOK_LOW_RISK_REPAIR_CLASSES` only for explicitly provider-approved local repair classes.
 - `CUSTOMIZATION_PROJECT_DIRECTORY`
 - `MCP_CURSOR_SECRET` only when cursor signing must be independent from the existing MCP/OAuth
@@ -155,8 +153,8 @@ Operational values:
 
 ## Production Defaults
 
-- Unsigned production requests use the bounded `preview` harness profile. Reads and prepare-only
-  plans remain available; commit and OAuth revocation require a signed `operations` context.
+- Unsigned production requests expose the full catalog without SuperMCP response redaction or
+  usage budgets. NetSuite role permissions and client/provider consent remain authoritative.
 - Map the OAuth client credentials to the exact NetSuite account and role you want SuperMCP to use.
 - Run `ns_checkAccountPermissions` after changing OAuth mapping, role permissions, or RESTlet
   deployments.
@@ -165,7 +163,7 @@ Operational values:
   source payloads; legacy full-body rows are compacted when accessed.
 - Store `JOB_STORE_PATH`, `EXPORT_DIRECTORY`, `INTEGRATION_STORE_PATH`,
   `CUSTOMIZATION_STORE_PATH`, `SEMANTIC_STORE_PATH`, `RUNBOOK_STORE_PATH`,
-  `COMPOSITE_STORE_PATH`, and `HARNESS_BUDGET_STORE_PATH` on persistent storage
+  and `COMPOSITE_STORE_PATH` on persistent storage
   so resumable exports, versioned contracts and metrics, canaries, runbooks, evidence claims, and
   outbox delivery state survive restarts.
   Keep customization deployment state and generated checksum-pinned projects on the same class of

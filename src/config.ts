@@ -58,8 +58,6 @@ const ConfigSchema = z
     semanticStorePath: z.string().min(1),
     runbookStorePath: z.string().min(1),
     compositeStorePath: z.string().min(1),
-    harnessBudgetStorePath: z.string().min(1),
-    harnessContextSecret: z.string().min(16).optional(),
     lowRiskRepairClasses: z.array(
       z.enum(["localMetadataRefresh", "readJobRecovery", "exportRebuild"]),
     ),
@@ -178,8 +176,6 @@ export function parseConfig(env: NodeJS.ProcessEnv): Result<AppConfig, ConfigErr
     semanticStorePath: env["SEMANTIC_STORE_PATH"] ?? "./data/semantic-definitions.json",
     runbookStorePath: env["RUNBOOK_STORE_PATH"] ?? "./data/runbooks.json",
     compositeStorePath: env["COMPOSITE_STORE_PATH"] ?? "./data/composites.json",
-    harnessBudgetStorePath: env["HARNESS_BUDGET_STORE_PATH"] ?? "./data/harness-budgets.json",
-    harnessContextSecret: nonEmptyEnv(env["MCP_HARNESS_CONTEXT_SECRET"]),
     lowRiskRepairClasses: commaList(env["RUNBOOK_LOW_RISK_REPAIR_CLASSES"]),
     cursorSecret:
       env["MCP_CURSOR_SECRET"] ??

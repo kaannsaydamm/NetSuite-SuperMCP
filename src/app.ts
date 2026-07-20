@@ -6,10 +6,7 @@ import { AuditLog } from "./audit"
 import { identityFromHeaders, isAuthorized } from "./auth"
 import { CompositeStore } from "./composites/composite-store"
 import type { AppConfig } from "./config"
-import type { HarnessContext } from "./contracts/harness-schemas"
 import { CustomizationStore } from "./customizations/customization-store"
-import { HarnessBudgetStore } from "./harness/budget-store"
-import { decodeHarnessContext, defaultHarnessContext, isToolAllowed } from "./harness/context"
 import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
@@ -42,7 +39,6 @@ export type AppDependencies = {
   readonly semanticStore?: SemanticStore
   readonly runbookStore?: RunbookStore
   readonly compositeStore?: CompositeStore
-  readonly harnessBudgetStore?: HarnessBudgetStore
   readonly mcpOAuthService?: McpOAuthService
 }
 
@@ -66,8 +62,6 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
   const runbookStore = dependencies.runbookStore ?? new RunbookStore(config.runbookStorePath)
   const compositeStore =
     dependencies.compositeStore ?? new CompositeStore(config.compositeStorePath)
-  const harnessBudgetStore =
-    dependencies.harnessBudgetStore ?? new HarnessBudgetStore(config.harnessBudgetStorePath)
   const managementTokenProvider =
     config.managementNetsuite === undefined
       ? undefined
@@ -150,29 +144,7 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
         requestOauthControl = requestTokenProvider
       }
     }
-    let harnessContext: HarnessContext | undefined
-    try {
-      harnessContext = decodeHarnessContext(
-        context.req.header("x-supermcp-context"),
-        context.req.header("x-supermcp-signature"),
-        config.harnessContextSecret,
-      )
-    } catch (error) {
-      return context.json(
-        { error: error instanceof Error ? error.message : "invalid harness context" },
-        401,
-      )
-    }
-    harnessContext ??= defaultHarnessContext(
-      config.netsuite.environment,
-      identity.requester,
-      identity.client,
-    )
-    const allowedToolNames = new Set(
-      (Object.keys(toolPolicies) as ToolName[]).filter((name) =>
-        isToolAllowed(harnessContext, name),
-      ),
-    )
+    const allowedToolNames = new Set(Object.keys(toolPolicies) as ToolName[])
     const server = new McpServer(
       { name: config.serverName, version: config.serverVersion },
       {
@@ -197,11 +169,9 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       semanticStore,
       runbookStore,
       compositeStore,
-      harnessBudgetStore,
-      ...(harnessContext === undefined ? {} : { harnessContext }),
       allowedToolNames,
-      requester: harnessContext?.subject ?? identity.requester,
-      client: harnessContext?.provider ?? identity.client,
+      requester: identity.requester,
+      client: identity.client,
     })
 
     const transport = new WebStandardStreamableHTTPServerTransport({

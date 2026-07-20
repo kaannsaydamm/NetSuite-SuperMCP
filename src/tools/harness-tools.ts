@@ -6,26 +6,12 @@ import {
 } from "../contracts/harness-schemas"
 import { getToolContract, validateToolRequest } from "../contracts/tool-registry"
 import type { JsonValue } from "../shared/json"
-import { ToolName, toolPolicies } from "./catalog"
+import { ToolName } from "./catalog"
 import { outputSchemaFor } from "./output-schemas"
 import { runNetSuiteTool } from "./response"
 import type { ToolDependencies } from "./types"
 
 export function registerHarnessTools(server: McpServer, dependencies: ToolDependencies): void {
-  register(server, dependencies, ToolName.GetHarnessContext, zEmpty(), async () => ({
-    configured: dependencies.harnessContext !== undefined,
-    context: dependencies.harnessContext ?? null,
-    consentOwner: "provider-or-harness",
-  }))
-  register(server, dependencies, ToolName.GetHarnessBudget, zEmpty(), async () =>
-    dependencies.harnessBudgetStore.status(dependencies.harnessContext),
-  )
-  register(server, dependencies, ToolName.GetCatalogProfile, zEmpty(), async () => ({
-    profile: dependencies.harnessContext?.profile ?? "operations",
-    tools: Object.keys(toolPolicies).filter((name) =>
-      dependencies.allowedToolNames.has(name as ToolName),
-    ),
-  }))
   register(
     server,
     dependencies,
@@ -79,8 +65,7 @@ function register<T>(
     toolName,
     {
       title: toolName,
-      description:
-        "Uses provider-signed scope, budgets, sensitivity metadata, or immutable composite definitions without taking over user consent.",
+      description: "Creates or reads an immutable composite definition for typed MCP workflows.",
       inputSchema: schema,
       outputSchema: outputSchemaFor(toolName),
     },
@@ -115,10 +100,6 @@ function resolveTemplate(
       resolveTemplate(current, declared, examples),
     ]),
   )
-}
-
-function zEmpty() {
-  return CompositeDefinitionSchema.pick({}).strict()
 }
 
 function jsonObject(value: unknown) {

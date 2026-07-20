@@ -9,7 +9,15 @@ import { FakeNetSuiteClient, testConfig } from "./test-support"
 describe("MCP RESTlet-backed file actions", () => {
   it("routes File Cabinet reads through the RESTlet action layer", async () => {
     // Given
-    const fakeNetSuite = new FakeNetSuiteClient()
+    const source =
+      "define(['N/search'], (search) => {\n  const rows = search.create({ type: 'item' })\n  return { rows }\n})"
+    class FileClient extends FakeNetSuiteClient {
+      override async runRestletAction(action: RestletAction): Promise<JsonObject> {
+        this.actions.push(action)
+        return { fileId: "16706", contents: source }
+      }
+    }
+    const fakeNetSuite = new FileClient()
     const app = createApp(testConfig(), { netsuite: fakeNetSuite })
 
     // When
@@ -25,6 +33,9 @@ describe("MCP RESTlet-backed file actions", () => {
 
     // Then
     expect(response.status).toBe(200)
+    const body = ToolTextResponseSchema.parse(await response.json())
+    expect(body.result.structuredContent?.["contents"]).toBe(source)
+    expect(body.result.structuredContent?.["harness"]).toBeUndefined()
     expect(fakeNetSuite.actions).toEqual([
       {
         action: ToolName.GetFile,

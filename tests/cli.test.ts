@@ -13,7 +13,7 @@ describe("netsuite-supermcp CLI", () => {
     )
 
     expect(result.status).toBe(0)
-    expect(result.stdout.trim()).toBe("0.1.46")
+    expect(result.stdout.trim()).toBe("0.1.47")
     expect(result.stderr).toBe("")
   })
 })

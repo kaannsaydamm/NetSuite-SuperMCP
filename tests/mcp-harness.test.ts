@@ -3,13 +3,11 @@ import { mkdtemp } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { createApp } from "../src/app"
-import { HarnessContextSchema } from "../src/contracts/harness-schemas"
-import { encodeHarnessContext } from "../src/harness/context"
 import { ToolName } from "../src/tools/catalog"
 import { FakeNetSuiteClient, testConfig } from "./test-support"
 
-describe("MCP harness controls", () => {
-  it("uses a bounded preview profile by default for unsigned production requests", async () => {
+describe("MCP catalog and composite tools", () => {
+  it("leaves permissions and consent to the client for unsigned production requests", async () => {
     const app = createApp(
       testConfig({ netsuite: { ...testConfig().netsuite, environment: "production" } }),
       { netsuite: new FakeNetSuiteClient() },
@@ -23,30 +21,16 @@ describe("MCP harness controls", () => {
     const names = listed.result.tools.map((tool: { name: string }) => tool.name)
     expect(names).toContain(ToolName.GetRecord)
     expect(names).toContain(ToolName.CreateRecord)
-    expect(names).not.toContain(ToolName.CommitAction)
+    expect(names).toContain(ToolName.CommitAction)
+    expect(names).toContain(ToolName.RevokeOAuthAuthorization)
   })
-  it("filters the actual catalog and creates only schema-valid composites", async () => {
+  it("creates only schema-valid composites without restricting the catalog", async () => {
     const root = await mkdtemp(join(tmpdir(), "supermcp-harness-mcp-"))
-    const secret = "harness-verification-secret"
     const config = testConfig({
-      harnessContextSecret: secret,
-      harnessBudgetStorePath: join(root, "budgets.json"),
       compositeStorePath: join(root, "composites.json"),
     })
-    const signed = encodeHarnessContext(
-      HarnessContextSchema.parse({
-        version: 1,
-        scopeId: "task:customer-read",
-        provider: "test",
-        subject: "user",
-        profile: "read",
-        allowedRecordTypes: ["customer"],
-        budgets: { calls: 20 },
-      }),
-      secret,
-    )
     const app = createApp(config, { netsuite: new FakeNetSuiteClient() })
-    const listed = await request(app, signed, {
+    const listed = await requestUnsigned(app, {
       jsonrpc: "2.0",
       id: 1,
       method: "tools/list",
@@ -55,10 +39,10 @@ describe("MCP harness controls", () => {
     const names = listed.result.tools.map((tool: { name: string }) => tool.name)
     expect(names).toContain(ToolName.GetRecord)
     expect(names).toContain(ToolName.CreateCompositeTool)
-    expect(names).not.toContain(ToolName.CreateRecord)
-    expect(names).not.toContain(ToolName.CommitAction)
+    expect(names).toContain(ToolName.CreateRecord)
+    expect(names).toContain(ToolName.CommitAction)
 
-    const created = await request(app, signed, {
+    const created = await requestUnsigned(app, {
       jsonrpc: "2.0",
       id: 2,
       method: "tools/call",
@@ -82,7 +66,7 @@ describe("MCP harness controls", () => {
       },
     })
     expect(created.result.isError).not.toBe(true)
-    expect(created.result.structuredContent.harness.profile).toBe("read")
+    expect(created.result.structuredContent?.["harness"]).toBeUndefined()
   })
 })
 
@@ -97,33 +81,11 @@ async function requestUnsigned(app: ReturnType<typeof createApp>, body: object) 
     body: JSON.stringify(body),
   })
   expect(response.status).toBe(200)
-  return (await response.json()) as { result: { tools: { name: string }[] } }
-}
-
-async function request(
-  app: ReturnType<typeof createApp>,
-  signed: { encoded: string; signature: string },
-  body: object,
-) {
-  const response = await app.request("/mcp", {
-    method: "POST",
-    headers: {
-      authorization: "Bearer test-token-12345",
-      "content-type": "application/json",
-      accept: "application/json, text/event-stream",
-      "x-supermcp-context": signed.encoded,
-      "x-supermcp-signature": signed.signature,
-    },
-    body: JSON.stringify(body),
-  })
-  expect(response.status).toBe(200)
   return (await response.json()) as {
     result: {
       isError?: boolean
       tools: { name: string }[]
-      structuredContent: Record<string, unknown> & {
-        harness: { profile: string }
-      }
+      structuredContent?: Record<string, unknown>
     }
   }
 }

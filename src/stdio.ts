@@ -5,8 +5,6 @@ import { CompositeStore } from "./composites/composite-store"
 import { parseConfig } from "./config"
 import { formatConfigError } from "./config-help"
 import { CustomizationStore } from "./customizations/customization-store"
-import { HarnessBudgetStore } from "./harness/budget-store"
-import { decodeHarnessContext, defaultHarnessContext, isToolAllowed } from "./harness/context"
 import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
@@ -39,19 +37,9 @@ const customizationStore = new CustomizationStore(config.customizationStorePath)
 const semanticStore = new SemanticStore(config.semanticStorePath)
 const runbookStore = new RunbookStore(config.runbookStorePath)
 const compositeStore = new CompositeStore(config.compositeStorePath)
-const harnessBudgetStore = new HarnessBudgetStore(config.harnessBudgetStorePath)
-const configuredHarnessContext = decodeHarnessContext(
-  process.env["MCP_HARNESS_CONTEXT"],
-  process.env["MCP_HARNESS_CONTEXT_SIGNATURE"],
-  config.harnessContextSecret,
-)
 const requester = process.env["MCP_REQUESTER"] ?? "local-agent"
 const client = process.env["MCP_CLIENT"] ?? "stdio"
-const harnessContext =
-  configuredHarnessContext ?? defaultHarnessContext(config.netsuite.environment, requester, client)
-const allowedToolNames = new Set(
-  (Object.keys(toolPolicies) as ToolName[]).filter((name) => isToolAllowed(harnessContext, name)),
-)
+const allowedToolNames = new Set(Object.keys(toolPolicies) as ToolName[])
 const server = new McpServer(
   { name: config.serverName, version: config.serverVersion },
   {
@@ -73,11 +61,9 @@ registerTools(server, {
   semanticStore,
   runbookStore,
   compositeStore,
-  harnessBudgetStore,
-  ...(harnessContext === undefined ? {} : { harnessContext }),
   allowedToolNames,
-  requester: harnessContext?.subject ?? requester,
-  client: harnessContext?.provider ?? client,
+  requester,
+  client,
 })
 
 const transport = new StdioServerTransport()

@@ -493,6 +493,10 @@ Cross-cutting modules:
 
 ## Phase 11: Harness-Controlled Profiles, Budgets, Approvals, and Tool Composition
 
+> Historical note: runtime harness profiles, budgets, scope filters, and response redaction were
+> removed in 0.1.47. NetSuite role permissions and client/provider consent are authoritative.
+> Immutable composite tools remain supported.
+
 ### Features
 
 - Provider-selected catalog profiles: read, preview, and operations.
