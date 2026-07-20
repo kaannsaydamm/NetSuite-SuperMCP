@@ -6,7 +6,7 @@ import { parseConfig } from "./config"
 import { formatConfigError } from "./config-help"
 import { CustomizationStore } from "./customizations/customization-store"
 import { HarnessBudgetStore } from "./harness/budget-store"
-import { decodeHarnessContext, isToolAllowed } from "./harness/context"
+import { decodeHarnessContext, defaultHarnessContext, isToolAllowed } from "./harness/context"
 import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
@@ -40,11 +40,15 @@ const semanticStore = new SemanticStore(config.semanticStorePath)
 const runbookStore = new RunbookStore(config.runbookStorePath)
 const compositeStore = new CompositeStore(config.compositeStorePath)
 const harnessBudgetStore = new HarnessBudgetStore(config.harnessBudgetStorePath)
-const harnessContext = decodeHarnessContext(
+const configuredHarnessContext = decodeHarnessContext(
   process.env["MCP_HARNESS_CONTEXT"],
   process.env["MCP_HARNESS_CONTEXT_SIGNATURE"],
   config.harnessContextSecret,
 )
+const requester = process.env["MCP_REQUESTER"] ?? "local-agent"
+const client = process.env["MCP_CLIENT"] ?? "stdio"
+const harnessContext =
+  configuredHarnessContext ?? defaultHarnessContext(config.netsuite.environment, requester, client)
 const allowedToolNames = new Set(
   (Object.keys(toolPolicies) as ToolName[]).filter((name) => isToolAllowed(harnessContext, name)),
 )
@@ -72,8 +76,8 @@ registerTools(server, {
   harnessBudgetStore,
   ...(harnessContext === undefined ? {} : { harnessContext }),
   allowedToolNames,
-  requester: process.env["MCP_REQUESTER"] ?? "local-agent",
-  client: process.env["MCP_CLIENT"] ?? "stdio",
+  requester: harnessContext?.subject ?? requester,
+  client: harnessContext?.provider ?? client,
 })
 
 const transport = new StdioServerTransport()

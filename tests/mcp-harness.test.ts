@@ -9,6 +9,22 @@ import { ToolName } from "../src/tools/catalog"
 import { FakeNetSuiteClient, testConfig } from "./test-support"
 
 describe("MCP harness controls", () => {
+  it("uses a bounded preview profile by default for unsigned production requests", async () => {
+    const app = createApp(
+      testConfig({ netsuite: { ...testConfig().netsuite, environment: "production" } }),
+      { netsuite: new FakeNetSuiteClient() },
+    )
+    const listed = await requestUnsigned(app, {
+      jsonrpc: "2.0",
+      id: 0,
+      method: "tools/list",
+      params: {},
+    })
+    const names = listed.result.tools.map((tool: { name: string }) => tool.name)
+    expect(names).toContain(ToolName.GetRecord)
+    expect(names).toContain(ToolName.CreateRecord)
+    expect(names).not.toContain(ToolName.CommitAction)
+  })
   it("filters the actual catalog and creates only schema-valid composites", async () => {
     const root = await mkdtemp(join(tmpdir(), "supermcp-harness-mcp-"))
     const secret = "harness-verification-secret"
@@ -69,6 +85,20 @@ describe("MCP harness controls", () => {
     expect(created.result.structuredContent.harness.profile).toBe("read")
   })
 })
+
+async function requestUnsigned(app: ReturnType<typeof createApp>, body: object) {
+  const response = await app.request("/mcp", {
+    method: "POST",
+    headers: {
+      authorization: "Bearer test-token-12345",
+      "content-type": "application/json",
+      accept: "application/json, text/event-stream",
+    },
+    body: JSON.stringify(body),
+  })
+  expect(response.status).toBe(200)
+  return (await response.json()) as { result: { tools: { name: string }[] } }
+}
 
 async function request(
   app: ReturnType<typeof createApp>,

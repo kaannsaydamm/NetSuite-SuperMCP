@@ -31,10 +31,10 @@ export class SemanticStore {
   constructor(readonly path: string) {}
 
   async defineTerm(owner: string, definition: BusinessTermDefinition) {
-    return await this.define(owner, "terms", definition)
+    return publicEntry(await this.define(owner, "terms", definition))
   }
   async defineMetric(owner: string, definition: MetricDefinition) {
-    return await this.define(owner, "metrics", definition)
+    return publicEntry(await this.define(owner, "metrics", definition))
   }
 
   async getTerm(owner: string, id: string, version: string): Promise<BusinessTermDefinition> {
@@ -60,6 +60,14 @@ export class SemanticStore {
     return entry.definition
   }
 
+  async deleteTerm(owner: string, id: string, version: string) {
+    return await this.delete(owner, "terms", id, version)
+  }
+
+  async deleteMetric(owner: string, id: string, version: string) {
+    return await this.delete(owner, "metrics", id, version)
+  }
+
   private async define<T extends BusinessTermDefinition | MetricDefinition>(
     owner: string,
     key: "terms" | "metrics",
@@ -81,6 +89,21 @@ export class SemanticStore {
       const entry = { owner, definition, fingerprint }
       entries.push(entry)
       return entry
+    })
+  }
+
+  private async delete(owner: string, key: "terms" | "metrics", id: string, version: string) {
+    return await this.write(async (store) => {
+      const entries = store[key]
+      const index = entries.findIndex(
+        (entry) =>
+          entry.owner === owner &&
+          entry.definition.id === id &&
+          entry.definition.version === version,
+      )
+      if (index < 0) throw new Error("SEMANTIC_DEFINITION_NOT_FOUND")
+      entries.splice(index, 1)
+      return { deleted: true as const, id, version }
     })
   }
 
@@ -112,5 +135,19 @@ export class SemanticStore {
     } finally {
       release()
     }
+  }
+}
+
+function publicEntry<T extends BusinessTermDefinition | MetricDefinition>(entry: {
+  owner: string
+  definition: T
+  fingerprint: string
+}) {
+  return {
+    registryOwner: entry.owner,
+    businessOwner: entry.definition.owner ?? null,
+    createdBy: entry.owner,
+    definition: entry.definition,
+    fingerprint: entry.fingerprint,
   }
 }

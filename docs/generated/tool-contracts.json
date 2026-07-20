@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "toolCount": 183,
+  "toolCount": 185,
   "tools": [
     {
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "canaryId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -47,7 +47,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "delivered": true,
           "eventId": "123e4567-e89b-42d3-a456-426614174000"
@@ -93,7 +93,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "writers": [
             {
@@ -240,7 +240,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "permissions": [],
           "profile": "current",
@@ -429,7 +429,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "maxScripts": 1,
           "scriptId": "customscript_example"
@@ -543,7 +543,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "permissionGroups": [
             {
@@ -723,7 +723,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fields": [
             "email"
@@ -828,7 +828,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "records": [
             {
@@ -1045,7 +1045,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "matchField": "upccode",
           "type": "inventoryItem",
@@ -1259,7 +1259,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "purchaseOrderId": "123",
           "selection": {
@@ -1697,7 +1697,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fields": [
             "id",
@@ -2025,7 +2025,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "claims": [
             {
@@ -2193,7 +2193,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "jobId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -2382,7 +2382,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "includeRestlet": true,
           "recordTypes": [
@@ -2475,7 +2475,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "confirmation": "confirm:example",
           "operationId": "123e4567-e89b-42d3-a456-426614174000"
@@ -2542,7 +2542,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "adjustmentAccountId": "454",
           "locationId": "2",
@@ -2857,7 +2857,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "after": {
             "metricId": "inventory.onhand",
@@ -2937,7 +2937,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "permissions": [],
           "recordFamilies": [
@@ -3164,7 +3164,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fileId": "123",
           "targetFolderId": "456"
@@ -3487,7 +3487,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "events": [
             {
@@ -3640,7 +3640,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "description": "Reads one explicitly selected customer.",
           "id": "customer.review",
@@ -3897,7 +3897,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "items": [
             {
@@ -4171,7 +4171,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "name": "Example"
         }
@@ -4471,7 +4471,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "compression": "gzip",
           "format": "jsonl",
@@ -4802,7 +4802,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "type": "customer",
           "values": {
@@ -5064,7 +5064,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "lineLimit": 100,
@@ -5286,7 +5286,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordType": "customer",
           "title": "Example"
@@ -5632,7 +5632,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "description": "Location field used by this account's approved inventory metric.",
           "field": "location",
@@ -5735,7 +5735,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "domain": "orders",
           "fields": {
@@ -5911,7 +5911,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "aggregation": "sum",
           "businessTerms": [
@@ -6243,7 +6243,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "description": "Read-only order diagnosis with explicit evidence.",
           "id": "diagnose.order",
@@ -6403,12 +6403,58 @@
       "title": "define Runbook"
     },
     {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": [],
+        "valid": {
+          "id": "inventory.location",
+          "version": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_deleteBusinessTerm",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "delete Business Term"
+    },
+    {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
       "effects": [
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fileId": "123"
         }
@@ -6696,7 +6742,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "folderId": "123"
         }
@@ -6979,12 +7025,58 @@
       "title": "delete Folder"
     },
     {
+      "description": "Reads or validates NetSuite information without changing a business record.",
+      "effects": [],
+      "examples": {
+        "invalid": [],
+        "valid": {
+          "id": "inventory.onhand",
+          "version": "1.0"
+        }
+      },
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[a-z][a-z0-9_.-]{1,127}$",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[1-9][0-9]*(?:\\.[0-9]+){0,2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version"
+        ],
+        "type": "object"
+      },
+      "mutatesNetSuite": false,
+      "name": "ns_deleteMetric",
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": {},
+        "properties": {},
+        "type": "object"
+      },
+      "phaseSupport": [
+        "preview"
+      ],
+      "requiredPermissions": [
+        "Record-specific view permission"
+      ],
+      "risk": "low",
+      "title": "delete Metric"
+    },
+    {
       "description": "Prepares or commits a typed NetSuite mutation through the operation planner.",
       "effects": [
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "type": "customer"
@@ -7208,7 +7300,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "searchId": "customsearch_example"
         }
@@ -7476,7 +7568,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fieldId": "entity",
           "type": "salesOrder"
@@ -7674,7 +7766,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "type": "salesOrder"
         }
@@ -7866,7 +7958,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "name": "ns_fulfillSalesOrder"
         }
@@ -8002,7 +8094,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "includeAuthenticatedChecks": true,
           "profile": "current"
@@ -8163,7 +8255,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "includeSystemNotes": true,
@@ -8400,7 +8492,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "source": [
             {
@@ -8747,7 +8839,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "after": {
             "fingerprint": "after",
@@ -9086,7 +9178,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "after": {
             "columns": [
@@ -9421,7 +9513,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "artifacts": [
             {
@@ -9608,7 +9700,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "traces": [
             {
@@ -9806,7 +9898,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "eventType": "failed",
           "idempotencyKey": "event-1",
@@ -9902,7 +9994,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "invariants": [
             {
@@ -10130,7 +10222,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "facts": {
             "environment": "sandbox"
@@ -10297,7 +10389,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordId": "123",
           "recordType": "customrecord_job"
@@ -10600,7 +10692,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "limit": 100,
@@ -10807,7 +10899,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "params": [
             "F"
@@ -11046,7 +11138,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "profile": "current"
         }
@@ -11167,7 +11259,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "compression": "gzip",
           "dimensions": [
@@ -11261,7 +11353,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "compression": "gzip",
           "format": "csv",
@@ -11493,7 +11585,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "savedSearchId": "customsearch_example"
         }
@@ -11682,7 +11774,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "compression": "gzip",
           "format": "jsonl",
@@ -11968,7 +12060,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "maxScripts": 10,
           "scriptIds": [
@@ -12076,7 +12168,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "label": "Customer",
           "limit": 10,
@@ -12283,7 +12375,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fieldId": "custbody_external_id",
           "scriptIds": [
@@ -12400,7 +12492,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 25,
           "search": "inventory"
@@ -12506,7 +12598,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "externalId": "example",
           "limit": 5,
@@ -12713,7 +12805,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordType": "salesorder",
           "scriptIds": [
@@ -12826,7 +12918,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordType": "salesorder",
           "scriptIds": [
@@ -12939,7 +13031,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "maxScripts": 10,
           "scriptIds": [
@@ -13047,7 +13139,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "scriptId": "123"
@@ -13228,7 +13320,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "salesOrderId": "123",
           "selection": {
@@ -13666,7 +13758,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "sources": [
             {
@@ -13811,7 +13903,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "dimensions": [
             "location"
@@ -13892,7 +13984,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "cases": [
             {
@@ -14018,7 +14110,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "customizations": [
             {
@@ -14270,7 +14362,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "count": 2,
           "seed": "test",
@@ -14376,7 +14468,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "customizations": [
             {
@@ -14592,7 +14684,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 20
         }
@@ -14683,7 +14775,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {}
       },
       "inputSchema": {
@@ -14713,7 +14805,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "compositeId": "customer.review",
           "compositeVersion": "1.0"
@@ -14759,7 +14851,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "deploymentId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -14800,7 +14892,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {}
       },
       "inputSchema": {
@@ -14845,7 +14937,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "claimId": "order.state"
         }
@@ -14882,7 +14974,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "recordType": "customrecord_job"
@@ -15171,7 +15263,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fileId": "123"
         }
@@ -15380,7 +15472,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {}
       },
       "inputSchema": {
@@ -15410,7 +15502,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {}
       },
       "inputSchema": {
@@ -15440,7 +15532,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "profile": "current"
         }
@@ -15554,7 +15646,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "errors": [],
           "failed": 0,
@@ -15701,7 +15793,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "recordType": "salesOrder"
@@ -15860,7 +15952,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "features": [
             "RESTWEBSERVICES"
@@ -16031,7 +16123,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "jobId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -16220,7 +16312,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 25,
           "profile": "current",
@@ -16334,7 +16426,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordId": "123",
           "recordType": "customrecord_mapping"
@@ -16481,7 +16573,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "metricId": "inventory.onhand",
           "metricVersion": "1.0"
@@ -16527,7 +16619,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "profile": "current"
         }
@@ -16618,7 +16710,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordId": "123",
           "recordType": "script"
@@ -16837,7 +16929,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "type": "customer"
@@ -16900,7 +16992,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "type": "customer"
         }
@@ -16976,7 +17068,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "lineLimit": 100,
@@ -17196,7 +17288,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "executionId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -17237,7 +17329,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "scriptId": "123"
@@ -17416,7 +17508,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "maxExecutions": 25,
           "scriptId": "customscript_example"
@@ -17530,7 +17622,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {}
       },
       "inputSchema": {
@@ -17642,7 +17734,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "limit": 100,
@@ -17849,7 +17941,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "name": "ns_fulfillSalesOrder"
         }
@@ -17937,7 +18029,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "integrationReferences": [],
@@ -18169,7 +18261,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "limit": 100,
@@ -18376,7 +18468,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "sublist": "item",
@@ -18446,7 +18538,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "keyField": "id",
           "keyIsUnique": true,
@@ -18709,7 +18801,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "categories": [
             "script",
@@ -18784,7 +18876,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "salesOrderId": "123",
           "selection": {
@@ -19222,7 +19314,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {}
       },
       "inputSchema": {
@@ -19310,7 +19402,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "path": "/SuiteScripts"
@@ -19540,7 +19632,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "recordType": "script"
@@ -19753,7 +19845,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 50,
           "search": "customer",
@@ -19959,7 +20051,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 20,
           "search": "sales"
@@ -20159,7 +20251,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {}
       },
       "inputSchema": {
@@ -20279,7 +20371,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10
         }
@@ -20481,7 +20573,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "scriptId": "123"
@@ -20640,7 +20732,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "query": "integration"
@@ -20773,7 +20865,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "measurements": [
             {
@@ -20902,7 +20994,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "canaryId": "123e4567-e89b-42d3-a456-426614174000",
           "observations": []
@@ -21016,7 +21108,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fileId": "123",
           "targetFolderId": "456"
@@ -21331,7 +21423,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "dimensions": [
             "location"
@@ -21405,7 +21497,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "customizations": [
             {
@@ -21656,7 +21748,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "customizations": [
             {
@@ -21889,7 +21981,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 20
         }
@@ -21931,7 +22023,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "action": "ns_createFolder",
           "payload": {
@@ -23305,7 +23397,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "destructive": false,
           "evidence": [],
@@ -23457,7 +23549,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "maxRecords": 1,
           "name": "order canary",
@@ -23582,7 +23674,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "operationId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -23697,7 +23789,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "changedScriptIds": [
             "customscript_example"
@@ -23756,7 +23848,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "projectId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -23797,7 +23889,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "adjustmentAccountId": "454",
           "locationId": "2",
@@ -24110,7 +24202,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "operationId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -24169,7 +24261,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "sourceSearchId": "customsearch_example",
           "targetSearchId": "customsearch_example_clone",
@@ -24374,7 +24466,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "changedScriptIds": [
             "customscript_example"
@@ -24433,7 +24525,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "estimatedLines": [
             {
@@ -24631,7 +24723,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "runbookId": "diagnose.order",
           "runbookVersion": "1.0"
@@ -24677,7 +24769,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "records": [
             {
@@ -24905,7 +24997,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "canaryId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -24946,7 +25038,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "destructive": false,
           "evidence": [],
@@ -25098,7 +25190,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "hypotheses": [
             {
@@ -25263,7 +25355,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "purchaseOrderId": "123",
           "selection": {
@@ -25701,7 +25793,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "contract": {
             "domain": "orders",
@@ -26024,7 +26116,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "contract": {
             "domain": "orders",
@@ -26346,7 +26438,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "contract": {
             "domain": "orders",
@@ -26668,7 +26760,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "contract": {
             "domain": "orders",
@@ -26990,7 +27082,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "contract": {
             "domain": "orders",
@@ -27312,7 +27404,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "changedObjects": [
             "customscript_example"
@@ -27446,7 +27538,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "claimId": "order.state",
           "confidence": 1,
@@ -27571,7 +27663,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "executionId": "123e4567-e89b-42d3-a456-426614174000",
           "observedEvidence": [
@@ -27707,7 +27799,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "action": "ns_createSavedSearch",
           "mode": "simulation",
@@ -27802,7 +27894,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "jobId": "123e4567-e89b-42d3-a456-426614174000",
           "recoverRunning": false
@@ -27999,7 +28091,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordId": "123",
           "recordType": "customrecord_job",
@@ -28354,7 +28446,7 @@
         "Revokes the selected OAuth authorization and clears its local access-token cache."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "confirmation": "revoke:current:1234567",
           "profile": "current"
@@ -28427,7 +28519,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "jobId": "123e4567-e89b-42d3-a456-426614174000",
           "maxChunks": 1
@@ -28624,7 +28716,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "dimensions": [
             "location"
@@ -28698,7 +28790,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "cases": [
             {
@@ -28824,7 +28916,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "reportId": "123"
@@ -29076,7 +29168,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "savedSearchId": "customsearch_example"
@@ -29328,7 +29420,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "recordType": "customer"
@@ -29622,7 +29714,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "query": "SELECT id FROM customer"
@@ -29786,7 +29878,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "keyField": "id",
           "keyIsUnique": true,
@@ -30049,7 +30141,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "limit": 10,
           "recordType": "customer"
@@ -30349,7 +30441,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "action": "ns_createSavedSearch",
           "payload": {
@@ -30435,7 +30527,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "channels": [
             {
@@ -30626,7 +30718,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "changes": [
             {
@@ -30814,7 +30906,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "adjustments": [
             {
@@ -30986,7 +31078,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "evidence": [
             {
@@ -31099,7 +31191,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "type": "customer",
@@ -31367,7 +31459,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "endpoint": "https://example.com/events",
           "eventTypes": [
@@ -31426,7 +31518,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "profile": "current"
         }
@@ -31581,7 +31673,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "metricId": "inventory.onhand",
           "metricVersion": "1.0"
@@ -31629,7 +31721,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "fromId": "123",
           "fromType": "salesOrder",
@@ -32091,7 +32183,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "folderId": "123",
           "name": "Example"
@@ -32420,7 +32512,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "recordId": "123",
           "recordType": "customrecord_mapping",
@@ -32775,7 +32867,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "id": "123",
           "type": "customer",
@@ -33045,7 +33137,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "searchId": "customsearch_example",
           "values": {
@@ -33361,7 +33453,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "contract": {
             "domain": "orders",
@@ -33619,7 +33711,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "records": [
             {
@@ -33847,7 +33939,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "dimensions": [
             "location"
@@ -33921,7 +34013,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "projectId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -33962,7 +34054,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "params": [
             "F"
@@ -34201,7 +34293,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "name": "ns_getRecord",
           "payload": {
@@ -34349,7 +34441,7 @@
       "description": "Reads or validates NetSuite information without changing a business record.",
       "effects": [],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "deploymentId": "123e4567-e89b-42d3-a456-426614174000"
         }
@@ -34392,7 +34484,7 @@
         "May change NetSuite only during an explicit commit phase."
       ],
       "examples": {
-        "invalid": null,
+        "invalid": [],
         "valid": {
           "contents": "example",
           "path": "/SuiteScripts/example.txt"

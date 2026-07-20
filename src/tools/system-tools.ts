@@ -107,7 +107,7 @@ export function registerSystemTools(server: McpServer, dependencies: ToolDepende
     },
     async (input) =>
       respond(ToolName.GetAuditLog, dependencies, input, {
-        events: await dependencies.auditLog.readRecent(input.limit),
+        events: JSON.parse(JSON.stringify(await dependencies.auditLog.readRecent(input.limit))),
       }),
   )
 }

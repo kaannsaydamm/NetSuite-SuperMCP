@@ -43,6 +43,29 @@ class CommittedFulfillmentClient extends FakeNetSuiteClient {
 }
 
 describe("MCP NetSuite actions", () => {
+  it("rejects an unknown record type before creating an operation plan", async () => {
+    const fakeNetSuite = new (class extends FakeNetSuiteClient {
+      override async getRecordMetadata(
+        request: Parameters<FakeNetSuiteClient["getRecordMetadata"]>[0],
+      ) {
+        if (request.type === "definitelyNotARealNetSuiteRecord") throw new Error("HTTP 404")
+        return super.getRecordMetadata(request)
+      }
+    })()
+    const app = createApp(testConfig(), { netsuite: fakeNetSuite })
+    const response = await mcpCall(app, {
+      jsonrpc: "2.0",
+      id: 8,
+      method: "tools/call",
+      params: {
+        name: ToolName.CreateRecord,
+        arguments: { type: "definitelyNotARealNetSuiteRecord", values: {} },
+      },
+    })
+    const body = ToolTextResponseSchema.parse(await response.json())
+    expect(body.result.content[0]?.text).toContain("INVALID_RECORD_TYPE")
+  })
+
   it("prepares record creation without calling the REST record client", async () => {
     // Given
     const fakeNetSuite = new FakeNetSuiteClient()

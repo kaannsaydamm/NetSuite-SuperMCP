@@ -73,7 +73,9 @@ permission toggles. Approval remains owned by the client application, harness, o
 
 After any npm update or RESTlet deploy, restart the client-side MCP server process and call
 `ns_getSuperMcpVersion` from that client. A healthy current connector reports matching
-`configuredVersion`, `packageVersion`, and `restlet.version`, plus `toolCount: 183`.
+`configuredVersion`, `packageVersion`, and `restlet.version`, plus `toolCount: 185`. A differing
+`configuredVersion` means `MCP_SERVER_VERSION_OVERRIDE` is explicitly set and should normally be
+removed outside development builds.
 
 ## NetSuite OAuth
 

@@ -9,7 +9,7 @@ import type { AppConfig } from "./config"
 import type { HarnessContext } from "./contracts/harness-schemas"
 import { CustomizationStore } from "./customizations/customization-store"
 import { HarnessBudgetStore } from "./harness/budget-store"
-import { decodeHarnessContext, isToolAllowed } from "./harness/context"
+import { decodeHarnessContext, defaultHarnessContext, isToolAllowed } from "./harness/context"
 import { IntegrationStore } from "./integrations/integration-store"
 import { ExportStore } from "./jobs/export-store"
 import { JobStore } from "./jobs/job-store"
@@ -108,6 +108,11 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
         401,
       )
     }
+    harnessContext ??= defaultHarnessContext(
+      config.netsuite.environment,
+      identity.requester,
+      identity.client,
+    )
     const allowedToolNames = new Set(
       (Object.keys(toolPolicies) as ToolName[]).filter((name) =>
         isToolAllowed(harnessContext, name),
@@ -140,8 +145,8 @@ export function createApp(config: AppConfig, dependencies: AppDependencies = {})
       harnessBudgetStore,
       ...(harnessContext === undefined ? {} : { harnessContext }),
       allowedToolNames,
-      requester: identity.requester,
-      client: identity.client,
+      requester: harnessContext?.subject ?? identity.requester,
+      client: harnessContext?.provider ?? identity.client,
     })
 
     const transport = new WebStandardStreamableHTTPServerTransport({

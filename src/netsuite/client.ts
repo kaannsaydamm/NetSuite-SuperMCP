@@ -1,5 +1,6 @@
 import ky, { HTTPError } from "ky"
 import type { AppConfig } from "../config"
+import { bindSuiteQlParams } from "../query/suiteql"
 import { NetSuiteRequestError } from "../shared/errors"
 import { type JsonObject, type JsonValue, JsonValueSchema } from "../shared/json"
 import type {
@@ -17,6 +18,7 @@ type RequestJsonOptions = Omit<RequestInit, "headers"> & {
   readonly headers?: Record<string, string>
   readonly json?: unknown
   readonly searchParams?: Record<string, string> | URLSearchParams
+  readonly retryable?: boolean
 }
 
 export interface NetSuiteClient {
@@ -42,6 +44,7 @@ export class OAuthNetSuiteClient implements NetSuiteClient {
       `${this.config.baseUrl}/services/rest/record/v1/${ref.type}/${ref.id}`,
       {
         method: "GET",
+        retryable: true,
       },
     )
   }
@@ -79,6 +82,7 @@ export class OAuthNetSuiteClient implements NetSuiteClient {
       request.select.length === 0 ? undefined : { select: request.select.join(",") }
     return this.requestJson(path, {
       method: "GET",
+      retryable: true,
       headers: { accept: request.mediaType },
       ...(searchParams === undefined ? {} : { searchParams }),
     })
@@ -87,7 +91,7 @@ export class OAuthNetSuiteClient implements NetSuiteClient {
   async getTransactionLines(request: TransactionLinesRequest): Promise<JsonObject> {
     return this.requestJson(
       `${this.config.baseUrl}/services/rest/record/v1/${request.type}/${request.id}/${request.sublist}`,
-      { method: "GET" },
+      { method: "GET", retryable: true },
     )
   }
 
@@ -96,6 +100,7 @@ export class OAuthNetSuiteClient implements NetSuiteClient {
     return this.requestJson(`${this.config.baseUrl}/services/rest/query/v1/suiteql`, {
       method: "POST",
       json: suiteQlBody(request),
+      retryable: true,
       ...(searchParams === undefined ? {} : { searchParams }),
     })
   }
@@ -104,6 +109,7 @@ export class OAuthNetSuiteClient implements NetSuiteClient {
     return this.requestJson(this.config.restletUrl, {
       method: "POST",
       json: action,
+      retryable: action.phase === "preview",
     })
   }
 
@@ -119,11 +125,16 @@ export class OAuthNetSuiteClient implements NetSuiteClient {
 
   private async requestJson(url: string, options: RequestJsonOptions) {
     const token = await this.accessTokenProvider()
+    const { retryable = false, ...requestOptions } = options
     try {
       const response = await ky(url, {
-        ...options,
+        ...requestOptions,
         timeout: 30_000,
-        retry: { limit: 2, methods: ["get", "post"], statusCodes: [408, 429, 500, 502, 503, 504] },
+        retry: {
+          limit: retryable ? 2 : 0,
+          methods: ["get", "post"],
+          statusCodes: [408, 429, 500, 502, 503, 504],
+        },
         headers: { ...options.headers, authorization: `Bearer ${token}`, prefer: "transient" },
       })
       return await responseToJsonObject(response)
@@ -168,7 +179,5 @@ function suiteQlSearchParams(request: SuiteQlRequest): Record<string, string> | 
 }
 
 function suiteQlBody(request: SuiteQlRequest): JsonObject {
-  return request.params.length === 0
-    ? { q: request.query }
-    : { q: request.query, params: request.params }
+  return { q: bindSuiteQlParams(request.query, request.params) }
 }

@@ -174,11 +174,10 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
       search
         .create({
           type: "systemnote",
-          filters: [["record", "anyof", recordId], "AND", ["recordtype", "is", recordType]],
+          filters: [["recordid", "equalto", recordId], "AND", ["recordtype", "is", recordType]],
           columns: [
-            "internalid",
             "recordtype",
-            "record",
+            "recordid",
             "field",
             "oldvalue",
             "newvalue",
@@ -195,7 +194,7 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
           events.push({
             id: String(result.id),
             recordType: result.getValue({ name: "recordtype" }),
-            recordId: result.getValue({ name: "record" }),
+            recordId: result.getValue({ name: "recordid" }),
             field: result.getValue({ name: "field" }),
             oldValue: result.getValue({ name: "oldvalue" }),
             newValue: result.getValue({ name: "newvalue" }),

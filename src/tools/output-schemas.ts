@@ -373,6 +373,8 @@ export function outputSchemaFor(toolName: ToolName): z.ZodTypeAny {
       return CustomizationOutputSchema
     case ToolName.DefineBusinessTerm:
     case ToolName.DefineMetric:
+    case ToolName.DeleteBusinessTerm:
+    case ToolName.DeleteMetric:
     case ToolName.GetMetricDefinition:
     case ToolName.PlanBusinessQuery:
     case ToolName.ValidateMetricPlan:

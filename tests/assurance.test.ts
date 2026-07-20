@@ -57,6 +57,33 @@ describe("assurance and simulation primitives", () => {
     expect(wildcard.valid).toBe(true)
   })
 
+  it("counts field frequencies once when multiple rules inspect the same field", () => {
+    const result = profileDataQuality({
+      records: [
+        { key: "1", fields: { ean: "123" }, evidence: [] },
+        { key: "2", fields: { ean: "123" }, evidence: [] },
+      ],
+      rules: [
+        {
+          id: "ean-required",
+          field: "ean",
+          severity: "high",
+          rule: "required",
+          remediation: "Set EAN.",
+        },
+        {
+          id: "ean-unique",
+          field: "ean",
+          severity: "high",
+          rule: "unique",
+          remediation: "Deduplicate EAN.",
+        },
+      ],
+    })
+
+    expect(result.frequencies["ean"]?.['"123"']).toBe(2)
+  })
+
   it("keeps simulations isolated and root causes uncertainty-aware", () => {
     const inventory = simulateInventory({
       initial: [{ itemId: "1", locationId: "2", quantity: 5 }],

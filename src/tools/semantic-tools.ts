@@ -5,6 +5,8 @@ import {
   CompareMetricDefinitionsInputSchema,
   DefineBusinessTermInputSchema,
   DefineMetricInputSchema,
+  DeleteBusinessTermInputSchema,
+  DeleteMetricInputSchema,
   ExportMetricResultInputSchema,
   GenerateMetricReportInputSchema,
   type MetricDefinition,
@@ -38,6 +40,17 @@ export function registerSemanticTools(server: McpServer, dependencies: ToolDepen
     await validateTermReferences(dependencies, input)
     return await dependencies.semanticStore.defineMetric(dependencies.requester, input)
   })
+  register(
+    server,
+    dependencies,
+    ToolName.DeleteBusinessTerm,
+    DeleteBusinessTermInputSchema,
+    async (input) =>
+      await dependencies.semanticStore.deleteTerm(dependencies.requester, input.id, input.version),
+  )
+  register(server, dependencies, ToolName.DeleteMetric, DeleteMetricInputSchema, async (input) =>
+    dependencies.semanticStore.deleteMetric(dependencies.requester, input.id, input.version),
+  )
   register(
     server,
     dependencies,

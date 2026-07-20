@@ -53,6 +53,28 @@ describe("harness scope and budgets", () => {
     ).toEqual({ email: "[REDACTED]", accessToken: "[REDACTED]", name: "Visible" })
   })
 
+  it("redacts built-in PII recursively even without an explicit field list", () => {
+    expect(
+      redactForHarness(undefined, {
+        customer: {
+          emailAddress: "person@example.com",
+          shipAddress: "Example Street 1",
+          mobilephone: "+90 555 000 0000",
+          entityName: "Example Person",
+          statusName: "Pending Fulfillment",
+        },
+      }),
+    ).toEqual({
+      customer: {
+        emailAddress: "[REDACTED]",
+        shipAddress: "[REDACTED]",
+        mobilephone: "[REDACTED]",
+        entityName: "[REDACTED]",
+        statusName: "Pending Fulfillment",
+      },
+    })
+  })
+
   it("keeps composite versions immutable and rejects cycles", async () => {
     const root = await mkdtemp(join(tmpdir(), "supermcp-composite-"))
     const store = new CompositeStore(join(root, "composites.json"))

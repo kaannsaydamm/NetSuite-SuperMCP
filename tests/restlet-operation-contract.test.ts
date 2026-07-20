@@ -25,4 +25,19 @@ describe("permanent RESTlet operation contract", () => {
     expect(transformSource).toContain("operationActions.applyLineSelection")
     expect(projectSource).toContain('"supermcp_operation_actions.js"')
   })
+
+  it("uses the System Note result id instead of the unsupported internalid column", async () => {
+    const source = await readFile(
+      "netsuite/suitescript/supermcp_record_explorer_actions.js",
+      "utf8",
+    )
+    const systemNotes = source.slice(
+      source.indexOf("function getSystemNotes"),
+      source.indexOf("function transactionSummary"),
+    )
+    expect(systemNotes).not.toContain('"internalid"')
+    expect(systemNotes).not.toContain('["record",')
+    expect(systemNotes).toContain('["recordid",')
+    expect(systemNotes).toContain("String(result.id)")
+  })
 })

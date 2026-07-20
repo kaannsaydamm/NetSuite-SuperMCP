@@ -14,6 +14,26 @@ type RequestSummary = {
 }
 
 describe("OAuthNetSuiteClient", () => {
+  it("does not retry a record mutation after an upstream 502", async () => {
+    const originalFetch = globalThis.fetch
+    let attempts = 0
+    globalThis.fetch = Object.assign(
+      async () => {
+        attempts += 1
+        return new Response("upstream failed", { status: 502 })
+      },
+      { preconnect: originalFetch.preconnect },
+    )
+    try {
+      await expect(
+        clientForBaseUrl("https://netsuite.test").createRecord({ type: "customer", values: {} }),
+      ).rejects.toThrow()
+      expect(attempts).toBe(1)
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
+
   it("creates records with REST POST and returns the Location header", async () => {
     // When
     const { result } = await withMockNetSuite(
@@ -155,21 +175,21 @@ describe("OAuthNetSuiteClient", () => {
     })
   })
 
-  it("sends SuiteQL params only when present", async () => {
+  it("renders SuiteQL params into q because SuiteTalk REST accepts only the q body field", async () => {
     // When
     const { result } = await withMockNetSuite(
       (request) => Response.json(request),
       (client) =>
         client.runSuiteQl({
-          query: "select id from transaction where id = ?",
-          params: [123],
+          query: "select id from transaction where id = ? and memo = ?",
+          params: [123, "O'Reilly"],
         }),
     )
 
     // Then
     expect(result).toMatchObject({
       path: "/services/rest/query/v1/suiteql",
-      body: { q: "select id from transaction where id = ?", params: [123] },
+      body: { q: "select id from transaction where id = 123 and memo = 'O''Reilly'" },
     })
   })
 })

@@ -47,6 +47,23 @@ describe("semantic metric compiler", () => {
     )
   })
 
+  it("deletes only the requester's selected semantic definition", async () => {
+    const root = await mkdtemp(join(tmpdir(), "supermcp-semantic-delete-"))
+    const store = new SemanticStore(join(root, "semantic.json"))
+    await store.defineMetric("owner-a", metric)
+    await store.defineMetric("owner-b", metric)
+
+    expect(await store.deleteMetric("owner-a", metric.id, metric.version)).toEqual({
+      deleted: true,
+      id: metric.id,
+      version: metric.version,
+    })
+    await expect(store.getMetric("owner-a", metric.id, metric.version)).rejects.toThrow(
+      "SEMANTIC_DEFINITION_NOT_FOUND",
+    )
+    expect(await store.getMetric("owner-b", metric.id, metric.version)).toEqual(metric)
+  })
+
   it("rejects an ambiguous term not declared by the selected metric", () => {
     expect(() => assertBusinessQueryIsExplicit("show margin", metric)).toThrow(
       "AMBIGUOUS_BUSINESS_TERM",

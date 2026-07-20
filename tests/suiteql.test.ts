@@ -10,7 +10,7 @@ class PagedClient extends FakeNetSuiteClient {
   override async runSuiteQl(request: SuiteQlRequest): Promise<JsonObject> {
     this.queries.push(request)
     if (this.queries.length === 1) {
-      return { items: [{ id: 1 }, { id: 2 }], hasMore: true }
+      return { items: [{ id: "1" }, { id: "2" }], hasMore: true }
     }
     return { items: [{ id: 3 }], hasMore: false }
   }

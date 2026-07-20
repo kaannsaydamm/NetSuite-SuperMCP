@@ -209,7 +209,7 @@ export async function runSuiteQlPage(
     return { items: [], count: 0, hasMore: false, truncated: true, nextCursor: null, consumed }
   }
   const fetchSize = Math.min(input.pageSize, remaining)
-  const lastKey = state?.["lastKey"]
+  const lastKey = normalizeCursorKey(state?.["lastKey"], input.keyField)
   const wrappedQuery =
     lastKey === undefined
       ? `SELECT * FROM (${input.query}) supermcp_q ORDER BY supermcp_q.${input.keyField} ASC`
@@ -252,6 +252,78 @@ export async function runSuiteQlPage(
 
 export function queryFingerprint(query: string): string {
   return createHash("sha256").update(query.trim()).digest("hex")
+}
+
+export function bindSuiteQlParams(query: string, params: readonly JsonValue[]): string {
+  let index = 0
+  let parameterIndex = 0
+  let output = ""
+  let quote: "'" | '"' | undefined
+  while (index < query.length) {
+    const char = query[index] as string
+    const next = query[index + 1]
+    if (quote !== undefined) {
+      output += char
+      if (char === quote && next === quote) {
+        output += next
+        index += 2
+        continue
+      }
+      if (char === quote) quote = undefined
+      index += 1
+      continue
+    }
+    if (char === "'" || char === '"') {
+      quote = char
+      output += char
+      index += 1
+      continue
+    }
+    if (char === "-" && next === "-") {
+      const end = consumeLineComment(query, index + 2)
+      output += query.slice(index, end)
+      index = end
+      continue
+    }
+    if (char === "/" && next === "*") {
+      const end = consumeBlockComment(query, index + 2)
+      output += query.slice(index, end)
+      index = end
+      continue
+    }
+    if (char === "?") {
+      if (parameterIndex >= params.length) throw new Error("SUITEQL_PARAMETER_COUNT_MISMATCH")
+      output += suiteQlLiteral(params[parameterIndex] as JsonValue)
+      parameterIndex += 1
+      index += 1
+      continue
+    }
+    output += char
+    index += 1
+  }
+  if (parameterIndex !== params.length) throw new Error("SUITEQL_PARAMETER_COUNT_MISMATCH")
+  return output
+}
+
+function suiteQlLiteral(value: JsonValue): string {
+  if (value === null) return "NULL"
+  if (typeof value === "string") return `'${value.replaceAll("'", "''")}'`
+  if (typeof value === "number" && Number.isFinite(value)) return String(value)
+  if (typeof value === "boolean") return value ? "'T'" : "'F'"
+  throw new Error("SUITEQL_PARAMETER_TYPE_UNSUPPORTED")
+}
+
+function normalizeCursorKey(value: JsonValue | undefined, keyField: string): JsonValue | undefined {
+  const leaf = keyField.split(".").at(-1)?.toLowerCase()
+  if (
+    (leaf === "id" || leaf === "internalid") &&
+    typeof value === "string" &&
+    /^\d+$/.test(value)
+  ) {
+    const numeric = Number(value)
+    if (Number.isSafeInteger(numeric)) return numeric
+  }
+  return value
 }
 
 function tokenize(query: string): Token[] {

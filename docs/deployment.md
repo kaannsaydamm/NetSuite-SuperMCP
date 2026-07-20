@@ -72,7 +72,7 @@ netsuite-supermcp doctor
 
 From any connected MCP client, also run `ns_getSuperMcpVersion`. It should show the same installed
 package version and RESTlet version, `restlet.reachable: true`, the expected NetSuite account ID,
-and `toolCount: 183`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
+and `toolCount: 185`. If npm, the running MCP process, and the deployed RESTlet disagree, restart
 the MCP process first and redeploy the RESTlet if `restlet.version` is old.
 
 If you use SuiteCloud CLI instead of the NetSuite UI, Oracle's current CLI package is
@@ -149,11 +149,14 @@ Operational values:
 
 ## Production Defaults
 
+- Unsigned production requests use the bounded `preview` harness profile. Reads and prepare-only
+  plans remain available; commit and OAuth revocation require a signed `operations` context.
 - Map the OAuth client credentials to the exact NetSuite account and role you want SuperMCP to use.
 - Run `ns_checkAccountPermissions` after changing OAuth mapping, role permissions, or RESTlet
   deployments.
 - Store `AUDIT_LOG_PATH` on persistent storage or send audit output through your platform log
-  collector.
+  collector. Audit rows contain metadata/fingerprints rather than full request, record, file, or
+  source payloads; legacy full-body rows are compacted when accessed.
 - Store `JOB_STORE_PATH`, `EXPORT_DIRECTORY`, `INTEGRATION_STORE_PATH`,
   `CUSTOMIZATION_STORE_PATH`, `SEMANTIC_STORE_PATH`, `RUNBOOK_STORE_PATH`,
   `COMPOSITE_STORE_PATH`, and `HARNESS_BUDGET_STORE_PATH` on persistent storage

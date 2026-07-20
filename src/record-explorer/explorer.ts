@@ -10,7 +10,7 @@ export async function readRecordTypeMetadata(client: NetSuiteClient, type: strin
     const metadata = await client.getRecordMetadata({
       type,
       select: [],
-      mediaType: "application/json",
+      mediaType: "application/schema+json",
     })
     return { source: "restMetadata", metadata }
   } catch (error) {
@@ -54,6 +54,19 @@ export function extractRecordTypes(
 }
 
 export function extractFields(metadata: JsonValue) {
+  if (isObject(metadata) && isObject(metadata["properties"])) {
+    return Object.entries(metadata["properties"]).map(([id, value]) => {
+      const entry = isObject(value) ? value : {}
+      return {
+        id,
+        label: text(entry["title"] ?? entry["label"]) || id,
+        type: text(entry["type"] ?? entry["dataType"]),
+        required: entry["required"] === true || entry["nullable"] === false,
+        readOnly: entry["readOnly"] === true,
+        source: entry,
+      }
+    })
+  }
   const objects = collectObjects(metadata)
   const fields = objects
     .map((entry) => ({
@@ -150,6 +163,7 @@ export function createEvidenceBundle(name: string, items: readonly JsonObject[])
 
 export function transactionHypotheses(chain: JsonObject, notes: JsonObject | undefined) {
   const gaps = Array.isArray(chain["gaps"]) ? chain["gaps"] : []
+  const noteGaps = notes && Array.isArray(notes["gaps"]) ? notes["gaps"] : []
   const nodes = Array.isArray(chain["nodes"]) ? chain["nodes"] : []
   const events = notes && Array.isArray(notes["events"]) ? notes["events"] : []
   const hypotheses: JsonValue[] = []
@@ -172,7 +186,7 @@ export function transactionHypotheses(chain: JsonObject, notes: JsonObject | und
       explanation: "No downstream or upstream transaction is visible from the selected record.",
     })
   }
-  if (events.length === 0) {
+  if (events.length === 0 && noteGaps.length === 0) {
     hypotheses.push({
       rank: hypotheses.length + 1,
       code: "NO_SYSTEM_NOTES_VISIBLE",
@@ -183,6 +197,72 @@ export function transactionHypotheses(chain: JsonObject, notes: JsonObject | und
     })
   }
   return hypotheses
+}
+
+export function normalizeTransactionChain(chain: JsonObject): JsonObject {
+  const rawNodes = Array.isArray(chain["nodes"]) ? chain["nodes"].filter(isObject) : []
+  const knownTypes = new Map<string, string>()
+  for (const node of rawNodes) {
+    const id = text(node["id"])
+    const candidate = canonicalTransactionType(text(node["canonicalType"] ?? node["type"]))
+    if (id && candidate !== "transaction") knownTypes.set(id, candidate)
+  }
+  const canonicalRef = (value: JsonValue | undefined): JsonObject | undefined => {
+    if (!isObject(value)) return undefined
+    const id = text(value["id"])
+    const type = canonicalTransactionType(text(value["canonicalType"] ?? value["type"]))
+    return { ...value, type: type === "transaction" ? (knownTypes.get(id) ?? type) : type, id }
+  }
+  const nodes = uniqueBy(
+    rawNodes.map(canonicalRef).filter((node): node is JsonObject => node !== undefined),
+    (node) => `${node["type"]}:${node["id"]}`,
+  )
+  const aliases = new Map<string, string>()
+  for (const node of rawNodes) {
+    const id = text(node["id"])
+    const canonical = knownTypes.get(id) ?? canonicalTransactionType(text(node["type"]))
+    aliases.set(`${text(node["type"])}:${id}`, `${canonical}:${id}`)
+    aliases.set(`transaction:${id}`, `${canonical}:${id}`)
+  }
+  const edges: JsonObject[] = uniqueBy(
+    (Array.isArray(chain["edges"]) ? chain["edges"] : []).filter(isObject).map(
+      (edge): JsonObject => ({
+        ...edge,
+        from: canonicalEdgeRef(text(edge["from"]), aliases),
+        to: canonicalEdgeRef(text(edge["to"]), aliases),
+      }),
+    ),
+    (edge) => `${edge["from"]}:${edge["to"]}:${text(edge["relation"])}`,
+  )
+  const root = canonicalRef(chain["root"])
+  return { ...chain, ...(root === undefined ? {} : { root }), nodes, edges }
+}
+
+function canonicalTransactionType(value: string): string {
+  const aliases: Record<string, string> = {
+    salesord: "salesOrder",
+    salesorder: "salesOrder",
+    custinvc: "invoice",
+    invoice: "invoice",
+    itemship: "itemFulfillment",
+    itemfulfillment: "itemFulfillment",
+    purchord: "purchaseOrder",
+    purchaseorder: "purchaseOrder",
+    itemrcpt: "itemReceipt",
+    itemreceipt: "itemReceipt",
+    vendbill: "vendorBill",
+    vendorbill: "vendorBill",
+    transaction: "transaction",
+  }
+  return aliases[value.toLowerCase()] ?? value
+}
+
+function canonicalEdgeRef(value: string, aliases: ReadonlyMap<string, string>): string {
+  const separator = value.lastIndexOf(":")
+  if (separator < 0) return value
+  const type = value.slice(0, separator)
+  const id = value.slice(separator + 1)
+  return aliases.get(value) ?? `${canonicalTransactionType(type)}:${id}`
 }
 
 function collectObjects(value: JsonValue): JsonObject[] {

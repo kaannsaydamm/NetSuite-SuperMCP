@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test"
+import { readFile } from "node:fs/promises"
 import { createApp } from "../src/app"
 import type { RestletAction } from "../src/netsuite/types"
 import type { JsonObject } from "../src/shared/json"
@@ -27,6 +28,21 @@ class ScriptNetSuiteClient extends FakeNetSuiteClient {
 }
 
 describe("MCP SuiteScript observability", () => {
+  it("resolves script files from loaded script records instead of unsupported search columns", async () => {
+    const source = await readFile(
+      "netsuite/suitescript/supermcp_script_observability_actions.js",
+      "utf8",
+    )
+    const getSources = source.slice(
+      source.indexOf("function getScriptSources"),
+      source.indexOf("function executionLogResponse"),
+    )
+    expect(getSources).toContain("record.load")
+    expect(getSources).toContain('getValue({ fieldId: "scriptfile" })')
+    expect(getSources).not.toContain(
+      '["internalid", "scriptid", "name", "scripttype", "scriptfile"]',
+    )
+  })
   it("analyzes a script by script ID through the permanent source action", async () => {
     const netsuite = new ScriptNetSuiteClient()
     const app = createApp(testConfig(), { netsuite })

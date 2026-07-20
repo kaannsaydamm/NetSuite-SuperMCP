@@ -102,6 +102,14 @@ export function fieldWriteConflicts(input: z.infer<typeof FieldWriteConflictInpu
 export function profileDataQuality(input: QualityInput) {
   const violations: Array<Record<string, unknown>> = []
   const frequencies: Record<string, Record<string, number>> = {}
+  for (const field of new Set(input.rules.map((rule) => rule.field))) {
+    const frequency: Record<string, number> = {}
+    for (const record of input.records) {
+      const valueKey = JSON.stringify(record.fields[field] ?? null)
+      frequency[valueKey] = (frequency[valueKey] ?? 0) + 1
+    }
+    frequencies[field] = frequency
+  }
   for (const rule of input.rules) {
     const seen = new Map<string, string[]>()
     for (const record of input.records) {
@@ -121,10 +129,6 @@ export function profileDataQuality(input: QualityInput) {
         const key = JSON.stringify(value)
         seen.set(key, [...(seen.get(key) ?? []), record.key])
       }
-      const valueKey = JSON.stringify(value ?? null)
-      const frequency = frequencies[rule.field] ?? {}
-      frequency[valueKey] = (frequency[valueKey] ?? 0) + 1
-      frequencies[rule.field] = frequency
     }
     if (rule.rule === "unique")
       for (const [value, keys] of seen)

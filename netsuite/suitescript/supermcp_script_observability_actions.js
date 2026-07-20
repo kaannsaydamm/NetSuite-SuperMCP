@@ -2,7 +2,7 @@
  * @NApiVersion 2.1
  * @NModuleScope SameAccount
  */
-define(["N/error", "N/file", "N/search"], (nsError, file, search) => {
+define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, search) => {
   const SCRIPT_OBSERVABILITY_ACTIONS = {
     ns_findScriptErrors: findScriptErrors,
     ns_getScriptLogs: getScriptLogs,
@@ -27,7 +27,7 @@ define(["N/error", "N/file", "N/search"], (nsError, file, search) => {
       scripts: runSearch(
         "script",
         filters,
-        ["internalid", "scriptid", "name", "scripttype", "scriptfile", "owner", "isinactive"],
+        ["internalid", "scriptid", "name", "owner", "isinactive"],
         maxResults,
       ),
       maxResults,
@@ -143,16 +143,25 @@ define(["N/error", "N/file", "N/search"], (nsError, file, search) => {
       const scriptRef = resolveDeploymentScript(payload.deploymentId)
       addIdFilter(filters, "internalid", "scriptid", scriptRef)
     }
-    const rows = runSearch(
-      "script",
-      filters,
-      ["internalid", "scriptid", "name", "scripttype", "scriptfile"],
-      maxScripts,
-    )
+    const rows = runSearch("script", filters, ["internalid", "scriptid", "name"], maxScripts)
     const sources = []
     const gaps = []
     for (const row of rows) {
-      const fileId = scalarValue(row.values.scriptfile)
+      let scriptRecord
+      try {
+        scriptRecord = record.load({
+          type: row.recordType || "script",
+          id: row.id,
+          isDynamic: false,
+        })
+      } catch (error) {
+        gaps.push({
+          scriptId: scalarValue(row.values.scriptid) || row.id,
+          reason: error?.name ? String(error.name) : "script record is not loadable",
+        })
+        continue
+      }
+      const fileId = scriptRecord.getValue({ fieldId: "scriptfile" })
       if (!fileId) {
         gaps.push({
           scriptId: scalarValue(row.values.scriptid) || row.id,
@@ -173,7 +182,7 @@ define(["N/error", "N/file", "N/search"], (nsError, file, search) => {
         sources.push({
           scriptId: scalarValue(row.values.scriptid) || row.id,
           internalId: row.id,
-          scriptType: scalarValue(row.values.scripttype),
+          scriptType: scriptRecord.type,
           deploymentIds: deploymentIdsFor(row.id),
           file: {
             id: String(fileId),

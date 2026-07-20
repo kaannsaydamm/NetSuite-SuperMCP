@@ -141,6 +141,8 @@ import {
   CompareMetricDefinitionsInputSchema,
   DefineBusinessTermInputSchema,
   DefineMetricInputSchema,
+  DeleteBusinessTermInputSchema,
+  DeleteMetricInputSchema,
   ExportMetricResultInputSchema,
   GenerateMetricReportInputSchema,
   MetricRefInputSchema,
@@ -447,6 +449,10 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
       return DefineBusinessTermInputSchema
     case ToolName.DefineMetric:
       return DefineMetricInputSchema
+    case ToolName.DeleteBusinessTerm:
+      return DeleteBusinessTermInputSchema
+    case ToolName.DeleteMetric:
+      return DeleteMetricInputSchema
     case ToolName.GetMetricDefinition:
       return MetricRefInputSchema
     case ToolName.PlanBusinessQuery:
@@ -519,7 +525,7 @@ function inputSchemaFor(name: ToolName): z.ZodTypeAny {
 }
 
 function examplesFor(name: ToolName): { readonly valid: JsonValue; readonly invalid: JsonValue } {
-  return { valid: validExampleFor(name), invalid: null }
+  return { valid: validExampleFor(name), invalid: [] }
 }
 
 function validExampleFor(name: ToolName): JsonValue {
@@ -920,6 +926,10 @@ function validExampleFor(name: ToolName): JsonValue {
       }
     case ToolName.DefineMetric:
       return metricExample()
+    case ToolName.DeleteBusinessTerm:
+      return { id: "inventory.location", version: "1.0" }
+    case ToolName.DeleteMetric:
+      return { id: "inventory.onhand", version: "1.0" }
     case ToolName.GetMetricDefinition:
     case ToolName.TraceMetricLineage:
       return { metricId: "inventory.onhand", metricVersion: "1.0" }

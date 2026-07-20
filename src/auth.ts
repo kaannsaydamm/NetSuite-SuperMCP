@@ -18,7 +18,7 @@ export function isAuthorized(authorization: string | null, expectedToken: string
 
 export function identityFromHeaders(headers: Headers): RequestIdentity {
   return {
-    requester: headers.get("x-supermcp-user") ?? "unknown",
-    client: headers.get("x-supermcp-client") ?? "unknown",
+    requester: headers.get("x-supermcp-user") ?? "oauth-account-user",
+    client: headers.get("x-supermcp-client") ?? "mcp-http",
   }
 }

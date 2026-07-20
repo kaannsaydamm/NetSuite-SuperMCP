@@ -10,6 +10,17 @@ export async function prepareRecordOperation(
 ): Promise<JsonObject> {
   const type = requireString(payload, "type")
   const id = typeof payload["id"] === "string" ? payload["id"] : undefined
+  if (id === undefined) {
+    try {
+      await dependencies.netsuite.getRecordMetadata({
+        type,
+        select: [],
+        mediaType: "application/schema+json",
+      })
+    } catch (error) {
+      throw new Error(`INVALID_RECORD_TYPE: ${type}`, { cause: error })
+    }
+  }
   const sourceSnapshot =
     id === undefined
       ? { type, state: "newRecord" }

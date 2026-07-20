@@ -24,6 +24,7 @@ import {
   diffSnapshots,
   extractFields,
   extractRecordTypes,
+  normalizeTransactionChain,
   readRecordTypeMetadata,
   transactionHypotheses,
 } from "../record-explorer/explorer"
@@ -257,16 +258,18 @@ async function transactionChain(
   dependencies: ToolDependencies,
   input: z.infer<typeof TransactionChainInputSchema>,
 ) {
-  return await dependencies.netsuite.runRestletAction({
-    action: ToolName.GetTransactionChain,
-    phase: "preview",
-    payload: {
-      recordType: input.type,
-      recordId: input.id,
-      maxNodes: input.maxNodes,
-      integrationReferences: input.integrationReferences,
-    },
-  })
+  return normalizeTransactionChain(
+    await dependencies.netsuite.runRestletAction({
+      action: ToolName.GetTransactionChain,
+      phase: "preview",
+      payload: {
+        recordType: input.type,
+        recordId: input.id,
+        maxNodes: input.maxNodes,
+        integrationReferences: input.integrationReferences,
+      },
+    }),
+  )
 }
 
 async function systemNotes(

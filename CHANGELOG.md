@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.40
+
+- Added recursive built-in PII redaction for email, phone, address, personal-name, addressee,
+  attention, and postal-code fields. Harness `piiMode: show` remains the explicit override.
+- Replaced full request/response audit persistence with bounded metadata, fingerprints, counts,
+  duration, record references, and error codes; legacy full-body rows are compacted on access.
+- Added a bounded unsigned-production preview profile. Prepare tools remain available, while actual
+  commit and OAuth revocation require an explicitly signed operations scope.
+- Fixed SuiteTalk REST SuiteQL parameters by safely rendering validated scalar literals into `q`,
+  including keyset cursor numeric IDs and semantic metric execution.
+- Fixed JSON Schema field discovery, System Notes search columns and diagnostic gap handling,
+  transaction type canonicalization, data-quality frequency counts, and invalid tool examples.
+- Fixed SuiteScript source resolution by loading script records instead of requesting unsupported
+  script search columns. Read-only requests may retry transient upstream failures; mutations do not.
+- Added requester-owned `ns_deleteBusinessTerm` and `ns_deleteMetric` cleanup tools and explicit
+  `registryOwner`, `businessOwner`, and `createdBy` provenance.
+
 ## 0.1.39
 
 - Added HMAC-verified harness contexts for provider-selected read, preview, and operations profiles.

@@ -33,6 +33,7 @@ export async function runNetSuiteTool(request: NetSuiteToolRequest): Promise<Too
       result: responseResult,
       status: "succeeded",
       requestId,
+      durationMs: performance.now() - started,
     })
     return toolText(responseResult)
   } catch (error) {
@@ -45,6 +46,7 @@ export async function runNetSuiteTool(request: NetSuiteToolRequest): Promise<Too
       result: auditEnvelope,
       status: "failed",
       requestId,
+      durationMs: performance.now() - started,
     })
     return toolError(envelope)
   } finally {
@@ -78,6 +80,7 @@ export async function respond(
     result: responseResult,
     status: "succeeded",
     requestId,
+    durationMs: performance.now() - started,
   })
   await dependencies.harnessBudgetStore.recordRuntime(
     dependencies.harnessContext,
@@ -124,6 +127,7 @@ type AuditWriteRequest = {
   readonly result: JsonObject
   readonly status: "blocked" | "succeeded" | "failed"
   readonly requestId: string
+  readonly durationMs: number
 }
 
 async function writeAudit(request: AuditWriteRequest): Promise<void> {
@@ -137,6 +141,7 @@ async function writeAudit(request: AuditWriteRequest): Promise<void> {
     requester: request.dependencies.requester,
     client: request.dependencies.client,
     requestId: request.requestId,
+    durationMs: request.durationMs,
     input: request.input,
     result: request.result,
   })

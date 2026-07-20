@@ -114,6 +114,8 @@ export const MetricDefinitionSchema = z
 export const DefineBusinessTermInputSchema = BusinessTermDefinitionSchema
 export const DefineMetricInputSchema = MetricDefinitionSchema
 export const MetricRefInputSchema = z.object({ metricId: IdSchema, metricVersion: VersionSchema })
+export const DeleteBusinessTermInputSchema = z.object({ id: IdSchema, version: VersionSchema })
+export const DeleteMetricInputSchema = z.object({ id: IdSchema, version: VersionSchema })
 export const PlanBusinessQueryInputSchema = MetricRefInputSchema.extend({
   query: z.string().min(1).max(4000),
   dimensions: z.array(IdentifierSchema).max(20).default([]),

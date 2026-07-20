@@ -16,6 +16,15 @@ Includes:
   and redacted evidence bundles.
 - Inventory stock import preparation and commit tools for XLS/CSV-derived stock counts.
 - Connector-visible version diagnostics with local MCP, npm package, RESTlet, tool-count, account, and execution-context details.
+- Recursive PII redaction and metadata-only audit events; full record bodies, file contents,
+  SuiteScript source, credentials, and personal data are not persisted in the audit log.
+- A bounded production preview profile when no signed harness context is supplied. It exposes
+  prepare/read tools but not the commit or OAuth-revocation tools.
+- Safe SuiteQL parameter rendering for the REST query endpoint and signed keyset cursors.
+- Requester-owned semantic registry cleanup with `ns_deleteBusinessTerm` and `ns_deleteMetric`.
+
+The MCP never grants its own consent. The client/provider or a signed harness context owns approval.
+NetSuite operations run with the permissions of the OAuth-linked NetSuite user and role.
 
 ## Local Setup
 
@@ -350,11 +359,20 @@ Providers can sign a versioned harness context with `MCP_HARNESS_CONTEXT_SECRET`
 `MCP_HARNESS_CONTEXT` and `MCP_HARNESS_CONTEXT_SIGNATURE` environment values. When verification is
 configured, unsigned or invalid scope claims are rejected.
 
+Without a configured verifier, unsigned sandbox connections keep the local development catalog.
+Unsigned production connections receive a bounded `preview` profile: read and prepare tools are
+available, but `ns_commitAction` and OAuth revocation are not exposed. A signed `operations`
+context is required to expose them.
+
 The signed context selects the `read`, `preview`, or `operations` catalog, optional tool and record
 type allowlists, persistent call/row/record/governance/runtime budgets, PII fields, and approval
 facts. `ns_getHarnessContext`, `ns_getHarnessBudget`, and `ns_getCatalogProfile` expose the active
-facts. Secrets are always redacted. The harness may permit non-secret PII, but SuperMCP never calls
+facts. Built-in recursive PII matching is active even when `piiFields` is empty. Secrets are always
+redacted. The harness may explicitly permit non-secret PII, but SuperMCP never calls
 an approval callback or treats model text as consent.
+
+Audit rows contain metadata and fingerprints only. On first audit read or write, legacy rows that
+contain full request/response bodies are compacted in place before they can be returned.
 
 `ns_createCompositeTool` stores an immutable versioned composite assembled from existing typed
 tools, runbooks, and prior composites. Inputs must be declared and include validation examples;

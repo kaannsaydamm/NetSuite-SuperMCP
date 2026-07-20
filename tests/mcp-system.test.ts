@@ -17,6 +17,7 @@ describe("MCP system tools", () => {
       const contract = getToolContract(name)
       expect(contract.inputSchema.safeParse(contract.examples.valid).success, name).toBe(true)
       expect(contract.inputSchema.safeParse(contract.examples.invalid).success, name).toBe(false)
+      expect(contract.examples.invalid, name).not.toBeNull()
     }
   })
 
@@ -85,7 +86,7 @@ describe("MCP system tools", () => {
     expect(payload.server).toMatchObject({
       name: "NetSuite SuperMCP",
       configuredVersion: "local-dev",
-      packageVersion: "0.1.39",
+      packageVersion: "0.1.40",
       toolCount: Object.keys(ToolName).length,
     })
     expect(payload.netsuite).toMatchObject({
@@ -310,7 +311,7 @@ describe("MCP system tools", () => {
     // Then
     expect(response.status).toBe(200)
     expect(text).toContain(ToolName.UpdateMapping)
-    expect(text).toContain("[REDACTED]")
+    expect(text).toContain("fingerprint")
     expect(text).not.toContain("secret")
   })
 })

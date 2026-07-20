@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto"
+import { createHash, createHmac, timingSafeEqual } from "node:crypto"
 import { type HarnessContext, HarnessContextSchema } from "../contracts/harness-schemas"
 import type { JsonValue } from "../shared/json"
 import type { ToolName } from "../tools/catalog"
@@ -41,6 +41,25 @@ export function isToolAllowed(context: HarnessContext | undefined, toolName: Too
   return toolName !== "ns_commitAction" && toolName !== "ns_revokeOAuthAuthorization"
 }
 
+export function defaultHarnessContext(
+  environment: "sandbox" | "production",
+  requester: string,
+  client: string,
+): HarnessContext | undefined {
+  if (environment !== "production") return undefined
+  const scope = createHash("sha256").update(`${requester}\0${client}`).digest("hex").slice(0, 24)
+  return HarnessContextSchema.parse({
+    version: 1,
+    scopeId: `production-default:${scope}`,
+    provider: client,
+    subject: requester,
+    profile: "preview",
+    budgets: { calls: 100, rows: 10000, records: 1000, runtimeMs: 120000 },
+    sensitivity: { piiFields: [], piiMode: "redact" },
+    approvals: { requiredForRisks: ["medium", "high", "critical"], decisions: [] },
+  })
+}
+
 export function assertRequestScope(context: HarnessContext | undefined, value: JsonValue): void {
   if (context === undefined || context.allowedRecordTypes.length === 0) return
   const allowed = new Set(context.allowedRecordTypes.map((entry) => entry.toLowerCase()))
@@ -67,12 +86,30 @@ export function assertRequestScope(context: HarnessContext | undefined, value: J
 
 export function redactForHarness(context: HarnessContext | undefined, value: JsonValue): JsonValue {
   const pii = new Set(context?.sensitivity.piiFields.map((entry) => entry.toLowerCase()) ?? [])
+  const redactPii = context?.sensitivity.piiMode !== "show"
   return map(value, (key, current) => {
     if (/secret|token|password|private.?key|authorization|credential/i.test(key))
       return "[REDACTED]"
-    if (context?.sensitivity.piiMode !== "show" && pii.has(key.toLowerCase())) return "[REDACTED]"
+    if (redactPii && (pii.has(key.toLowerCase()) || isBuiltInPiiField(key))) return "[REDACTED]"
     return current
   })
+}
+
+function isBuiltInPiiField(key: string): boolean {
+  const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, "")
+  if (/email|phone|address/.test(normalized)) return true
+  return new Set([
+    "addressee",
+    "attention",
+    "entityname",
+    "firstname",
+    "lastname",
+    "mobile",
+    "postalcode",
+    "postcode",
+    "zip",
+    "zipcode",
+  ]).has(normalized)
 }
 
 function visit(value: JsonValue, callback: (key: string, value: JsonValue) => void): void {

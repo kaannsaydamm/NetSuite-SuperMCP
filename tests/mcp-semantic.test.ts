@@ -72,6 +72,36 @@ describe("MCP semantic layer", () => {
       expect.objectContaining({ sourceRefs: ["savedsearch:customsearch_inventory_source"] }),
     )
   })
+
+  it("reports registry and business ownership separately and supports explicit cleanup", async () => {
+    const root = await mkdtemp(join(tmpdir(), "supermcp-semantic-cleanup-"))
+    const config = testConfig({ semanticStorePath: join(root, "semantic.json") })
+    const app = createApp(config, {
+      netsuite: new MetricClient(),
+      semanticStore: new SemanticStore(config.semanticStorePath),
+    })
+    const defined = await call(app, ToolName.DefineBusinessTerm, {
+      id: "sales.order",
+      version: "1.0",
+      label: "Sales order",
+      description: "Approved sales order identifier.",
+      table: "transaction",
+      field: "id",
+      valueType: "identifier",
+      owner: "Finance Operations",
+      sourceRefs: [],
+    })
+    expect(defined).toMatchObject({
+      registryOwner: "test-user",
+      businessOwner: "Finance Operations",
+      createdBy: "test-user",
+    })
+    const deleted = await call(app, ToolName.DeleteBusinessTerm, {
+      id: "sales.order",
+      version: "1.0",
+    })
+    expect(deleted).toMatchObject({ deleted: true, id: "sales.order", version: "1.0" })
+  })
 })
 
 async function call(app: ReturnType<typeof createApp>, name: ToolName, args: JsonObject) {
