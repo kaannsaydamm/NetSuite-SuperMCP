@@ -55,7 +55,7 @@ netsuite-supermcp public-url
 netsuite-supermcp setup
 netsuite-supermcp doctor
 netsuite-supermcp suitecloud
-netsuite-supermcp suitecloud --deploy --auth-id supermcp-11675047
+netsuite-supermcp suitecloud --deploy --auth-id supermcp-yourid
 netsuite-supermcp-public-url
 netsuite-supermcp-oauth2
 netsuite-supermcp-oauth-login
