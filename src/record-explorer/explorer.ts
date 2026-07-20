@@ -225,17 +225,51 @@ export function normalizeTransactionChain(chain: JsonObject): JsonObject {
     aliases.set(`transaction:${id}`, `${canonical}:${id}`)
   }
   const edges: JsonObject[] = uniqueBy(
-    (Array.isArray(chain["edges"]) ? chain["edges"] : []).filter(isObject).map(
-      (edge): JsonObject => ({
-        ...edge,
-        from: canonicalEdgeRef(text(edge["from"]), aliases),
-        to: canonicalEdgeRef(text(edge["to"]), aliases),
-      }),
-    ),
-    (edge) => `${edge["from"]}:${edge["to"]}:${text(edge["relation"])}`,
+    (Array.isArray(chain["edges"]) ? chain["edges"] : []).filter(isObject).map((edge) => {
+      const relation = text(edge["relation"])
+      const from = canonicalEdgeRef(text(edge["from"]), aliases)
+      const to = canonicalEdgeRef(text(edge["to"]), aliases)
+      const canonicalRelation = canonicalRelationship(relation)
+      const oriented =
+        canonicalRelation === "created" ? orientTransactionEdge(from, to) : { from, to }
+      return { ...edge, ...oriented, relation: canonicalRelation }
+    }),
+    (edge) => {
+      const relation = text(edge["relation"])
+      const endpoints = [text(edge["from"]), text(edge["to"])]
+      return relation === "created"
+        ? `${endpoints.sort().join(":")}:${relation}`
+        : `${endpoints[0]}:${endpoints[1]}:${relation}`
+    },
   )
   const root = canonicalRef(chain["root"])
-  return { ...chain, ...(root === undefined ? {} : { root }), nodes, edges }
+  return {
+    ...chain,
+    ...(root === undefined ? {} : { root }),
+    nodes,
+    edges,
+    tree: edges.map((edge) => `${edge["from"]} --${edge["relation"]}--> ${edge["to"]}`),
+  }
+}
+
+function canonicalRelationship(value: string): string {
+  return ["appliedBy", "appliedTo", "createdFrom"].includes(value) ? "created" : value
+}
+
+function orientTransactionEdge(from: string, to: string): { from: string; to: string } {
+  const fromStage = transactionStage(from)
+  const toStage = transactionStage(to)
+  return fromStage !== undefined && toStage !== undefined && fromStage > toStage
+    ? { from: to, to: from }
+    : { from, to }
+}
+
+function transactionStage(ref: string): number | undefined {
+  const type = ref.slice(0, ref.lastIndexOf(":"))
+  if (["salesOrder", "purchaseOrder", "returnAuthorization"].includes(type)) return 0
+  if (["invoice", "itemFulfillment", "itemReceipt", "vendorBill", "creditMemo"].includes(type))
+    return 1
+  return undefined
 }
 
 function canonicalTransactionType(value: string): string {

@@ -97,6 +97,26 @@ describe("record explorer primitives", () => {
     expect(result["root"]).toEqual({ type: "salesOrder", id: "10" })
   })
 
+  it("orients created-from relationships parent to child and rebuilds the canonical tree", () => {
+    const result = normalizeTransactionChain({
+      root: { type: "SalesOrd", id: "10" },
+      nodes: [
+        { type: "SalesOrd", id: "10" },
+        { type: "CustInvc", id: "20" },
+      ],
+      edges: [
+        { from: "SalesOrd:10", to: "CustInvc:20", relation: "appliedBy" },
+        { from: "CustInvc:20", to: "transaction:10", relation: "createdFrom" },
+      ],
+      tree: ["stale raw tree"],
+    })
+
+    expect(result["edges"]).toEqual([
+      { from: "salesOrder:10", to: "invoice:20", relation: "created" },
+    ])
+    expect(result["tree"]).toEqual(["salesOrder:10 --created--> invoice:20"])
+  })
+
   it("does not infer missing history when the System Notes search failed", () => {
     expect(
       transactionHypotheses(

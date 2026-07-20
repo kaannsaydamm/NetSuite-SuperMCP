@@ -30,10 +30,7 @@ const PagingShape = {
 }
 
 function direct<T extends z.ZodTypeAny>(payload: T) {
-  return z.union([
-    z.object({ action: z.string().min(1).optional(), payload }),
-    z.intersection(payload, z.object({ action: z.string().min(1).optional() })),
-  ])
+  return payload
 }
 
 const schemaByTool: Partial<Record<ToolName, z.ZodTypeAny>> = {
@@ -87,7 +84,24 @@ const schemaByTool: Partial<Record<ToolName, z.ZodTypeAny>> = {
   [ToolName.UpdateSavedSearch]: direct(UpdateSavedSearchPayloadSchema),
   [ToolName.DeleteSavedSearch]: direct(DeleteSavedSearchPayloadSchema),
   [ToolName.ListFileCabinet]: direct(
-    z.object({ folderId: IdSchema.optional(), path: z.string().optional(), ...PagingShape }),
+    z
+      .object({
+        folderId: z
+          .union([
+            z.string().regex(/^-?[1-9]\d*$/),
+            z
+              .number()
+              .int()
+              .refine((v) => v !== 0),
+          ])
+          .optional(),
+        path: z.string().min(1).optional(),
+        includeUrls: z.boolean().optional(),
+        ...PagingShape,
+      })
+      .refine((value) => (value.folderId === undefined) !== (value.path === undefined), {
+        message: "Provide exactly one of folderId or path",
+      }),
   ),
   [ToolName.GetFile]: direct(
     z.object({

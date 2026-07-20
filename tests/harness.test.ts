@@ -75,6 +75,40 @@ describe("harness scope and budgets", () => {
     })
   })
 
+  it("redacts PII carried by generic System Note value fields", () => {
+    expect(
+      redactForHarness(context, {
+        events: [
+          {
+            field: "Shipping Address",
+            oldValue: "Person Name\nExample Street 1\n34000 Istanbul",
+            newValue: "Person Name\nExample Street 2\n34000 Istanbul",
+            user: "System Note User",
+          },
+          {
+            field: "Entity",
+            oldValue: "Customer Name",
+            newValue: { id: "42", refName: "Customer Name" },
+          },
+        ],
+      }),
+    ).toEqual({
+      events: [
+        {
+          field: "Shipping Address",
+          oldValue: "[REDACTED]",
+          newValue: "[REDACTED]",
+          user: "[REDACTED]",
+        },
+        {
+          field: "Entity",
+          oldValue: "[REDACTED]",
+          newValue: "[REDACTED]",
+        },
+      ],
+    })
+  })
+
   it("keeps composite versions immutable and rejects cycles", async () => {
     const root = await mkdtemp(join(tmpdir(), "supermcp-composite-"))
     const store = new CompositeStore(join(root, "composites.json"))

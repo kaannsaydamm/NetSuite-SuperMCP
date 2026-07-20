@@ -87,12 +87,7 @@ export function assertRequestScope(context: HarnessContext | undefined, value: J
 export function redactForHarness(context: HarnessContext | undefined, value: JsonValue): JsonValue {
   const pii = new Set(context?.sensitivity.piiFields.map((entry) => entry.toLowerCase()) ?? [])
   const redactPii = context?.sensitivity.piiMode !== "show"
-  return map(value, (key, current) => {
-    if (/secret|token|password|private.?key|authorization|credential/i.test(key))
-      return "[REDACTED]"
-    if (redactPii && (pii.has(key.toLowerCase()) || isBuiltInPiiField(key))) return "[REDACTED]"
-    return current
-  })
+  return redactValue(value, pii, redactPii)
 }
 
 function isBuiltInPiiField(key: string): boolean {
@@ -105,11 +100,61 @@ function isBuiltInPiiField(key: string): boolean {
     "firstname",
     "lastname",
     "mobile",
+    "refname",
+    "systemnoteuser",
+    "user",
     "postalcode",
     "postcode",
     "zip",
     "zipcode",
   ]).has(normalized)
+}
+
+function redactValue(value: JsonValue, pii: ReadonlySet<string>, redactPii: boolean): JsonValue {
+  if (Array.isArray(value)) return value.map((entry) => redactValue(entry, pii, redactPii))
+  if (value === null || typeof value !== "object") return value
+
+  const descriptor = Object.entries(value)
+    .filter(([key]) => /^(field|fieldid|fieldname)$/i.test(key))
+    .map(([, current]) => (typeof current === "string" ? current : ""))
+    .join(" ")
+  const sensitiveChange = redactPii && isSensitiveDescriptor(descriptor, pii)
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, current]) => {
+      if (/secret|token|password|private.?key|authorization|credential/i.test(key))
+        return [key, "[REDACTED]"]
+      if (
+        redactPii &&
+        (pii.has(key.toLowerCase()) ||
+          isBuiltInPiiField(key) ||
+          (sensitiveChange && /^(oldvalue|newvalue|value|text)$/i.test(key)) ||
+          (typeof current === "string" && looksLikeMultilineAddress(current)))
+      )
+        return [key, "[REDACTED]"]
+      return [key, redactValue(current, pii, redactPii)]
+    }),
+  )
+}
+
+function isSensitiveDescriptor(value: string, pii: ReadonlySet<string>): boolean {
+  const normalized = value.toLowerCase().replace(/[^a-z0-9]/g, "")
+  return (
+    [...pii].some((entry) => normalized.includes(entry.replace(/[^a-z0-9]/g, ""))) ||
+    isBuiltInPiiField(normalized) ||
+    /customer|employee|entity|person|vendor|contact|name/.test(normalized)
+  )
+}
+
+function looksLikeMultilineAddress(value: string): boolean {
+  const lines = value.split(/\r?\n/).filter((line) => line.trim().length > 0)
+  if (lines.length < 2) return false
+  return (
+    lines.length >= 3 ||
+    /\b(street|st\.?|road|rd\.?|avenue|ave\.?|boulevard|blvd\.?|mahallesi|mah\.?|sokak|sok\.?|cadde|cad\.?|posta|postal|zip)\b/i.test(
+      value,
+    )
+  )
 }
 
 function visit(value: JsonValue, callback: (key: string, value: JsonValue) => void): void {
@@ -122,15 +167,4 @@ function visit(value: JsonValue, callback: (key: string, value: JsonValue) => vo
     callback(key, current)
     visit(current, callback)
   }
-}
-
-function map(value: JsonValue, callback: (key: string, value: JsonValue) => JsonValue): JsonValue {
-  if (Array.isArray(value)) return value.map((entry) => map(entry, callback))
-  if (value === null || typeof value !== "object") return value
-  return Object.fromEntries(
-    Object.entries(value).map(([key, current]) => {
-      const replaced = callback(key, current)
-      return [key, replaced === current ? map(current, callback) : replaced]
-    }),
-  )
 }

@@ -45,10 +45,7 @@ describe("MCP RESTlet-backed report actions", () => {
         method: "tools/call",
         params: {
           name: call.name,
-          arguments: {
-            action: "ignored-by-mcp",
-            payload: call.payload,
-          },
+          arguments: call.payload,
         },
       })
       expect(response.status).toBe(200)

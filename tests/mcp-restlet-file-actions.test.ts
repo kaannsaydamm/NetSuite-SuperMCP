@@ -19,10 +19,7 @@ describe("MCP RESTlet-backed file actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.GetFile,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { fileId: "SuiteScripts/supermcp_action_restlet.js", maxBytes: 1048576 },
-        },
+        arguments: { fileId: "SuiteScripts/supermcp_action_restlet.js", maxBytes: 1048576 },
       },
     })
 
@@ -50,12 +47,9 @@ describe("MCP RESTlet-backed file actions", () => {
       params: {
         name: ToolName.WriteFile,
         arguments: {
-          action: "ignored-by-mcp",
-          payload: {
-            fileId: "SuiteScripts/SuperMCP/example.js",
-            contents: "define([], () => ({}))",
-            confirmation: "writeFile:SuiteScripts/SuperMCP/example.js",
-          },
+          fileId: "SuiteScripts/SuperMCP/example.js",
+          contents: "define([], () => ({}))",
+          confirmation: "writeFile:SuiteScripts/SuperMCP/example.js",
         },
       },
     })
@@ -111,10 +105,7 @@ describe("MCP RESTlet-backed file actions", () => {
         method: "tools/call",
         params: {
           name: call.name,
-          arguments: {
-            action: "ignored-by-mcp",
-            payload: call.payload,
-          },
+          arguments: call.payload,
         },
       })
       expect(response.status).toBe(200)

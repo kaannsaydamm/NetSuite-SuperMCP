@@ -17,10 +17,7 @@ describe("MCP RESTlet-backed read actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.RunSavedSearch,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { savedSearchId: "customsearch_failed_orders", pageSize: 50 },
-        },
+        arguments: { savedSearchId: "customsearch_failed_orders", pageSize: 50 },
       },
     })
 
@@ -47,10 +44,7 @@ describe("MCP RESTlet-backed read actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.RunReport,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { reportId: "customsearch_monthly_sales", pageSize: 100 },
-        },
+        arguments: { reportId: "customsearch_monthly_sales", pageSize: 100 },
       },
     })
 
@@ -77,10 +71,7 @@ describe("MCP RESTlet-backed read actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.GetIntegrationLogs,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { savedSearchId: "customsearch_integration_logs", pageIndex: 1 },
-        },
+        arguments: { savedSearchId: "customsearch_integration_logs", pageIndex: 1 },
       },
     })
 
@@ -107,10 +98,7 @@ describe("MCP RESTlet-backed read actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.GetFailedIntegrationJobs,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { savedSearchId: "customsearch_failed_integration_jobs", pageSize: 25 },
-        },
+        arguments: { savedSearchId: "customsearch_failed_integration_jobs", pageSize: 25 },
       },
     })
 
@@ -138,12 +126,9 @@ describe("MCP RESTlet-backed read actions", () => {
       params: {
         name: ToolName.ExplainIntegrationError,
         arguments: {
-          action: "ignored-by-mcp",
-          payload: {
-            recordType: "customrecord_integration_job",
-            recordId: "456",
-            fields: ["name", "custrecord_error_message"],
-          },
+          recordType: "customrecord_integration_job",
+          recordId: "456",
+          fields: ["name", "custrecord_error_message"],
         },
       },
     })

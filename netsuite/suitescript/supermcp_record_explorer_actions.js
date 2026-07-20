@@ -170,11 +170,13 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
     const limit = boundedInteger(payload.limit, 1, 1000, 250)
     const events = []
     const gaps = []
+    const expectedRecordType = canonicalSystemNoteRecordType(recordType)
+    let scanned = 0
     try {
       search
         .create({
           type: "systemnote",
-          filters: [["recordid", "equalto", recordId], "AND", ["recordtype", "is", recordType]],
+          filters: [["recordid", "equalto", recordId]],
           columns: [
             "recordtype",
             "recordid",
@@ -191,9 +193,15 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
         .run()
         .each((result) => {
           if (events.length >= limit) return false
+          scanned += 1
+          const resultRecordType =
+            result.getText({ name: "recordtype" }) || result.getValue({ name: "recordtype" })
+          if (canonicalSystemNoteRecordType(resultRecordType) !== expectedRecordType) {
+            return scanned < 5000
+          }
           events.push({
             id: String(result.id),
-            recordType: result.getValue({ name: "recordtype" }),
+            recordType: resultRecordType,
             recordId: result.getValue({ name: "recordid" }),
             field: result.getValue({ name: "field" }),
             oldValue: result.getValue({ name: "oldvalue" }),
@@ -213,6 +221,7 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
       action: actionRequest.action,
       phase: "preview",
       record: { type: recordType, id: recordId },
+      recordTypeDiscriminant: expectedRecordType,
       events,
       count: events.length,
       gaps,
@@ -220,6 +229,43 @@ define(["N/error", "N/record", "N/search"], (nsError, record, search) => {
       truncated: events.length >= limit,
       ordering: "netsuite-returned-sequence",
     }
+  }
+
+  function canonicalSystemNoteRecordType(value) {
+    const normalized = String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")
+    if (isTransactionRecordType(normalized)) return "transaction"
+    return normalized
+  }
+
+  function isTransactionRecordType(value) {
+    return [
+      "transaction",
+      "salesorder",
+      "salesord",
+      "invoice",
+      "custinvc",
+      "itemfulfillment",
+      "itemship",
+      "purchaseorder",
+      "purchord",
+      "itemreceipt",
+      "itemrcpt",
+      "vendorbill",
+      "vendbill",
+      "creditmemo",
+      "custcred",
+      "cashsale",
+      "cashrefund",
+      "customerpayment",
+      "vendorpayment",
+      "inventoryadjustment",
+      "inventorytransfer",
+      "transferorder",
+      "returnauthorization",
+      "vendorreturnauthorization",
+    ].includes(value)
   }
 
   function transactionSummary(id) {

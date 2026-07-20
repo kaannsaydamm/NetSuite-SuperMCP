@@ -33,12 +33,9 @@ describe("MCP RESTlet-backed integration actions", () => {
       params: {
         name: ToolName.RetryIntegrationJob,
         arguments: {
-          action: "ignored-by-mcp",
-          payload: {
-            recordType: "customrecord_integration_job",
-            recordId: "456",
-            values: { custrecord_retry_requested: true },
-          },
+          recordType: "customrecord_integration_job",
+          recordId: "456",
+          values: { custrecord_retry_requested: true },
         },
       },
     })
@@ -79,11 +76,9 @@ describe("MCP RESTlet-backed integration actions", () => {
       params: {
         name: ToolName.RetryIntegrationJob,
         arguments: {
-          payload: {
-            recordType: "customrecord_integration_job",
-            recordId: "456",
-            values: { custrecord_retry_requested: true },
-          },
+          recordType: "customrecord_integration_job",
+          recordId: "456",
+          values: { custrecord_retry_requested: true },
         },
       },
     })

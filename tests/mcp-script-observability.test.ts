@@ -37,7 +37,9 @@ describe("MCP SuiteScript observability", () => {
       source.indexOf("function getScriptSources"),
       source.indexOf("function executionLogResponse"),
     )
-    expect(getSources).toContain("record.load")
+    expect(getSources).toContain("loadScriptRecord")
+    expect(source).toContain('"mapreducescript"')
+    expect(source).toContain('type: "scriptdeployment"')
     expect(getSources).toContain('getValue({ fieldId: "scriptfile" })')
     expect(getSources).not.toContain(
       '["internalid", "scriptid", "name", "scripttype", "scriptfile"]',

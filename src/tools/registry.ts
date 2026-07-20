@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+import { getToolContract } from "../contracts/tool-registry"
 import { registerAssuranceTools } from "./assurance-tools"
 import { registerCustomizationTools } from "./customization-tools"
 import { registerHarnessTools } from "./harness-tools"
@@ -36,7 +37,17 @@ function filterToolRegistration(server: McpServer, allowed: ReadonlySet<string>)
         return (name: string, ...args: unknown[]) => {
           if (!allowed.has(name)) return undefined
           const register = target.registerTool as (...parameters: unknown[]) => unknown
-          return register.call(target, name, ...args)
+          const contract = getToolContract(name)
+          const options = args[0]
+          const normalizedOptions =
+            options !== null && typeof options === "object" && !Array.isArray(options)
+              ? {
+                  ...options,
+                  inputSchema: contract.inputSchema,
+                  outputSchema: contract.outputSchema,
+                }
+              : options
+          return register.call(target, name, normalizedOptions, ...args.slice(1))
         }
       const value = Reflect.get(target, property, target)
       return typeof value === "function" ? value.bind(target) : value

@@ -39,25 +39,17 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     const maxResults = optionalInt(payload, "limit", "pageSize", 100, 1, 1000)
     const filters = []
     addIdFilter(filters, "internalid", "scriptid", payload.deploymentId)
-    addIdFilter(filters, "script", "script.scriptid", payload.scriptId)
+    const scriptInternalId = resolveScriptInternalId(payload.scriptId)
+    if (scriptInternalId !== null) addFilter(filters, ["script", "anyof", scriptInternalId])
     addContainsFilter(filters, "title", payload.query)
+    const deployments = runSearch(
+      "scriptdeployment",
+      filters,
+      ["internalid", "scriptid", "title", "script", "isdeployed"],
+      maxResults,
+    ).map(enrichDeployment)
     return result(actionRequest, {
-      deployments: runSearch(
-        "scriptdeployment",
-        filters,
-        [
-          "internalid",
-          "scriptid",
-          "title",
-          "script",
-          "status",
-          "isdeployed",
-          "allroles",
-          "loglevel",
-          "runasrole",
-        ],
-        maxResults,
-      ),
+      deployments,
       maxResults,
     })
   }
@@ -84,10 +76,10 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
       payload: { scriptId: payload.scriptId, deploymentId: payload.deploymentId, limit: 100 },
     }).deployments
     const gaps = []
-    const executions = safeSearch(
+    const executions = adaptiveSearch(
       "scriptexecutionlog",
       executionFilters(payload, false),
-      ["internalid", "script", "scriptdeployment", "type", "title", "detail", "user", "date"],
+      ["script", "type", "title", "detail", "user", "date"],
       maxExecutions,
       gaps,
     )
@@ -95,13 +87,15 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
       "scheduledscriptinstance",
       instanceFilters(payload),
       [
-        "internalid",
-        "script",
-        "scriptdeployment",
+        { name: "name", join: "script", key: "script" },
+        { name: "internalid", join: "scriptdeployment", key: "scriptdeployment" },
+        "datecreated",
         "status",
+        "startdate",
+        "enddate",
         "percentcomplete",
         "queue",
-        "mapreducestage",
+        "queueposition",
       ],
       maxExecutions,
       gaps,
@@ -149,11 +143,7 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     for (const row of rows) {
       let scriptRecord
       try {
-        scriptRecord = record.load({
-          type: row.recordType || "script",
-          id: row.id,
-          isDynamic: false,
-        })
+        scriptRecord = loadScriptRecord(row)
       } catch (error) {
         gaps.push({
           scriptId: scalarValue(row.values.scriptid) || row.id,
@@ -211,10 +201,10 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     const payload = actionRequest.payload
     const maxResults = optionalInt(payload, "limit", "pageSize", 100, 1, 1000)
     const gaps = []
-    const logs = safeSearch(
+    const logs = adaptiveSearch(
       "scriptexecutionlog",
       executionFilters(payload, errorsOnly),
-      ["internalid", "script", "scriptdeployment", "type", "title", "detail", "user", "date"],
+      ["script", "type", "title", "detail", "user", "date"],
       maxResults,
       gaps,
     )
@@ -245,6 +235,79 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     return scalarValue(matches[0].values.script)
   }
 
+  function resolveScriptInternalId(scriptId) {
+    if (scriptId === undefined || scriptId === null || scriptId === "") return null
+    if (isPositiveId(scriptId)) return String(scriptId)
+    const matches = runSearch("script", [["scriptid", "is", String(scriptId)]], ["internalid"], 2)
+    if (matches.length === 0) throw requestError("SCRIPT_NOT_FOUND", "scriptId was not found")
+    if (matches.length > 1)
+      throw requestError("SCRIPT_NOT_UNIQUE", "scriptId matched multiple scripts")
+    return matches[0].id
+  }
+
+  function loadScriptRecord(row) {
+    const scriptId = String(scalarValue(row.values.scriptid) || "")
+    const candidates = scriptRecordTypes(scriptId)
+    let lastError = null
+    for (const type of candidates) {
+      try {
+        return record.load({ type, id: row.id, isDynamic: false })
+      } catch (error) {
+        lastError = error
+      }
+    }
+    throw lastError || requestError("SCRIPT_NOT_LOADABLE", "script record is not loadable")
+  }
+
+  function scriptRecordTypes(scriptId) {
+    const types = [
+      "mapreducescript",
+      "scheduledscript",
+      "usereventscript",
+      "clientscript",
+      "restlet",
+      "suitelet",
+      "workflowactionscript",
+      "massupdatescript",
+      "portlet",
+      "bundleinstallationscript",
+    ]
+    const hints = [
+      [/_mr$/i, "mapreducescript"],
+      [/_ss$/i, "scheduledscript"],
+      [/_ue$/i, "usereventscript"],
+      [/_cs$/i, "clientscript"],
+      [/_rl$/i, "restlet"],
+      [/_sl$/i, "suitelet"],
+      [/_wa$/i, "workflowactionscript"],
+    ]
+    const hinted = hints.find(([pattern]) => pattern.test(scriptId))
+    return hinted ? [hinted[1], ...types.filter((type) => type !== hinted[1])] : types
+  }
+
+  function enrichDeployment(row) {
+    try {
+      const deployment = record.load({ type: "scriptdeployment", id: row.id, isDynamic: false })
+      for (const fieldId of ["status", "allroles", "loglevel", "runasrole"]) {
+        row.values[fieldId] = safeRecordField(deployment, fieldId)
+      }
+    } catch (error) {
+      row.loadGap = error?.name ? String(error.name) : "deployment record is not loadable"
+    }
+    return row
+  }
+
+  function safeRecordField(instance, fieldId) {
+    try {
+      return {
+        value: instance.getValue({ fieldId }),
+        text: instance.getText({ fieldId }),
+      }
+    } catch (_) {
+      return { value: null, text: null }
+    }
+  }
+
   function deploymentIdsFor(scriptInternalId) {
     return runSearch(
       "scriptdeployment",
@@ -255,11 +318,21 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
   }
 
   function runSearch(type, filters, columns, maxResults) {
-    const loaded = search.create({ type, filters, columns })
+    const specs = columns.map((entry) => {
+      const definition = typeof entry === "string" ? { name: entry, key: entry } : entry
+      return {
+        key: definition.key || definition.name,
+        column: search.createColumn({
+          name: definition.name,
+          ...(definition.join ? { join: definition.join } : {}),
+        }),
+      }
+    })
+    const loaded = search.create({ type, filters, columns: specs.map((spec) => spec.column) })
     return loaded
       .run()
       .getRange({ start: 0, end: maxResults })
-      .map((row) => serialize(row, columns))
+      .map((row) => serialize(row, specs))
   }
 
   function safeSearch(type, filters, columns, maxResults, gaps) {
@@ -274,12 +347,36 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     }
   }
 
+  function adaptiveSearch(type, filters, desiredColumns, maxResults, gaps) {
+    const supported = []
+    const unsupported = []
+    for (const column of desiredColumns) {
+      try {
+        runSearch(type, filters, [column], 1)
+        supported.push(column)
+      } catch (_error) {
+        unsupported.push(column)
+      }
+    }
+    if (unsupported.length > 0)
+      gaps.push({ source: `${type}-columns`, reason: "unsupported search columns", unsupported })
+    try {
+      return runSearch(type, filters, supported, maxResults)
+    } catch (error) {
+      gaps.push({
+        source: type,
+        reason: error?.name ? String(error.name) : "unsupported or inaccessible",
+      })
+      return []
+    }
+  }
+
   function serialize(row, columns) {
     const values = {}
-    for (const column of columns) {
-      values[column] = {
-        value: row.getValue({ name: column }),
-        text: row.getText({ name: column }),
+    for (const spec of columns) {
+      values[spec.key] = {
+        value: row.getValue(spec.column),
+        text: row.getText(spec.column),
       }
     }
     return { id: String(row.id), recordType: row.recordType, values }

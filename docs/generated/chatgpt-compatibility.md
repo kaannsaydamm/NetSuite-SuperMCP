@@ -3,7 +3,7 @@
 This file is generated from the current MCP contract registry.
 
 - Contract schema version: `1`
-- Contract fingerprint: `4f95a0750a9b270fcb1790cde8dc6fe72ac5b3bf32f8380f1060dc32907d061b`
+- Contract fingerprint: `fcc138d3462e1f9c75798e553f49d548e493249a5176be2ee35bb193b89e84e8`
 - Tool count: `185`
 - Cache behavior: ChatGPT custom apps cache MCP tool definitions.
 

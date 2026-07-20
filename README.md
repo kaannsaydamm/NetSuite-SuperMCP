@@ -19,6 +19,8 @@ Includes:
 - Connector-visible version diagnostics with local MCP, npm package, RESTlet, tool-count, account, and execution-context details.
 - Recursive PII redaction and metadata-only audit events; full record bodies, file contents,
   SuiteScript source, credentials, and personal data are not persisted in the audit log.
+- Record-type-scoped System Notes, canonical transaction graphs, bounded File Cabinet browsing,
+  and concrete SuiteScript record-type diagnostics.
 - A bounded production preview profile when no signed harness context is supplied. It exposes
   prepare/read tools but not the commit or OAuth-revocation tools.
 - Safe SuiteQL parameter rendering for the REST query endpoint and signed keyset cursors.
@@ -472,3 +474,14 @@ NetSuite authorization; NetSuite allows or denies actions based on the mapped ac
 Tools return risk metadata and write audit events. Client applications, harness settings, or the
 user decide approval. Use `ns_checkAccountPermissions` to probe the configured account's effective
 REST, SuiteQL, record metadata, and optional RESTlet access.
+
+## License
+
+Copyright 2026 Kaan Kadir Aluclu.
+
+The public package is source-available under the
+[PolyForm Noncommercial License 1.0.0](LICENSE). Personal and other noncommercial use, modification,
+and distribution are permitted under those terms. Commercial use, monetization, resale, paid
+hosting, inclusion in a commercial product or service, and use in a revenue-generating organizational
+workflow require a separate written license from Kaan Kadir Aluclu. See
+[COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md).

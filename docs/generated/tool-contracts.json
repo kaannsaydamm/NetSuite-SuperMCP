@@ -1302,203 +1302,93 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "purchaseOrderId": {
-                "pattern": "^[1-9]\\d*$",
-                "type": "string"
-              },
-              "selection": {
-                "oneOf": [
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "mode": {
-                        "const": "allOpen",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode"
-                    ],
-                    "type": "object"
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "lines": {
-                        "items": {
-                          "additionalProperties": false,
-                          "properties": {
-                            "inventoryDetail": {
-                              "additionalProperties": {
-                                "$ref": "#/$defs/__schema0"
-                              },
-                              "propertyNames": {
-                                "type": "string"
-                              },
-                              "type": "object"
-                            },
-                            "line": {
-                              "maximum": 9007199254740991,
-                              "minimum": 0,
-                              "type": "integer"
-                            },
-                            "locationId": {
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            "quantity": {
-                              "exclusiveMinimum": 0,
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "line"
-                          ],
-                          "type": "object"
-                        },
-                        "minItems": 1,
-                        "type": "array"
-                      },
-                      "mode": {
-                        "const": "selected",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode",
-                      "lines"
-                    ],
-                    "type": "object"
-                  }
-                ]
-              },
-              "values": {
-                "additionalProperties": {
-                  "$ref": "#/$defs/__schema0"
-                },
-                "propertyNames": {
-                  "type": "string"
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "purchaseOrderId",
-              "selection"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "purchaseOrderId": {
+            "pattern": "^[1-9]\\d*$",
+            "type": "string"
           },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
+          "selection": {
+            "oneOf": [
+              {
                 "additionalProperties": false,
                 "properties": {
-                  "purchaseOrderId": {
-                    "pattern": "^[1-9]\\d*$",
+                  "mode": {
+                    "const": "allOpen",
                     "type": "string"
-                  },
-                  "selection": {
-                    "oneOf": [
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "mode": {
-                            "const": "allOpen",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode"
-                        ],
-                        "type": "object"
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "lines": {
-                            "items": {
-                              "additionalProperties": false,
-                              "properties": {
-                                "inventoryDetail": {
-                                  "additionalProperties": {
-                                    "$ref": "#/$defs/__schema0"
-                                  },
-                                  "propertyNames": {
-                                    "type": "string"
-                                  },
-                                  "type": "object"
-                                },
-                                "line": {
-                                  "maximum": 9007199254740991,
-                                  "minimum": 0,
-                                  "type": "integer"
-                                },
-                                "locationId": {
-                                  "minLength": 1,
-                                  "type": "string"
-                                },
-                                "quantity": {
-                                  "exclusiveMinimum": 0,
-                                  "type": "number"
-                                }
-                              },
-                              "required": [
-                                "line"
-                              ],
-                              "type": "object"
-                            },
-                            "minItems": 1,
-                            "type": "array"
-                          },
-                          "mode": {
-                            "const": "selected",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode",
-                          "lines"
-                        ],
-                        "type": "object"
-                      }
-                    ]
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
                   }
                 },
                 "required": [
-                  "purchaseOrderId",
-                  "selection"
+                  "mode"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "lines": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "inventoryDetail": {
+                          "additionalProperties": {
+                            "$ref": "#/$defs/__schema0"
+                          },
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        "line": {
+                          "maximum": 9007199254740991,
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "locationId": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "line"
+                      ],
+                      "type": "object"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "mode": {
+                    "const": "selected",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "mode",
+                  "lines"
                 ],
                 "type": "object"
               }
+            ]
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
+            "propertyNames": {
+              "type": "string"
+            },
             "type": "object"
           }
-        ]
+        },
+        "required": [
+          "purchaseOrderId",
+          "selection"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_billPurchaseOrder",
@@ -3172,123 +3062,48 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "fileId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "name": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "targetFolderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "fileId",
-                  "targetFolderId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "name": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "targetFolderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "fileId",
-                  "targetFolderId"
-                ],
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "targetFolderId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
               },
               {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
           }
-        ]
+        },
+        "required": [
+          "fileId",
+          "targetFolderId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_copyFile",
@@ -4178,101 +3993,37 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "name": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "parent": {
-                    "anyOf": [
-                      {
-                        "anyOf": [
-                          {
-                            "minLength": 1,
-                            "type": "string"
-                          },
-                          {
-                            "exclusiveMinimum": 0,
-                            "maximum": 9007199254740991,
-                            "type": "integer"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "name"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
           },
-          {
-            "allOf": [
+          "parent": {
+            "anyOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "name": {
+                "anyOf": [
+                  {
                     "minLength": 1,
                     "type": "string"
                   },
-                  "parent": {
-                    "anyOf": [
-                      {
-                        "anyOf": [
-                          {
-                            "minLength": 1,
-                            "type": "string"
-                          },
-                          {
-                            "exclusiveMinimum": 0,
-                            "maximum": 9007199254740991,
-                            "type": "integer"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
+                  {
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991,
+                    "type": "integer"
                   }
-                },
-                "required": [
-                  "name"
-                ],
-                "type": "object"
+                ]
               },
               {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "type": "null"
               }
             ]
           }
-        ]
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_createFolder",
@@ -5327,113 +5078,43 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "columns": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "isPublic": {
-                    "type": "boolean"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "searchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "title": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "title"
-                ],
-                "type": "object"
-              }
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+            "maxItems": 100,
+            "type": "array"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "columns": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "isPublic": {
-                    "type": "boolean"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "searchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "title": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "title"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "filters": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "isPublic": {
+            "type": "boolean"
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "searchId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "recordType",
+          "title"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_createSavedSearch",
@@ -6461,87 +6142,30 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "fileId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "fileId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "fileId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
           }
-        ]
+        },
+        "required": [
+          "fileId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_deleteFile",
@@ -6749,87 +6373,30 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "folderId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "folderId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "folderId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
           }
-        ]
+        },
+        "required": [
+          "folderId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_deleteFolder",
@@ -7307,69 +6874,21 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "searchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "searchId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "searchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "searchId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "searchId": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "searchId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_deleteSavedSearch",
@@ -10397,105 +9916,39 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "recordId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "fields": {
-                    "items": {
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "fields": {
-                    "items": {
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "recordType",
+          "recordId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_explainIntegrationError",
@@ -13147,137 +12600,55 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "deploymentId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "deploymentId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "scriptId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "deploymentId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "scriptId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "savedSearchId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "scriptId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
               },
               {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_findScriptErrors",
@@ -13363,203 +12734,93 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "salesOrderId": {
-                "pattern": "^[1-9]\\d*$",
-                "type": "string"
-              },
-              "selection": {
-                "oneOf": [
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "mode": {
-                        "const": "allOpen",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode"
-                    ],
-                    "type": "object"
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "lines": {
-                        "items": {
-                          "additionalProperties": false,
-                          "properties": {
-                            "inventoryDetail": {
-                              "additionalProperties": {
-                                "$ref": "#/$defs/__schema0"
-                              },
-                              "propertyNames": {
-                                "type": "string"
-                              },
-                              "type": "object"
-                            },
-                            "line": {
-                              "maximum": 9007199254740991,
-                              "minimum": 0,
-                              "type": "integer"
-                            },
-                            "locationId": {
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            "quantity": {
-                              "exclusiveMinimum": 0,
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "line"
-                          ],
-                          "type": "object"
-                        },
-                        "minItems": 1,
-                        "type": "array"
-                      },
-                      "mode": {
-                        "const": "selected",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode",
-                      "lines"
-                    ],
-                    "type": "object"
-                  }
-                ]
-              },
-              "values": {
-                "additionalProperties": {
-                  "$ref": "#/$defs/__schema0"
-                },
-                "propertyNames": {
-                  "type": "string"
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "salesOrderId",
-              "selection"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "salesOrderId": {
+            "pattern": "^[1-9]\\d*$",
+            "type": "string"
           },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
+          "selection": {
+            "oneOf": [
+              {
                 "additionalProperties": false,
                 "properties": {
-                  "salesOrderId": {
-                    "pattern": "^[1-9]\\d*$",
+                  "mode": {
+                    "const": "allOpen",
                     "type": "string"
-                  },
-                  "selection": {
-                    "oneOf": [
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "mode": {
-                            "const": "allOpen",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode"
-                        ],
-                        "type": "object"
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "lines": {
-                            "items": {
-                              "additionalProperties": false,
-                              "properties": {
-                                "inventoryDetail": {
-                                  "additionalProperties": {
-                                    "$ref": "#/$defs/__schema0"
-                                  },
-                                  "propertyNames": {
-                                    "type": "string"
-                                  },
-                                  "type": "object"
-                                },
-                                "line": {
-                                  "maximum": 9007199254740991,
-                                  "minimum": 0,
-                                  "type": "integer"
-                                },
-                                "locationId": {
-                                  "minLength": 1,
-                                  "type": "string"
-                                },
-                                "quantity": {
-                                  "exclusiveMinimum": 0,
-                                  "type": "number"
-                                }
-                              },
-                              "required": [
-                                "line"
-                              ],
-                              "type": "object"
-                            },
-                            "minItems": 1,
-                            "type": "array"
-                          },
-                          "mode": {
-                            "const": "selected",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode",
-                          "lines"
-                        ],
-                        "type": "object"
-                      }
-                    ]
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
                   }
                 },
                 "required": [
-                  "salesOrderId",
-                  "selection"
+                  "mode"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "lines": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "inventoryDetail": {
+                          "additionalProperties": {
+                            "$ref": "#/$defs/__schema0"
+                          },
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        "line": {
+                          "maximum": 9007199254740991,
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "locationId": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "line"
+                      ],
+                      "type": "object"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "mode": {
+                    "const": "selected",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "mode",
+                  "lines"
                 ],
                 "type": "object"
               }
+            ]
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
+            "propertyNames": {
+              "type": "string"
+            },
             "type": "object"
           }
-        ]
+        },
+        "required": [
+          "salesOrderId",
+          "selection"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_fulfillSalesOrder",
@@ -14982,91 +14243,32 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "recordType": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "recordType": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "recordType": {
+            "type": "string"
+          },
+          "savedSearchId": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_getFailedIntegrationJobs",
@@ -15270,89 +14472,31 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "fileId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "maxBytes": {
-                    "maximum": 10485760,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "path": {
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "maxBytes": {
-                    "maximum": 10485760,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "path": {
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "maxBytes": {
+            "maximum": 10485760,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "path": {
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_getFile",
@@ -15801,117 +14945,45 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "recordId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "recordType": {
+            "type": "string"
+          },
+          "savedSearchId": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_getIntegrationLogs",
@@ -16434,105 +15506,39 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "recordId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "fields": {
-                    "items": {
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "fields": {
-                    "items": {
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "recordType",
+          "recordId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_getMapping",
@@ -16718,105 +15724,39 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "recordId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "fields": {
-                    "items": {
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "fields": {
-                    "items": {
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "recordType",
+          "recordId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_getPlatformObject",
@@ -17337,137 +16277,55 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "deploymentId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "deploymentId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "scriptId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "deploymentId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "scriptId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "savedSearchId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "scriptId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
               },
               {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_getScriptLogs",
@@ -18919,203 +17777,93 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "salesOrderId": {
-                "pattern": "^[1-9]\\d*$",
-                "type": "string"
-              },
-              "selection": {
-                "oneOf": [
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "mode": {
-                        "const": "allOpen",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode"
-                    ],
-                    "type": "object"
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "lines": {
-                        "items": {
-                          "additionalProperties": false,
-                          "properties": {
-                            "inventoryDetail": {
-                              "additionalProperties": {
-                                "$ref": "#/$defs/__schema0"
-                              },
-                              "propertyNames": {
-                                "type": "string"
-                              },
-                              "type": "object"
-                            },
-                            "line": {
-                              "maximum": 9007199254740991,
-                              "minimum": 0,
-                              "type": "integer"
-                            },
-                            "locationId": {
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            "quantity": {
-                              "exclusiveMinimum": 0,
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "line"
-                          ],
-                          "type": "object"
-                        },
-                        "minItems": 1,
-                        "type": "array"
-                      },
-                      "mode": {
-                        "const": "selected",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode",
-                      "lines"
-                    ],
-                    "type": "object"
-                  }
-                ]
-              },
-              "values": {
-                "additionalProperties": {
-                  "$ref": "#/$defs/__schema0"
-                },
-                "propertyNames": {
-                  "type": "string"
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "salesOrderId",
-              "selection"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "salesOrderId": {
+            "pattern": "^[1-9]\\d*$",
+            "type": "string"
           },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
+          "selection": {
+            "oneOf": [
+              {
                 "additionalProperties": false,
                 "properties": {
-                  "salesOrderId": {
-                    "pattern": "^[1-9]\\d*$",
+                  "mode": {
+                    "const": "allOpen",
                     "type": "string"
-                  },
-                  "selection": {
-                    "oneOf": [
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "mode": {
-                            "const": "allOpen",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode"
-                        ],
-                        "type": "object"
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "lines": {
-                            "items": {
-                              "additionalProperties": false,
-                              "properties": {
-                                "inventoryDetail": {
-                                  "additionalProperties": {
-                                    "$ref": "#/$defs/__schema0"
-                                  },
-                                  "propertyNames": {
-                                    "type": "string"
-                                  },
-                                  "type": "object"
-                                },
-                                "line": {
-                                  "maximum": 9007199254740991,
-                                  "minimum": 0,
-                                  "type": "integer"
-                                },
-                                "locationId": {
-                                  "minLength": 1,
-                                  "type": "string"
-                                },
-                                "quantity": {
-                                  "exclusiveMinimum": 0,
-                                  "type": "number"
-                                }
-                              },
-                              "required": [
-                                "line"
-                              ],
-                              "type": "object"
-                            },
-                            "minItems": 1,
-                            "type": "array"
-                          },
-                          "mode": {
-                            "const": "selected",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode",
-                          "lines"
-                        ],
-                        "type": "object"
-                      }
-                    ]
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
                   }
                 },
                 "required": [
-                  "salesOrderId",
-                  "selection"
+                  "mode"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "lines": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "inventoryDetail": {
+                          "additionalProperties": {
+                            "$ref": "#/$defs/__schema0"
+                          },
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        "line": {
+                          "maximum": 9007199254740991,
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "locationId": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "line"
+                      ],
+                      "type": "object"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "mode": {
+                    "const": "selected",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "mode",
+                  "lines"
                 ],
                 "type": "object"
               }
+            ]
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
+            "propertyNames": {
+              "type": "string"
+            },
             "type": "object"
           }
-        ]
+        },
+        "required": [
+          "salesOrderId",
+          "selection"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_invoiceSalesOrder",
@@ -19410,109 +18158,45 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
+        "additionalProperties": false,
+        "properties": {
+          "folderId": {
+            "anyOf": [
+              {
+                "pattern": "^-?[1-9]\\d*$",
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "path": {
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "path": {
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "includeUrls": {
+            "type": "boolean"
+          },
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "path": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_listFileCabinet",
@@ -19640,99 +18324,36 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "category": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "minLength": 1,
+            "type": "string"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "category": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_listPlatformObjects",
@@ -20378,89 +18999,31 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "recordType": {
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "recordType": {
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "recordType": {
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_listReports",
@@ -20581,117 +19144,45 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "savedSearchId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "scriptId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "scriptId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "scriptId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_listScriptDeployments",
@@ -20740,91 +19231,32 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "savedSearchId": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_listScripts",
@@ -21116,115 +19548,44 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "fileId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "targetFolderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "fileId",
-                  "targetFolderId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "targetFolderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "fileId",
-                  "targetFolderId"
-                ],
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "targetFolderId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
               },
               {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
           }
-        ]
+        },
+        "required": [
+          "fileId",
+          "targetFolderId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_moveFile",
@@ -25398,203 +23759,93 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "purchaseOrderId": {
-                "pattern": "^[1-9]\\d*$",
-                "type": "string"
-              },
-              "selection": {
-                "oneOf": [
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "mode": {
-                        "const": "allOpen",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode"
-                    ],
-                    "type": "object"
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "lines": {
-                        "items": {
-                          "additionalProperties": false,
-                          "properties": {
-                            "inventoryDetail": {
-                              "additionalProperties": {
-                                "$ref": "#/$defs/__schema0"
-                              },
-                              "propertyNames": {
-                                "type": "string"
-                              },
-                              "type": "object"
-                            },
-                            "line": {
-                              "maximum": 9007199254740991,
-                              "minimum": 0,
-                              "type": "integer"
-                            },
-                            "locationId": {
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            "quantity": {
-                              "exclusiveMinimum": 0,
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "line"
-                          ],
-                          "type": "object"
-                        },
-                        "minItems": 1,
-                        "type": "array"
-                      },
-                      "mode": {
-                        "const": "selected",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode",
-                      "lines"
-                    ],
-                    "type": "object"
-                  }
-                ]
-              },
-              "values": {
-                "additionalProperties": {
-                  "$ref": "#/$defs/__schema0"
-                },
-                "propertyNames": {
-                  "type": "string"
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "purchaseOrderId",
-              "selection"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "purchaseOrderId": {
+            "pattern": "^[1-9]\\d*$",
+            "type": "string"
           },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
+          "selection": {
+            "oneOf": [
+              {
                 "additionalProperties": false,
                 "properties": {
-                  "purchaseOrderId": {
-                    "pattern": "^[1-9]\\d*$",
+                  "mode": {
+                    "const": "allOpen",
                     "type": "string"
-                  },
-                  "selection": {
-                    "oneOf": [
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "mode": {
-                            "const": "allOpen",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode"
-                        ],
-                        "type": "object"
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "lines": {
-                            "items": {
-                              "additionalProperties": false,
-                              "properties": {
-                                "inventoryDetail": {
-                                  "additionalProperties": {
-                                    "$ref": "#/$defs/__schema0"
-                                  },
-                                  "propertyNames": {
-                                    "type": "string"
-                                  },
-                                  "type": "object"
-                                },
-                                "line": {
-                                  "maximum": 9007199254740991,
-                                  "minimum": 0,
-                                  "type": "integer"
-                                },
-                                "locationId": {
-                                  "minLength": 1,
-                                  "type": "string"
-                                },
-                                "quantity": {
-                                  "exclusiveMinimum": 0,
-                                  "type": "number"
-                                }
-                              },
-                              "required": [
-                                "line"
-                              ],
-                              "type": "object"
-                            },
-                            "minItems": 1,
-                            "type": "array"
-                          },
-                          "mode": {
-                            "const": "selected",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode",
-                          "lines"
-                        ],
-                        "type": "object"
-                      }
-                    ]
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
                   }
                 },
                 "required": [
-                  "purchaseOrderId",
-                  "selection"
+                  "mode"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "lines": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "inventoryDetail": {
+                          "additionalProperties": {
+                            "$ref": "#/$defs/__schema0"
+                          },
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        "line": {
+                          "maximum": 9007199254740991,
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "locationId": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "line"
+                      ],
+                      "type": "object"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "mode": {
+                    "const": "selected",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "mode",
+                  "lines"
                 ],
                 "type": "object"
               }
+            ]
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
+            "propertyNames": {
+              "type": "string"
+            },
             "type": "object"
           }
-        ]
+        },
+        "required": [
+          "purchaseOrderId",
+          "selection"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_receivePurchaseOrder",
@@ -28135,117 +26386,45 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "recordId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId",
-                  "values"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId",
-                  "values"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
           }
-        ]
+        },
+        "required": [
+          "recordType",
+          "recordId",
+          "values"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_retryIntegrationJob",
@@ -28957,105 +27136,39 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "reportId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "reportId"
-                ],
-                "type": "object"
-              }
+        "additionalProperties": false,
+        "properties": {
+          "filters": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+            "maxItems": 100,
+            "type": "array"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "reportId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "reportId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "reportId": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "reportId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_runReport",
@@ -29209,105 +27322,39 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "savedSearchId"
-                ],
-                "type": "object"
-              }
+        "additionalProperties": false,
+        "properties": {
+          "filters": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+            "maxItems": 100,
+            "type": "array"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "savedSearchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "savedSearchId"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "savedSearchId": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "savedSearchId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_runSavedSearch",
@@ -29461,147 +27508,60 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "columns": {
-                    "items": {
-                      "anyOf": [
-                        {
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        {
-                          "additionalProperties": {
-                            "$ref": "#/$defs/__schema0"
-                          },
-                          "propertyNames": {
-                            "type": "string"
-                          },
-                          "type": "object"
-                        }
-                      ]
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
                 },
-                "required": [
-                  "recordType"
-                ],
-                "type": "object"
-              }
+                {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              ]
             },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+            "maxItems": 100,
+            "type": "array"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "columns": {
-                    "items": {
-                      "anyOf": [
-                        {
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        {
-                          "additionalProperties": {
-                            "$ref": "#/$defs/__schema0"
-                          },
-                          "propertyNames": {
-                            "type": "string"
-                          },
-                          "type": "object"
-                        }
-                      ]
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "filters": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "recordType"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_runSearch",
@@ -30182,153 +28142,63 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "columns": {
-                    "items": {
-                      "anyOf": [
-                        {
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        {
-                          "additionalProperties": {
-                            "$ref": "#/$defs/__schema0"
-                          },
-                          "propertyNames": {
-                            "type": "string"
-                          },
-                          "type": "object"
-                        }
-                      ]
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
                 },
-                "required": [
-                  "recordType"
-                ],
-                "type": "object"
-              }
+                {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              ]
             },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+            "maxItems": 100,
+            "type": "array"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "columns": {
-                    "items": {
-                      "anyOf": [
-                        {
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        {
-                          "additionalProperties": {
-                            "$ref": "#/$defs/__schema0"
-                          },
-                          "propertyNames": {
-                            "type": "string"
-                          },
-                          "type": "object"
-                        }
-                      ]
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "filters": {
-                    "items": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "limit": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "pageIndex": {
-                    "maximum": 9007199254740991,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "maximum": 1000,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "type": "string"
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "recordType"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "filters": {
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "pageIndex": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pageSize": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "recordType"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": false,
       "name": "ns_searchRecords",
@@ -31766,223 +29636,103 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "fromId": {
-                "pattern": "^[1-9]\\d*$",
-                "type": "string"
-              },
-              "fromType": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "selection": {
-                "oneOf": [
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "mode": {
-                        "const": "allOpen",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode"
-                    ],
-                    "type": "object"
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "lines": {
-                        "items": {
-                          "additionalProperties": false,
-                          "properties": {
-                            "inventoryDetail": {
-                              "additionalProperties": {
-                                "$ref": "#/$defs/__schema0"
-                              },
-                              "propertyNames": {
-                                "type": "string"
-                              },
-                              "type": "object"
-                            },
-                            "line": {
-                              "maximum": 9007199254740991,
-                              "minimum": 0,
-                              "type": "integer"
-                            },
-                            "locationId": {
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            "quantity": {
-                              "exclusiveMinimum": 0,
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "line"
-                          ],
-                          "type": "object"
-                        },
-                        "minItems": 1,
-                        "type": "array"
-                      },
-                      "mode": {
-                        "const": "selected",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "mode",
-                      "lines"
-                    ],
-                    "type": "object"
-                  }
-                ]
-              },
-              "toType": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "values": {
-                "additionalProperties": {
-                  "$ref": "#/$defs/__schema0"
-                },
-                "propertyNames": {
-                  "type": "string"
-                },
-                "type": "object"
-              }
-            },
-            "required": [
-              "fromType",
-              "fromId",
-              "toType",
-              "selection"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "fromId": {
+            "pattern": "^[1-9]\\d*$",
+            "type": "string"
           },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
+          "fromType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "selection": {
+            "oneOf": [
+              {
                 "additionalProperties": false,
                 "properties": {
-                  "fromId": {
-                    "pattern": "^[1-9]\\d*$",
+                  "mode": {
+                    "const": "allOpen",
                     "type": "string"
-                  },
-                  "fromType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "selection": {
-                    "oneOf": [
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "mode": {
-                            "const": "allOpen",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode"
-                        ],
-                        "type": "object"
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "lines": {
-                            "items": {
-                              "additionalProperties": false,
-                              "properties": {
-                                "inventoryDetail": {
-                                  "additionalProperties": {
-                                    "$ref": "#/$defs/__schema0"
-                                  },
-                                  "propertyNames": {
-                                    "type": "string"
-                                  },
-                                  "type": "object"
-                                },
-                                "line": {
-                                  "maximum": 9007199254740991,
-                                  "minimum": 0,
-                                  "type": "integer"
-                                },
-                                "locationId": {
-                                  "minLength": 1,
-                                  "type": "string"
-                                },
-                                "quantity": {
-                                  "exclusiveMinimum": 0,
-                                  "type": "number"
-                                }
-                              },
-                              "required": [
-                                "line"
-                              ],
-                              "type": "object"
-                            },
-                            "minItems": 1,
-                            "type": "array"
-                          },
-                          "mode": {
-                            "const": "selected",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "mode",
-                          "lines"
-                        ],
-                        "type": "object"
-                      }
-                    ]
-                  },
-                  "toType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
                   }
                 },
                 "required": [
-                  "fromType",
-                  "fromId",
-                  "toType",
-                  "selection"
+                  "mode"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "lines": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "inventoryDetail": {
+                          "additionalProperties": {
+                            "$ref": "#/$defs/__schema0"
+                          },
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        "line": {
+                          "maximum": 9007199254740991,
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "locationId": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "line"
+                      ],
+                      "type": "object"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "mode": {
+                    "const": "selected",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "mode",
+                  "lines"
                 ],
                 "type": "object"
               }
+            ]
+          },
+          "toType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
             },
-            "required": [
-              "payload"
-            ],
+            "propertyNames": {
+              "type": "string"
+            },
             "type": "object"
           }
-        ]
+        },
+        "required": [
+          "fromType",
+          "fromId",
+          "toType",
+          "selection"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_transformRecord",
@@ -32191,127 +29941,50 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "folderId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "name": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "parent": {
-                    "anyOf": [
-                      {
-                        "anyOf": [
-                          {
-                            "minLength": 1,
-                            "type": "string"
-                          },
-                          {
-                            "exclusiveMinimum": 0,
-                            "maximum": 9007199254740991,
-                            "type": "integer"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "folderId"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "name": {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
                     "minLength": 1,
                     "type": "string"
                   },
-                  "parent": {
-                    "anyOf": [
-                      {
-                        "anyOf": [
-                          {
-                            "minLength": 1,
-                            "type": "string"
-                          },
-                          {
-                            "exclusiveMinimum": 0,
-                            "maximum": 9007199254740991,
-                            "type": "integer"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
+                  {
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991,
+                    "type": "integer"
                   }
-                },
-                "required": [
-                  "folderId"
-                ],
-                "type": "object"
+                ]
               },
               {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "type": "null"
               }
             ]
           }
-        ]
+        },
+        "required": [
+          "folderId"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_updateFolder",
@@ -32556,117 +30229,45 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "recordId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId",
-                  "values"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "recordId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "recordType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
-                  }
-                },
-                "required": [
-                  "recordType",
-                  "recordId",
-                  "values"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "recordType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
           }
-        ]
+        },
+        "required": [
+          "recordType",
+          "recordId",
+          "values"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_updateMapping",
@@ -33180,81 +30781,27 @@
           }
         },
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "searchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
-                  }
-                },
-                "required": [
-                  "searchId",
-                  "values"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
+        "additionalProperties": false,
+        "properties": {
+          "searchId": {
+            "minLength": 1,
+            "type": "string"
           },
-          {
-            "allOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "searchId": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "values": {
-                    "additionalProperties": {
-                      "$ref": "#/$defs/__schema0"
-                    },
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "type": "object"
-                  }
-                },
-                "required": [
-                  "searchId",
-                  "values"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
-              }
-            ]
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
           }
-        ]
+        },
+        "required": [
+          "searchId",
+          "values"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_updateSavedSearch",
@@ -34492,163 +32039,68 @@
       },
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "anyOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "action": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "contents": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "encoding": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "fileId": {
+            "anyOf": [
+              {
                 "minLength": 1,
                 "type": "string"
               },
-              "payload": {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "contents": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "encoding": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "fileType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "isOnline": {
-                    "type": "boolean"
-                  },
-                  "name": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "path": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "contents"
-                ],
-                "type": "object"
-              }
-            },
-            "required": [
-              "payload"
-            ],
-            "type": "object"
-          },
-          {
-            "allOf": [
               {
-                "additionalProperties": false,
-                "properties": {
-                  "confirmation": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "contents": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "encoding": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "fileId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "fileType": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "folderId": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "exclusiveMinimum": 0,
-                        "maximum": 9007199254740991,
-                        "type": "integer"
-                      }
-                    ]
-                  },
-                  "isOnline": {
-                    "type": "boolean"
-                  },
-                  "name": {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  "path": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "contents"
-                ],
-                "type": "object"
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "action": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "type": "object"
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
               }
             ]
+          },
+          "fileType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "folderId": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer"
+              }
+            ]
+          },
+          "isOnline": {
+            "type": "boolean"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "path": {
+            "minLength": 1,
+            "type": "string"
           }
-        ]
+        },
+        "required": [
+          "contents"
+        ],
+        "type": "object"
       },
       "mutatesNetSuite": true,
       "name": "ns_writeFile",

@@ -44,10 +44,7 @@ const GenericTransformOperationPayloadSchema = z.object({
 })
 
 function directOperationInput<T extends z.ZodRawShape>(payload: z.ZodObject<T>) {
-  return z.union([
-    payload.extend({ action: z.string().min(1).optional() }),
-    z.object({ action: z.string().min(1).optional(), payload }),
-  ])
+  return payload
 }
 
 export const SalesOrderOperationInputSchema = directOperationInput(SalesOrderOperationPayloadSchema)

@@ -22,8 +22,9 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
   function listFileCabinet(actionRequest) {
     const payload = actionRequest.payload
     const folderRef = resolveListFolder(payload)
-    const maxEntries = optionalLimit(payload, "maxEntries", "limit", 200, 1, 1000)
+    const maxEntries = optionalLimit(payload, "maxEntries", "limit", 50, 1, 1000)
     const query = optionalText(payload, "query")
+    const includeUrls = optionalBoolean(payload, "includeUrls") === true
     if (folderRef.notFound) {
       return {
         action: actionRequest.action,
@@ -48,12 +49,14 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
       ["internalid", "name", "parent"],
       maxEntries,
     )
+    const fileColumns = ["internalid", "name", "folder", "filetype", "documentsize", "modified"]
+    if (includeUrls) fileColumns.push("url")
     const files = runObjectSearch(
       "file",
       combineFilters(fileFilters, fileQueryFilters),
-      ["internalid", "name", "folder", "filetype", "documentsize", "url", "modified"],
+      fileColumns,
       maxEntries,
-    )
+    ).map((entry) => sanitizeFileResult(entry))
 
     return {
       action: actionRequest.action,
@@ -62,6 +65,7 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
       files,
       folders,
       maxEntries,
+      includeUrls,
     }
   }
 
@@ -328,8 +332,11 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     if (folderId !== null && path !== null) {
       throw createRequestError("INVALID_FOLDER_TARGET", "Use either folderId or path, not both")
     }
-    if (path === null || path.length === 0 || path === "/") {
-      return { id: folderId, path: path || null, notFound: false }
+    if (folderId === null && (path === null || path.length === 0 || path === "/")) {
+      throw createRequestError(
+        "MISSING_FOLDER_TARGET",
+        "folderId or a non-root path is required to list File Cabinet entries",
+      )
     }
     const resolvedId = resolveFolderPath(path)
     if (resolvedId === null) {
@@ -361,6 +368,8 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
     const filters = [["name", "is", name]]
     if (parentId !== null) {
       filters.push("AND", ["parent", "anyof", String(parentId)])
+    } else {
+      filters.push("AND", ["parent", "anyof", "@NONE@"])
     }
     const rows = runObjectSearch("folder", filters, ["internalid", "name", "parent"], 1)
     return rows.length === 0 ? null : Number(rows[0].id)
@@ -392,6 +401,25 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
       values[columnKey(column)] = { value: result.getValue(column), text: result.getText(column) }
     }
     return { id: result.id, recordType: result.recordType, values }
+  }
+
+  function sanitizeFileResult(entry) {
+    const url = entry.values.url
+    if (url && typeof url.value === "string") url.value = sanitizeUrl(url.value)
+    if (url && typeof url.text === "string") url.text = sanitizeUrl(url.text)
+    return entry
+  }
+
+  function sanitizeUrl(value) {
+    const parts = value.split("?")
+    if (parts.length === 1) return value
+    const query = parts
+      .slice(1)
+      .join("?")
+      .split("&")
+      .filter((part) => !/^(h|token|access_token|signature|sig)=/i.test(part))
+      .join("&")
+    return query ? `${parts[0]}?${query}` : parts[0]
   }
 
   function columnKey(column) {

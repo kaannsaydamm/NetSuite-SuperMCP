@@ -16,6 +16,7 @@ export const ErrorEnvelopeSchema = z.object({
     requestId: z.string().uuid(),
     httpStatus: z.number().int().optional(),
     netsuiteCode: z.string().optional(),
+    netsuiteMessage: z.string().optional(),
     requiredPermission: z.string().optional(),
   }),
 })
@@ -36,7 +37,7 @@ export function toErrorEnvelope(error: unknown, requestId: string): ErrorEnvelop
         retryable: error.statusCode === 429 || error.statusCode >= 500,
         requestId,
         httpStatus: error.statusCode,
-        ...extractNetSuiteCode(error.responseBody),
+        ...extractNetSuiteDetails(error.responseBody),
       },
     })
   }
@@ -95,15 +96,41 @@ function likelyNetSuiteCause(statusCode: number): string {
   return "NetSuite rejected the request payload or record state."
 }
 
-function extractNetSuiteCode(responseBody: string): { readonly netsuiteCode?: string } {
+function extractNetSuiteDetails(responseBody: string): {
+  readonly netsuiteCode?: string
+  readonly netsuiteMessage?: string
+} {
   try {
     const parsed = JSON.parse(responseBody) as unknown
     if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
-      const code = (parsed as Record<string, unknown>)["o:errorCode"]
-      return typeof code === "string" ? { netsuiteCode: code } : {}
+      const object = parsed as Record<string, unknown>
+      const nested =
+        typeof object["error"] === "object" && object["error"] !== null
+          ? (object["error"] as Record<string, unknown>)
+          : object
+      const details = Array.isArray(object["o:errorDetails"])
+        ? (object["o:errorDetails"] as Record<string, unknown>[])[0]
+        : undefined
+      const code = details?.["o:errorCode"] ?? nested["o:errorCode"] ?? nested["code"]
+      const message =
+        details?.["detail"] ?? nested["detail"] ?? nested["message"] ?? object["title"]
+      return {
+        ...(typeof code === "string" ? { netsuiteCode: code } : {}),
+        ...(typeof message === "string" ? { netsuiteMessage: sanitizeMessage(message) } : {}),
+      }
     }
   } catch {
     return {}
   }
   return {}
+}
+
+function sanitizeMessage(value: string): string {
+  return value
+    .replace(
+      /(authorization|bearer|token|secret|password|credential)\s*[:=]\s*[^\s,;]+/gi,
+      "$1=[REDACTED]",
+    )
+    .replace(/([?&](?:h|token|access_token|signature|sig)=)[^&\s]+/gi, "$1[REDACTED]")
+    .slice(0, 2000)
 }

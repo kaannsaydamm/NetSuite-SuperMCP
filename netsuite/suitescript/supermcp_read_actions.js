@@ -19,6 +19,23 @@ define(["N/error", "N/file", "N/record", "N/search"], (nsError, file, record, se
 
   function runSavedSearch(actionRequest) {
     const payload = actionRequest.payload
+    if (
+      (actionRequest.action === "ns_getIntegrationLogs" ||
+        actionRequest.action === "ns_getFailedIntegrationJobs") &&
+      (payload.savedSearchId === undefined ||
+        payload.savedSearchId === null ||
+        payload.savedSearchId === "")
+    ) {
+      return {
+        action: actionRequest.action,
+        phase: actionRequest.phase,
+        configured: false,
+        configurationRequired: "savedSearchId",
+        results: [],
+        message:
+          "Provide the internal or script ID of an account-specific saved search. Use ns_listReports to discover saved searches.",
+      }
+    }
     const savedSearchId = requireText(payload, "savedSearchId")
     return runPagedSearch(actionRequest, savedSearchId, "savedSearchId")
   }

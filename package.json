@@ -1,9 +1,9 @@
 {
   "name": "netsuite-supermcp",
-  "version": "0.1.43",
+  "version": "0.1.44",
   "description": "A NetSuite MCP server with OAuth, REST/RESTlet tools, client installers, and account permission probes.",
   "private": false,
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "author": "Kaan Kadir Aluçlu",
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     ".env.example",
     "CHANGELOG.md",
     "LICENSE",
+    "COMMERCIAL-LICENSE.md",
     "README.md"
   ],
   "keywords": [

@@ -18,12 +18,9 @@ describe("MCP RESTlet-backed mapping actions", () => {
       params: {
         name: ToolName.GetMapping,
         arguments: {
-          action: "ignored-by-mcp",
-          payload: {
-            recordType: "customrecord_channel_mapping",
-            recordId: "321",
-            fields: ["name", "custrecord_source", "custrecord_target"],
-          },
+          recordType: "customrecord_channel_mapping",
+          recordId: "321",
+          fields: ["name", "custrecord_source", "custrecord_target"],
         },
       },
     })
@@ -56,12 +53,9 @@ describe("MCP RESTlet-backed mapping actions", () => {
       params: {
         name: ToolName.UpdateMapping,
         arguments: {
-          action: "ignored-by-mcp",
-          payload: {
-            recordType: "customrecord_channel_mapping",
-            recordId: "321",
-            values: { custrecord_target: "789" },
-          },
+          recordType: "customrecord_channel_mapping",
+          recordId: "321",
+          values: { custrecord_target: "789" },
         },
       },
     })

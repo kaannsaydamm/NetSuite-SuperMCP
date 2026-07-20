@@ -38,6 +38,8 @@ describe("permanent RESTlet operation contract", () => {
     expect(systemNotes).not.toContain('"internalid"')
     expect(systemNotes).not.toContain('["record",')
     expect(systemNotes).toContain('["recordid",')
+    expect(systemNotes).toContain("canonicalSystemNoteRecordType")
+    expect(systemNotes).not.toContain('["recordtype", "is", recordType]')
     expect(systemNotes).toContain("String(result.id)")
   })
 })

@@ -17,10 +17,7 @@ describe("MCP RESTlet-backed script actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.ListScripts,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { savedSearchId: "customsearch_supermcp_scripts", pageSize: 100 },
-        },
+        arguments: { savedSearchId: "customsearch_supermcp_scripts", pageSize: 100 },
       },
     })
 
@@ -48,8 +45,8 @@ describe("MCP RESTlet-backed script actions", () => {
       params: {
         name: ToolName.ListScriptDeployments,
         arguments: {
-          action: "ignored-by-mcp",
-          payload: { savedSearchId: "customsearch_supermcp_script_deployments", pageSize: 100 },
+          savedSearchId: "customsearch_supermcp_script_deployments",
+          pageSize: 100,
         },
       },
     })
@@ -77,10 +74,7 @@ describe("MCP RESTlet-backed script actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.GetScriptLogs,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { savedSearchId: "customsearch_supermcp_script_logs", pageSize: 100 },
-        },
+        arguments: { savedSearchId: "customsearch_supermcp_script_logs", pageSize: 100 },
       },
     })
 
@@ -107,10 +101,7 @@ describe("MCP RESTlet-backed script actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.FindScriptErrors,
-        arguments: {
-          action: "ignored-by-mcp",
-          payload: { savedSearchId: "customsearch_supermcp_script_errors", pageSize: 100 },
-        },
+        arguments: { savedSearchId: "customsearch_supermcp_script_errors", pageSize: 100 },
       },
     })
 

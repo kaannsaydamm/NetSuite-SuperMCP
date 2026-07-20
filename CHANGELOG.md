@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.44 - 2026-07-20
+
+- Redact nested System Note PII carried in generic value fields and entity references.
+- Enforce a fail-closed System Note record-type discriminant so identical internal IDs do not mix histories.
+- Publish direct object input schemas from one canonical contract source for every MCP tool.
+- Repair script inventory, deployment, source, and observability searches with stable search columns and concrete SuiteScript record types.
+- Canonicalize transaction graph aliases and orient parent/child edges without cycles.
+- Require a File Cabinet folder target, lower the default result limit, and make sanitized URLs opt-in.
+- Return actionable, secret-sanitized NetSuite error codes and details for failed diagnostics.
+- Return explicit configuration guidance when integration diagnostic saved searches are not supplied.
+- Change the public license from MIT to PolyForm Noncommercial 1.0.0; commercial rights remain reserved by Kaan Kadir Aluçlu.
+
 ## 0.1.43 - 2026-07-20
 
 - Fixed the NetSuite authorization request to send OAuth scopes as a space-delimited value.

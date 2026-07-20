@@ -57,9 +57,25 @@ describe("MCP system tools", () => {
     expect(JSON.stringify(body)).toContain(ToolName.ListCapabilities)
     expect(JSON.stringify(body)).toContain(ToolName.BillPurchaseOrder)
     const tools = z
-      .array(z.object({ name: z.string(), outputSchema: z.object({ type: z.literal("object") }) }))
+      .array(
+        z.object({
+          name: z.string(),
+          inputSchema: z.object({ type: z.literal("object") }).passthrough(),
+          outputSchema: z.object({ type: z.literal("object") }),
+        }),
+      )
       .parse(body.result.tools)
     expect(tools).toHaveLength(Object.keys(ToolName).length)
+    for (const [name, fields] of [
+      [ToolName.FulfillSalesOrder, ["salesOrderId", "selection"]],
+      [ToolName.RunSavedSearch, ["savedSearchId"]],
+      [ToolName.GetMapping, ["recordType", "recordId"]],
+    ] as const) {
+      const schema = tools.find((tool) => tool.name === name)?.inputSchema
+      expect(schema, name).not.toHaveProperty("anyOf")
+      for (const field of fields)
+        expect(JSON.stringify(schema), `${name}:${field}`).toContain(field)
+    }
   })
 
   it("returns MCP and deployed RESTlet version details", async () => {
@@ -86,7 +102,7 @@ describe("MCP system tools", () => {
     expect(payload.server).toMatchObject({
       name: "NetSuite SuperMCP",
       configuredVersion: "local-dev",
-      packageVersion: "0.1.43",
+      packageVersion: "0.1.44",
       toolCount: Object.keys(ToolName).length,
     })
     expect(payload.netsuite).toMatchObject({

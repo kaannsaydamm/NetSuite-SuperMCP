@@ -223,10 +223,7 @@ describe("MCP NetSuite actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.BillPurchaseOrder,
-        arguments: {
-          action: "bill",
-          payload: { purchaseOrderId: "123", selection: { mode: "allOpen" } },
-        },
+        arguments: { purchaseOrderId: "123", selection: { mode: "allOpen" } },
       },
     })
     const auditContent = await readFile(auditLogPath, "utf8")
@@ -260,10 +257,7 @@ describe("MCP NetSuite actions", () => {
       method: "tools/call",
       params: {
         name: ToolName.BillPurchaseOrder,
-        arguments: {
-          action: "bill",
-          payload: { purchaseOrderId: "123", selection: { mode: "allOpen" } },
-        },
+        arguments: { purchaseOrderId: "123", selection: { mode: "allOpen" } },
       },
     })
     const body = ToolTextResponseSchema.parse(await response.json())
