@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { createAuthorizationUrl } from "../scripts/oauth-login"
 import { NetSuiteTokenProvider } from "../src/netsuite/oauth"
+import { NetSuiteAuthorizationCodeExchange } from "../src/oauth/netsuite-authorization-exchange"
 import { testConfig } from "./test-support"
 
 describe("NetSuiteTokenProvider", () => {
@@ -131,6 +132,24 @@ describe("NetSuiteTokenProvider", () => {
     } finally {
       globalThis.fetch = originalFetch
     }
+  })
+})
+
+describe("NetSuiteAuthorizationCodeExchange", () => {
+  it("uses the space-delimited scope format required by NetSuite", () => {
+    const config = testConfig().netsuite
+    const exchange = new NetSuiteAuthorizationCodeExchange({
+      ...config,
+      authorizationUrl: "https://1234567.app.netsuite.com/app/login/oauth2/authorize.nl",
+      redirectUri: "https://mcp.example.com/oauth/netsuite/callback",
+      clientId: "client-id",
+    })
+
+    const url = new URL(
+      exchange.createAuthorizationUrl({ state: "state-value", codeChallenge: "challenge-value" }),
+    )
+
+    expect(url.searchParams.get("scope")).toBe("restlets rest_webservices")
   })
 })
 

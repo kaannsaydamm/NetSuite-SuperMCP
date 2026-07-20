@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.43 - 2026-07-20
+
+- Fixed the NetSuite authorization request to send OAuth scopes as a space-delimited value.
+- Added a regression test for the NetSuite authorization URL scope format.
+
 ## 0.1.42 - 2026-07-20
 
 - Fixed `public-url` selecting an older ngrok tunnel when another SuperMCP instance was already running.

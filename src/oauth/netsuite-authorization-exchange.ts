@@ -21,7 +21,7 @@ export class NetSuiteAuthorizationCodeExchange implements NetSuiteAuthorizationE
     url.searchParams.set("response_type", "code")
     url.searchParams.set("client_id", required(this.config.clientId, "NETSUITE_CLIENT_ID"))
     url.searchParams.set("redirect_uri", required(this.config.redirectUri, "NETSUITE_REDIRECT_URI"))
-    url.searchParams.set("scope", "restlets,rest_webservices")
+    url.searchParams.set("scope", "restlets rest_webservices")
     url.searchParams.set("state", input.state)
     url.searchParams.set("code_challenge", input.codeChallenge)
     url.searchParams.set("code_challenge_method", "S256")
