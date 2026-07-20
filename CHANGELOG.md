@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.42 - 2026-07-20
+
+- Fixed `public-url` selecting an older ngrok tunnel when another SuperMCP instance was already running.
+- Correlates the discovered HTTPS tunnel with the local MCP port before printing connector URLs.
+
 ## 0.1.41 - 2026-07-20
 
 - Added MCP-native OAuth 2.1 Authorization Code flow with PKCE S256, RFC 9728 protected-resource

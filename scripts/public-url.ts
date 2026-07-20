@@ -53,7 +53,7 @@ ngrok.stderr.on("data", (chunk: Buffer) => {
 
 let publicUrl: string
 try {
-  publicUrl = await waitForNgrokUrl()
+  publicUrl = await waitForNgrokUrl(localUrl)
 } catch (error) {
   ngrok.kill()
   throw error
@@ -121,7 +121,7 @@ try {
   console.log("")
   console.log("Claude discovers OAuth automatically and opens the NetSuite login page.")
   console.log("")
-  console.log("Keep this terminal open while ChatGPT uses the connector.")
+  console.log("Keep this process running while remote MCP clients use the connector.")
   await waitUntilChildExits()
 } catch (error) {
   shutdown()
@@ -503,8 +503,8 @@ async function waitForHealth(baseUrl: string): Promise<void> {
   throw new Error(`MCP health check timed out: ${serverOutput}`)
 }
 
-async function waitForNgrokUrl(): Promise<string> {
-  const apiUrl = "http://127.0.0.1:4040/api/tunnels"
+async function waitForNgrokUrl(localUrl: string): Promise<string> {
+  const expectedPort = new URL(localUrl).port
   for (let attempt = 0; attempt < 150; attempt += 1) {
     if (ngrok.exitCode !== null) {
       throw new Error(`ngrok exited before public URL was ready: ${ngrokOutput}`)
@@ -515,21 +515,41 @@ async function waitForNgrokUrl(): Promise<string> {
       return loggedUrl
     }
 
-    try {
-      const response = await fetch(apiUrl)
-      if (response.ok) {
-        const body = (await response.json()) as {
-          readonly tunnels?: readonly { readonly public_url?: string; readonly proto?: string }[]
+    for (let apiPort = 4040; apiPort <= 4050; apiPort += 1) {
+      try {
+        const response = await fetch(`http://127.0.0.1:${apiPort}/api/tunnels`)
+        if (response.ok) {
+          const body = (await response.json()) as {
+            readonly tunnels?: readonly {
+              readonly public_url?: string
+              readonly proto?: string
+              readonly config?: { readonly addr?: string }
+            }[]
+          }
+          const url = body.tunnels?.find(
+            (tunnel) =>
+              tunnel.proto === "https" &&
+              tunnel.public_url !== undefined &&
+              tunnelTargetsPort(tunnel.config?.addr, expectedPort),
+          )?.public_url
+          if (url !== undefined) {
+            return url
+          }
         }
-        const url = body.tunnels?.find((tunnel) => tunnel.proto === "https")?.public_url
-        if (url !== undefined) {
-          return url
-        }
-      }
-    } catch {}
+      } catch {}
+    }
     await delay(200)
   }
   throw new Error(`ngrok public URL timed out: ${ngrokOutput}`)
+}
+
+function tunnelTargetsPort(address: string | undefined, expectedPort: string): boolean {
+  if (address === undefined) return false
+  try {
+    return new URL(address).port === expectedPort
+  } catch {
+    return address.endsWith(`:${expectedPort}`)
+  }
 }
 
 function parseNgrokPublicUrl(output: string): string | undefined {
