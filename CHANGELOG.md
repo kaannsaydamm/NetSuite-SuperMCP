@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.45 - 2026-07-20
+
+- Add `netsuite-supermcp --version`, `-v`, and `version` CLI commands.
+
 ## 0.1.44 - 2026-07-20
 
 - Redact nested System Note PII carried in generic value fields and entity references.

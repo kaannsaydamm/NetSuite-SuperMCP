@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process"
+import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -8,6 +9,12 @@ const command = process.argv[2] ?? "stdio"
 const args = process.argv.slice(3)
 const usage =
   "Usage: netsuite-supermcp [setup|oauth2|switch-account|logout|auth-diagnose|doctor|suitecloud|stdio|http|tunnel|public-url|install|oauth-login] [...args]"
+
+if (command === "--version" || command === "-v" || command === "version") {
+  const { version } = JSON.parse(readFileSync(join(root, "package.json"), "utf8"))
+  console.log(version)
+  process.exit(0)
+}
 
 if (command === "--help" || command === "-h" || args.includes("--help") || args.includes("-h")) {
   console.log(usage)

@@ -102,7 +102,7 @@ describe("MCP system tools", () => {
     expect(payload.server).toMatchObject({
       name: "NetSuite SuperMCP",
       configuredVersion: "local-dev",
-      packageVersion: "0.1.44",
+      packageVersion: "0.1.45",
       toolCount: Object.keys(ToolName).length,
     })
     expect(payload.netsuite).toMatchObject({
